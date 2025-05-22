@@ -1,6 +1,6 @@
 // src/app/services/machinery.service.ts
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs'; // 'of' ya no será necesario si obtienes todo por HTTP
+import { Observable } from 'rxjs'; // 'of' ya no será necesario si tengo todo por HTTP
 import { HttpClient } from '@angular/common/http'; // <-- ¡IMPORTANTE! Importa HttpClient
 import { map } from 'rxjs/operators'; // <-- Necesario para el operador map si filtro en frontend
 import { Machinery, MachineryStatus } from '../models/machinery.model';
@@ -81,7 +81,7 @@ export class MachineryService {
 
     // **IMPORTANTE**: Define la URL del backend aquí.
     // Confirma con mis compañero el puerto y el endpoint exacto para las maquinarias.
-    // El puerto más común para un backend Node.js es 3000. El endpoint para una lista
+    // El puerto más común para un backend Node.js es 3001. El endpoint para una lista
     // de recursos suele ser algo como '/machineries' o '/api/machineries'.
     private apiUrl = 'http://localhost:3001/api/machineries';
 

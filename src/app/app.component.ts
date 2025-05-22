@@ -10,7 +10,7 @@ import { RouterOutlet, RouterLink } from '@angular/router'; // Para que el route
     CommonModule,
     RouterOutlet, // Permite que <router-outlet> funcione
     RouterLink // Permite que routerLink="" funcione en el HTML
-    // Aquí importarás otros componentes standalone que uses directamente en este template,
+    // acá se importaran otros componentes standalone que uses directamente en este template,
     // como los futuros HeaderComponent y FooterComponent.
   ],
   templateUrl: './app.component.html',
