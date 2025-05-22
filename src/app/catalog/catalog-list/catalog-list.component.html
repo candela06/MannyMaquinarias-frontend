@@ -1,0 +1,120 @@
+<div class="catalog-page-wrapper">
+    <aside class="filters-sidebar">
+        <div class="filter-header">
+            <h2>Filtrar</h2>
+            <button class="clear-all-btn" (click)="clearAllFilters()">Limpiar Todo</button>
+        </div>
+
+        <div class="filter-group">
+            <h3>Categoría</h3>
+            <div class="filter-options">
+                <label *ngFor="let type of machineryTypes" class="checkbox-option">
+                    <input type="checkbox" [value]="type" (change)="onFilterChange('type', type, $event)">
+                    {{ type }}
+                </label>
+            </div>
+            <button class="see-more-btn">Ver más</button>
+        </div>
+
+        <div class="filter-group">
+            <h3>Localidad</h3>
+            <div class="filter-options">
+                <label *ngFor="let location of machineryLocations" class="checkbox-option">
+                    <input type="checkbox" [value]="location" (change)="onFilterChange('location', location, $event)">
+                    {{ location }}
+                </label>
+            </div>
+            <button class="see-more-btn">Ver más</button>
+        </div>
+        <div class="filter-group">
+            <h3>Rango de Precios</h3>
+            <input type="range" min="0" max="1000" value="0" class="price-range-slider">
+            <div class="price-display">
+                <span>$0</span> - <span>$1000+</span>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h3>Fechas de Alquiler</h3>
+            <div class="date-filter-options">
+                <label for="startDate">Desde:</label>
+                <input type="date" id="startDate" [(ngModel)]="activeFilters.startDate" (change)="onDateChange()">
+                <label for="endDate">Hasta:</label>
+                <input type="date" id="endDate" [(ngModel)]="activeFilters.endDate" (change)="onDateChange()">
+            </div>
+        </div>
+
+
+
+
+
+
+    </aside>
+
+    <main class="catalog-main-content">
+        <div class="top-bar-controls">
+            <div class="active-filters-tags">
+                <span class="active-filter-tag" *ngIf="activeFilters.type">
+                    Tipo: {{ activeFilters.type }} <button (click)="removeFilter('type')">x</button>
+                </span>
+                <span class="active-filter-tag" *ngIf="activeFilters.location">
+                    Localidad: {{ activeFilters.location }} <button (click)="removeFilter('location')">x</button>
+                </span>
+                <span class="active-filter-tag" *ngIf="activeFilters.startDate">
+                    Desde: {{ activeFilters.startDate | date:'shortDate' }} <button
+                        (click)="removeFilter('startDate')">x</button>
+                </span>
+                <span class="active-filter-tag" *ngIf="activeFilters.endDate">
+                    Hasta: {{ activeFilters.endDate | date:'shortDate' }} <button
+                        (click)="removeFilter('endDate')">x</button>
+                </span>
+            </div>
+            <div class="sort-by-dropdown">
+                <span>Ordenar por:</span>
+                <select>
+                    <option value="relevancia">Relevancia</option>
+                    <option value="precioAsc">Precio: Menor a Mayor</option>
+                    <option value="precioDesc">Precio: Mayor a Menor</option>
+                    <option value="reciente">Más Reciente</option>
+                </select>
+            </div>
+        </div>
+
+        <section class="machinery-grid">
+            <article class="machinery-card" *ngFor="let machine of filteredMachineries">
+                <img [src]="machine.imageUrl" [alt]="'Imagen de ' + machine.model">
+                <div class="card-details">
+                    <h3>{{ machine.brand }} {{ machine.model }}</h3>
+                    <p class="card-type">Tipo: {{ machine.type }}</p>
+                    <p class="card-location">Localidad: {{ machine.location }}</p>
+                    <p class="card-price" *ngIf="machine.status !== MachineryStatus.OUT_OF_SERVICE">
+                        Precio: $$$
+                    </p>
+                    <div class="card-status">
+                        Estado:
+                        <span [ngClass]="{
+                'status-available': machine.status === MachineryStatus.AVAILABLE,
+                'status-reserved': machine.status === MachineryStatus.RESERVED,
+                'status-unavailable': machine.status === MachineryStatus.OUT_OF_SERVICE
+              }">
+                            {{ machine.status }}
+                        </span>
+                    </div>
+                    <p class="card-next-available"
+                        *ngIf="machine.status === MachineryStatus.RESERVED && machine.nextAvailableDate">
+                        Disponible a partir de: {{ machine.nextAvailableDate }}
+                    </p>
+                    <div class="card-button-wrapper">
+                        <button class="add-to-cart-btn" [disabled]="machine.status !== MachineryStatus.AVAILABLE">
+                            {{ machine.status === MachineryStatus.AVAILABLE ? 'Alquilar Ahora' : 'No Disponible' }}
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <p *ngIf="filteredMachineries.length === 0" class="no-results-message">
+                No se encontraron maquinarias que coincidan con los filtros.
+            </p>
+        </section>
+    </main>
+</div>
