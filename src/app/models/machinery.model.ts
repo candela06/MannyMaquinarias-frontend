@@ -18,6 +18,7 @@ export interface Machinery {
     cancellationPolicy: 'full' | 'percentage';
     lastMaintenance?: string;
     imageUrl: string;
+    description?: string;
     // --- NUEVAS PROPIEDADES ---
     location: string; // Nueva propiedad para la localidad (ej. 'Buenos Aires', 'Córdoba')
     // Para una implementación real de fechas, se usaría un tipo de dato de fecha:

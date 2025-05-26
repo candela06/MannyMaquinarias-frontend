@@ -260,10 +260,7 @@
     text-align: left;
 }
 
-.card-button-wrapper {
-    margin-top: auto;
-    padding-top: 15px;
-}
+
 
 .machinery-card h3 {
     color: #FF8C00;
@@ -492,3 +489,56 @@ app-root>footer {
     color: #888;
     margin-bottom: 5px !important;
 }
+
+
+.card-button-wrapper {
+    margin-top: 15px;
+    text-align: center;
+    margin-top: auto;
+}
+
+.view-details-button {
+    display: inline-block;
+    /* Permite aplicar padding y margin verticalmente, y que no ocupe todo el ancho */
+    background-color: #ff9800;
+    /* Un tono naranja que coincide con tu header */
+    color: white;
+    /* Texto blanco para que contraste */
+    padding: 10px 20px;
+    /* Espacio interno del botón */
+    border: none;
+    /* Sin borde */
+    border-radius: 5px;
+    /* Bordes ligeramente redondeados */
+    text-decoration: none;
+    /* Quita el subrayado predeterminado de los enlaces */
+    font-weight: bold;
+    /* Texto en negrita */
+    cursor: pointer;
+    /* Indica que es un elemento clicable */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    /* Transición suave para el hover */
+    font-size: 1em;
+    /* Tamaño de fuente */
+    width: 80%;
+    /* Ocupa el 80% del ancho del contenedor */
+    max-width: 180px;
+    /* Limita el ancho máximo para botones más grandes */
+}
+
+.view-details-button:hover {
+    background-color: #e08e00;
+    /* Un naranja un poco más oscuro al pasar el ratón */
+    transform: translateY(-2px);
+    /* Un pequeño efecto de levantamiento */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Sombra sutil al pasar el ratón */
+}
+
+.view-details-button:active {
+    background-color: #c47c00;
+    /* Un naranja aún más oscuro al hacer clic */
+    transform: translateY(0);
+    /* Vuelve a la posición original */
+    box-shadow: none;
+    /* Quita la sombra al hacer clic */ }

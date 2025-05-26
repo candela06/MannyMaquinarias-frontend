@@ -1,0 +1,91 @@
+<div *ngIf="machinery$ | async as machinery; else cargando" class="detail-page-container">
+    <div class="detail-card">
+        <div class="image-section">
+            <div class="main-image-wrapper">
+                <img [src]="machinery.imageUrl || 'assets/placeholder-big.jpg'"
+                    alt="{{ machinery.brand }} {{ machinery.model }}" class="main-detail-image">
+            </div>
+            <div class="thumbnail-gallery">
+                <img [src]="machinery.imageUrl || 'assets/placeholder-thumb.jpg'" alt="Miniatura"
+                    class="thumbnail-image">
+            </div>
+        </div>
+
+        <div class="details-section">
+            <button class="back-button" (click)="goBack()">
+                <span class="arrow-icon">←</span> Atrás
+            </button>
+
+            <h1 class="machine-title">{{ machinery.brand }} {{ machinery.model }}</h1>
+            <p class="machine-type">{{ machinery.type }}</p>
+
+            <div class="price-info">
+                <span class="current-price">${{ machinery.pricePerDay }} / día</span>
+            </div>
+
+            <div class="info-tabs">
+                <button class="tab-button active">Descripción</button>
+                <button class="tab-button">Especificaciones</button>
+                <button class="tab-button">Disponibilidad</button>
+            </div>
+
+            <div class="tab-content">
+                <div class="description-content">
+                    <p>{{ machinery.description || 'No hay descripción disponible para esta maquinaria.' }}</p>
+                    <p><strong>Ubicación:</strong> {{ machinery.location }}</p>
+                    <p><strong>Política de cancelación:</strong> {{ machinery.cancellationPolicy || 'No especificado.'
+                        }}</p>
+                </div>
+
+                <div class="availability-content">
+                    <h3>Fechas de Alquiler</h3>
+                    <div class="date-pickers">
+                        <label for="startDate">Desde:</label>
+                        <input type="date" id="startDate" [(ngModel)]="startDate" (change)="checkAvailability()">
+                        <label for="endDate">Hasta:</label>
+                        <input type="date" id="endDate" [(ngModel)]="endDate" (change)="checkAvailability()">
+                    </div>
+
+                    <div class="availability-status">
+                        <p><strong>Estado Actual:</strong>
+                            <span
+                                [ngClass]="{'status-available': machinery.status === MachineryStatus.AVAILABLE, 'status-reserved': machinery.status === MachineryStatus.RESERVED, 'status-unavailable': machinery.status === MachineryStatus.OUT_OF_SERVICE}">
+                                {{ machinery.status === MachineryStatus.AVAILABLE ? 'Disponible para Alquiler' :
+                                (machinery.status === MachineryStatus.RESERVED ? 'Reservado' : 'Fuera de Servicio') }}
+                            </span>
+                        </p>
+                        <p *ngIf="machinery.status === MachineryStatus.RESERVED && machinery.nextAvailableDate">
+                            Próxima disponibilidad a partir de: <strong>{{ machinery.nextAvailableDate | date:'fullDate'
+                                }}</strong>
+                        </p>
+                        <p *ngIf="machinery.status === MachineryStatus.OUT_OF_SERVICE">
+                            Esta máquina está actualmente fuera de servicio y no puede ser alquilada.
+                        </p>
+                    </div>
+                    <p class="temp-message">
+                        *Selecciona las fechas para ver la disponibilidad real (funcionalidad completa al conectar con
+                        el backend).
+                    </p>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="favorite-button" (click)="onFavoriteClick()">
+                    <span class="heart-icon">❤️</span> Añadir a Favoritos
+                </button>
+                <button class="rent-button" [disabled]="machinery.status !== MachineryStatus.AVAILABLE"
+                    (click)="onRentClick()">
+                    Alquilar Ahora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #cargando>
+    <p class="loading-message">Cargando detalles de la maquinaria...</p>
+</ng-template>
+
+<ng-template #noEncontrado>
+    <p class="not-found-message">Lo sentimos, la maquinaria solicitada no fue encontrada.</p>
+</ng-template>

@@ -7,7 +7,7 @@ import { CatalogListComponent } from './catalog/catalog-list/catalog-list.compon
 //import { RegisterComponent } from './auth/register/register.component'; // Añadimos este para la ruta de registro
 import { FaqComponent } from './shared/faq/faq.component'; // Añadimos este para la ruta de preguntas frecuentes
 //import { ContactComponent } from './shared/contact/contact.component'; // Añadimos este para la ruta de contacto
-
+import { DetalleMaquinariaComponent } from './detalle-maquinaria/detalle-maquinaria.component';
 export const routes: Routes = [
     { path: '', redirectTo: '/catalogo', pathMatch: 'full' }, // Redirige a la página principal
     { path: 'catalogo', component: CatalogListComponent },
@@ -15,6 +15,7 @@ export const routes: Routes = [
 //    { path: 'registro', component: RegisterComponent }, // Ruta para el componente de registro
     { path: 'preguntas-frecuentes', component: FaqComponent }, // Ruta para el componente de FAQ
 //    { path: 'contacto', component: ContactComponent }, // Ruta para el componente de contacto
+    { path: 'detalle/:id', component: DetalleMaquinariaComponent }
 
     // Más rutas se añadirán aquí a medida que desarrollemos funcionalidades específicas
     // Por ejemplo:
