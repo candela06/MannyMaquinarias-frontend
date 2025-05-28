@@ -1,54 +1,34 @@
-<header>
-  <div class="header-container">
-    <a class="logo" routerLink="/">
-      <img src="assets/Manny_Maquinarias_loco.png" alt="Logo Mannyquinarias">
-    </a>
+<header class="app-header">
+  <a routerLink="/catalogo" class="logo-container">
+    <img
+      src="src\assets\Manny.png"
+      alt="MannyMaquinarias Logo"
+      class="app-logo"
+    />
+  </a>
 
-    <div class="nav-and-search-wrapper">
-      <div class="search-container">
-        <input type="text" placeholder="Buscar..." [(ngModel)]="globalSearchTerm" (input)="onSearchInput($event)"
-          (focus)="showSuggestions = true" (blur)="hideSuggestions()" (keyup.enter)="executeSearch()"
-          class="navbar-search-input">
-        <button *ngIf="globalSearchTerm" (click)="clearGlobalSearch($event)" class="navbar-clear-button">X</button>
-
-        <button class="search-button" (click)="executeSearch()"></button>
-        <div *ngIf="showSuggestions" class="search-suggestions">
-          <div *ngIf="searchHistory.length > 0 && !filteredSuggestions.length && globalSearchTerm.length === 0"
-            class="history-section">
-            <div class="history-title">Búsquedas recientes</div>
-            <ul>
-              <li *ngFor="let term of searchHistory" (mousedown)="selectSuggestion(term, $event)">
-                {{ term }}
-                <button (click)="removeHistoryItem(term, $event)">X</button>
-              </li>
-            </ul>
-          </div>
-
-          <ul *ngIf="filteredSuggestions.length > 0">
-            <li *ngFor="let suggestion of filteredSuggestions" (mousedown)="selectSuggestion(suggestion, $event)">
-              {{ suggestion }}
-            </li>
-          </ul>
-          <div
-            *ngIf="globalSearchTerm && !filteredSuggestions.length && globalSearchTerm.length > 0 && !searchHistory.length"
-            class="no-results">
-            No se encontraron sugerencias.
-          </div>
-        </div>
-      </div>
-
-      <nav class="main-nav">
-        <a routerLink="/catalogo">Catálogo</a>
-        <a routerLink=#>Iniciar Sesión</a>
-      </nav>
-    </div>
-  </div>
+  <nav class="main-nav">
+    <a routerLink="/catalogo">Catálogo</a>
+    <a>Iniciar Sesión</a>
+    <a>Panel Admin</a>
+  </nav>
 </header>
 
-<main class="app-main-content">
-  <router-outlet></router-outlet>
-</main>
+<router-outlet></router-outlet>
 
-<footer>
-  <p class="copyright">&copy; {{ currentYear }} MannyMaquinarias. Todos los derechos reservados.</p>
+<footer class="app-footer">
+  <p>&copy; 2025 MannyMaquinarias. Todos los derechos reservados.</p>
 </footer>
+
+<style>
+  .app-footer {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    box-shadow: 0 -2px 4px var(--shadow-color);
+  }
+</style>

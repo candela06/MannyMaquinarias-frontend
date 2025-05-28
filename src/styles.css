@@ -1,76 +1,90 @@
-/* You can add global styles to this file, and also import other style files */
 /* src/styles.css */
 
-/* Puedes agregar aquí tus estilos globales o reset CSS */
+/* Definición de variables CSS para los colores */
+:root {
+    --primary-color: #ea7e00;
+    --secondary-color: #fbf7f2;
+    --text-color: #333;
+    --light-text-color: #666;
+    --border-color: #e0e0e0;
+    --card-background: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Estilos globales */
 body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    /* Fuente más moderna */
     margin: 0;
-    padding: 0;
-    background-color: #f0f2f5;
-    /* Un fondo gris muy claro para el body */
+    font-family: "Inter", sans-serif;
+    /* Usando la fuente Inter */
+    background-color: var(--secondary-color);
+    /* Fondo secundario muy claro */
+    color: var(--text-color);
+    line-height: 1.6;
 }
 
-/* Estilos para la cabecera del app.component */
-app-root>header {
-    background-color: #FF8C00;
-    padding: 15px 30px;
-    color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--primary-color);
+    /* Títulos con color principal */
+    margin-top: 0;
+    margin-bottom: 1rem;
 }
 
-.header-container {
-    max-width: 1200px;
-    margin: 0 auto;
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para el header de la aplicación */
+.app-header {
+    background-color: var(--primary-color);
+    /* Header con color principal */
+    color: #ffffff;
+    padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
-    /* Logo a la izq, nav a la der */
     align-items: center;
+    /* Bordes redondeados */
 }
 
-/* Estilo del logo */
-.logo img {
-    height: 50px;
-    /* Ajustá el tamaño según lo que necesites */
-    cursor: pointer;
-}
-
-app-root>header h1 {
-    margin: 0;
-    font-size: 1.8em;
-    color: white;
-}
-
-.main-nav {
-    display: flex;
-    gap: 50px;
-}
-
-.main-nav a {
-    color: white;
+.app-header .logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ffffff;
     text-decoration: none;
+}
+
+.app-header nav a {
+    color: #ffffff;
+    margin-left: 0.5rem;
     font-weight: 500;
-    font-size: 1.1em;
-    padding: 5px 0;
-    transition: color 0.2s ease;
+    transition: color 0.3s ease;
 }
 
-.main-nav a:hover {
-    color: #FFE0B2;
+.app-header nav a:hover {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
 }
 
-/* Estilos para el pie de página del app.component */
-app-root>footer {
-    background-color: #333;
-    /* Gris oscuro para el pie de página */
-    color: white;
-    text-align: center;
-    padding: 20px;
-    margin-top: 40px;
-    /* Espacio superior */
-    font-size: 0.9em;
+.app-header button {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    margin-left: 1rem;
 }
 
-.copyright {
-    margin: 0;
+.app-header button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: #ffffff;
 }

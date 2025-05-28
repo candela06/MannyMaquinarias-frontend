@@ -9,10 +9,10 @@
         <div class="filter-group">
             <h3>Categoría</h3>
             <div class="filter-options">
-                <label *ngFor="let type of machineryTypes" class="checkbox-option">
-                    <input type="checkbox" [value]="type" (change)="onFilterChange('type', type, $event)"
-                        [checked]="activeFilters.type.includes(type)">
-                    {{ type }}
+                <label *ngFor="let tipo of machineryTypes$ | async" class="checkbox-option">
+                    <input type="checkbox" [value]="tipo" (change)="onFilterChange('tipo', tipo, $event)"
+                        [checked]="activeFilters.tipo.includes(tipo)">
+                    {{ tipo }}
                 </label>
             </div>
             <button class="see-more-btn">Ver más</button>
@@ -21,10 +21,10 @@
         <div class="filter-group">
             <h3>Localidad</h3>
             <div class="filter-options">
-                <label *ngFor="let location of machineryLocations" class="checkbox-option">
-                    <input type="checkbox" [value]="location" (change)="onFilterChange('location', location, $event)"
-                        [checked]="activeFilters.location.includes(location)">
-                    {{ location }}
+                <label *ngFor="let ubicacion of machineryLocations$ | async" class="checkbox-option">
+                    <input type="checkbox" [value]="ubicacion" (change)="onFilterChange('ubicacion', ubicacion, $event)"
+                        [checked]="activeFilters.ubicacion.includes(ubicacion)">
+                    {{ ubicacion }}
                 </label>
             </div>
             <button class="see-more-btn">Ver más</button>
@@ -53,12 +53,12 @@
     <main class="catalog-main-content">
         <div class="top-bar-controls">
             <div class="active-filters-tags">
-                <span class="active-filter-tag" *ngIf="activeFilters.type.length > 0">
-                    Tipo: {{ activeFilters.type.join(', ') }} <button (click)="removeFilter('type')">x</button>
+                <span class="active-filter-tag" *ngIf="activeFilters.tipo.length > 0">
+                    Tipo: {{ activeFilters.tipo.join(', ') }} <button (click)="removeFilter('tipo')">x</button>
                 </span>
-                <span class="active-filter-tag" *ngIf="activeFilters.location.length > 0">
-                    Localidad: {{ activeFilters.location.join(', ') }} <button
-                        (click)="removeFilter('location')">x</button>
+                <span class="active-filter-tag" *ngIf="activeFilters.ubicacion.length > 0">
+                    Localidad: {{ activeFilters.ubicacion.join(', ') }} <button
+                        (click)="removeFilter('ubicacion')">x</button>
                 </span>
                 <span class="active-filter-tag" *ngIf="activeFilters.maxPrice < 1000">
                     Precio: Hasta ${{ activeFilters.maxPrice }} <button (click)="removeFilter('maxPrice')">x</button>
@@ -78,7 +78,6 @@
             <div class="sort-by-dropdown">
                 <span>Ordenar por:</span>
                 <select>
-                    <option value="relevancia">Relevancia</option>
                     <option value="precioAsc">Precio: Menor a Mayor</option>
                     <option value="precioDesc">Precio: Mayor a Menor</option>
                     <option value="reciente">Más Reciente</option>
@@ -87,29 +86,31 @@
         </div>
 
         <section class="machinery-grid">
-            <article class="machinery-card" *ngFor="let machine of filteredMachineries">
-                <img [src]="machine.imageUrl" [alt]="'Imagen de ' + machine.model">
+            <article class="machinery-card" *ngFor="let machine of filteredMachineries$ | async">
+                <img [src]="machine.imageUrl || 'https://placehold.co/400x200/e0e0e0/333333?text=No+Image'"
+                    [alt]="'Imagen de ' + machine.modelo">
                 <div class="card-details">
-                    <h3> {{ machine.brand }} {{ machine.model }} </h3>
-                    <p class="card-type">Tipo: {{ machine.type }}</p>
-                    <p class="card-location">Localidad: {{ machine.location }}</p>
-                    <p class="card-price" *ngIf="machine.status !== MachineryStatus.OUT_OF_SERVICE">
-                        <span class="current-price">${{ machine.pricePerDay }} / día</span>
+                    <h3> {{ machine.marca }} {{ machine.modelo }} </h3>
+                    <p class="card-type">Tipo: {{ machine.nombre }}</p>
+                    <p class="card-location">Localidad: {{ machine.sucursal?.nombre || 'Desconocida' }}</p>
+                    <p class="card-price"
+                        *ngIf="machine.estado !== MachineryStatus.EN_MANTENIMIENTO && machine.estado !== MachineryStatus.CHECKEO">
+                        <span class="current-price">${{ machine.precio }} / día</span>
                     </p>
 
                     <div class="card-status">
                         Estado:
                         <span [ngClass]="{
-                                'status-available': machine.status === MachineryStatus.AVAILABLE,
-                                'status-reserved': machine.status === MachineryStatus.RESERVED,
-                                'status-unavailable': machine.status === MachineryStatus.OUT_OF_SERVICE
+                                'status-available': machine.estado === MachineryStatus.DISPONIBLE,
+                                'status-reserved': machine.estado === MachineryStatus.ENTREGADO || machine.estado === MachineryStatus.CHECKEO,
+                                'status-unavailable': machine.estado === MachineryStatus.EN_MANTENIMIENTO
                             }">
-                            {{ machine.status }}
+                            {{ machine.estado }}
                         </span>
                     </div>
 
                     <p class="card-next-available"
-                        *ngIf="machine.status === MachineryStatus.RESERVED && machine.nextAvailableDate">
+                        *ngIf="(machine.estado === MachineryStatus.ENTREGADO || machine.estado === MachineryStatus.CHECKEO) && machine.nextAvailableDate">
                         Disponible a partir de: {{ machine.nextAvailableDate }}
                     </p>
 
@@ -121,7 +122,7 @@
                 </div>
             </article>
 
-            <p *ngIf="filteredMachineries.length === 0" class="no-results-message">
+            <p *ngIf="(filteredMachineries$ | async)?.length === 0" class="no-results-message">
                 No se encontraron maquinarias que coincidan con los filtros.
             </p>
         </section>

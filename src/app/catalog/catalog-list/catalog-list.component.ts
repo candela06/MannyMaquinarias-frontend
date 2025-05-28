@@ -1,144 +1,248 @@
 // src/app/catalog/catalog-list/catalog-list.component.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Asegúrate de importar FormsModule
-import { Machinery, MachineryStatus } from '../../models/machinery.model';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common'; // Para directivas como *ngIf, *ngFor, y pipes
+import { FormsModule } from '@angular/forms'; // Para [(ngModel)]
+import { RouterLink } from '@angular/router'; // Para [routerLink]
+import { Machinery, MachineryStatus } from '../../models/machinery.model'; // Importa Machinery y el enum
 import { MachineryService } from '../../services/machinery.service';
-import { RouterLink } from '@angular/router';
-import { FilterService } from '../../services/filter.service';
-import { Subscription } from 'rxjs';
+import { Observable, combineLatest, of } from 'rxjs'; // Importa Observables y operadores necesarios
+import { map, startWith } from 'rxjs/operators';
+
+// Interfaz para tipar el objeto de filtros activos, usando nombres de propiedades del backend o mapeados
+interface ActiveFilters {
+  tipo: string[]; // Coincide con 'nombre' del backend para el tipo de maquinaria
+  ubicacion: string[]; // Coincide con 'sucursal.nombre' del backend para la ubicación
+  maxPrice: number;
+  startDate: string | null;
+  endDate: string | null;
+  searchTerm: string | null; // Para la barra de búsqueda general
+}
 
 @Component({
   selector: 'app-catalog-list',
-  standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, DatePipe], // Asegúrate de tener FormsModule y DatePipe
+  standalone: true, // Indica que es un componente standalone
+  imports: [CommonModule, FormsModule, RouterLink], // Módulos necesarios para la plantilla
   templateUrl: './catalog-list.component.html',
-  styleUrl: './catalog-list.component.css'
+  styleUrls: ['./catalog-list.component.css'],
 })
-export class CatalogListComponent implements OnInit, OnDestroy {
-  allMachineries: Machinery[] = [];
-  filteredMachineries: Machinery[] = [];
-  machineryTypes: string[] = [];
-  machineryLocations: string[] = [];  
+export class CatalogListComponent implements OnInit {
+  // Observables para las listas de maquinarias y opciones de filtro
+  machineries$: Observable<Machinery[]> = of([]); // Todas las maquinarias disponibles (no borradas)
+  filteredMachineries$: Observable<Machinery[]> = of([]); // Maquinarias después de aplicar filtros
+  machineryTypes$: Observable<string[]> = of([]); // Tipos de maquinaria únicos
+  machineryLocations$: Observable<string[]> = of([]); // Localidades únicas
+
+  // Hace que el enum MachineryStatus sea accesible directamente en la plantilla HTML
   MachineryStatus = MachineryStatus;
 
-  // --- ACTUALIZAR LA INTERFAZ DE FILTROS ---
-  activeFilters: {
-    type: string[];
-    location: string[];
-    startDate?: string;
-    endDate?: string;
-    searchTerm?: string;
-    minPrice: number; // <-- ¡NUEVO!
-    maxPrice: number; // <-- ¡NUEVO!
-  } = {
-    type: [],
-    location: [],
-    searchTerm: '',
-    minPrice: 0,   // <-- Valor inicial por defecto para el slider
-    maxPrice: 1000 // <-- Valor inicial por defecto para el slider (asegúrate que coincida con el 'max' del HTML)
+  // Objeto que almacena los filtros activos, inicializado con valores por defecto
+  activeFilters: ActiveFilters = {
+    tipo: [], // Inicialmente sin tipos seleccionados
+    ubicacion: [], // Inicialmente sin ubicaciones seleccionadas
+    maxPrice: 1000, // Valor máximo por defecto para el slider de precio
+    startDate: null, // Fecha de inicio de alquiler no seleccionada
+    endDate: null, // Fecha de fin de alquiler no seleccionada
+    searchTerm: null, // Término de búsqueda vacío
   };
 
-  private searchSubscription!: Subscription;
-
-  constructor(
-    private machineryService: MachineryService,
-    private filterService: FilterService
-  ) { }
+  constructor(private machineryService: MachineryService) {}
 
   ngOnInit(): void {
-    this.machineryService.getMachineries().subscribe(data => {
-      this.allMachineries = data;
-      this.applyFilters(); // Aplica los filtros iniciales una vez que los datos se cargan
-    });
+    // Carga las opciones de tipos y localidades desde el servicio
+    this.machineryTypes$ = this.machineryService.getMachineryTypes();
+    this.machineryLocations$ = this.machineryService.getMachineryLocations();
 
-    this.machineryService.getMachineryTypes().subscribe(types => {
-      this.machineryTypes = types;
-    });
+    // Obtiene todas las maquinarias disponibles (filtradas por isDeleted y availability en el servicio)
+    this.machineries$ = this.machineryService.getAvailableMachineries();
 
-    this.machineryService.getMachineryLocations().subscribe(locations => {
-      this.machineryLocations = locations;
-    });
-
-    // Suscribirse al término de búsqueda del FilterService
-    this.searchSubscription = this.filterService.searchTerm$.subscribe(term => {
-      this.activeFilters.searchTerm = term;
-      this.applyFilters(); // Vuelve a aplicar todos los filtros cuando el término de búsqueda cambia
-    });
+    // Llama a la función de actualización de filtros para la carga inicial
+    // Esto asegura que `filteredMachineries$` se inicialice con los filtros por defecto
+    this.updateFilteredMachineries();
   }
 
-  ngOnDestroy(): void {
-    if (this.searchSubscription) {
-      this.searchSubscription.unsubscribe();
-    }
-  }
-
-  onFilterChange(filterName: 'type' | 'location', value: string, event: Event) {
-    const target = event.target as HTMLInputElement;
-    const isChecked = target.checked;
-
-    if (filterName === 'type') {
-      if (isChecked) {
-        if (!this.activeFilters.type.includes(value)) {
-          this.activeFilters.type.push(value);
-        }
-      } else {
-        this.activeFilters.type = this.activeFilters.type.filter(type => type !== value);
+  /**
+   * Maneja los cambios en los checkboxes de tipo y ubicación.
+   * Actualiza `activeFilters` y dispara la re-evaluación de los filtros.
+   * @param filterKey 'tipo' o 'ubicacion'
+   * @param value El valor del filtro (ej. 'Retroexcavadora', 'Quilmes')
+   * @param event El evento de cambio del checkbox
+   */
+  onFilterChange(
+    filterKey: 'tipo' | 'ubicacion',
+    value: string,
+    event: Event
+  ): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    if (isChecked) {
+      // Añade el valor si no está ya presente
+      if (!this.activeFilters[filterKey].includes(value)) {
+        this.activeFilters[filterKey].push(value);
       }
-    } else if (filterName === 'location') {
-      if (isChecked) {
-        if (!this.activeFilters.location.includes(value)) {
-          this.activeFilters.location.push(value);
-        }
-      } else {
-        this.activeFilters.location = this.activeFilters.location.filter(loc => loc !== value);
-      }
+    } else {
+      // Elimina el valor si está desmarcado
+      this.activeFilters[filterKey] = this.activeFilters[filterKey].filter(
+        (item) => item !== value
+      );
     }
-    this.applyFilters(); // Aplicar filtros cada vez que un checkbox cambia
+    this.updateFilteredMachineries(); // Vuelve a aplicar los filtros
   }
 
-  // --- Nuevo método para manejar el cambio del rango de precios ---
+  /**
+   * Maneja el cambio en el slider de rango de precios.
+   * El `[(ngModel)]` ya actualiza `activeFilters.maxPrice`.
+   * Dispara la re-evaluación de los filtros.
+   */
   onPriceRangeChange(): void {
-    // [(ngModel)] ya actualiza activeFilters.maxPrice (y minPrice si lo añades)
-    // Solo necesitamos llamar a applyFilters para refrescar la lista
-    this.applyFilters();
+    this.updateFilteredMachineries(); // Vuelve a aplicar los filtros
   }
 
-  onDateChange() {
-    this.applyFilters();
+  /**
+   * Maneja los cambios en los inputs de fecha (Desde/Hasta).
+   * El `[(ngModel)]` ya actualiza `activeFilters.startDate` y `activeFilters.endDate`.
+   * Dispara la re-evaluación de los filtros.
+   */
+  onDateChange(): void {
+    this.updateFilteredMachineries(); // Vuelve a aplicar los filtros
   }
 
-  removeFilter(filterName: 'type' | 'location' | 'startDate' | 'endDate' | 'searchTerm' | 'maxPrice', value?: string) {
-    if (filterName === 'type') {
-      if (value) {
-        this.activeFilters.type = this.activeFilters.type.filter(type => type !== value);
-      } else {
-        this.activeFilters.type = [];
-      }
-    } else if (filterName === 'location') {
-      if (value) {
-        this.activeFilters.location = this.activeFilters.location.filter(loc => loc !== value);
-      } else {
-        this.activeFilters.location = [];
-      }
-    } else if (filterName === 'startDate') {
-      delete this.activeFilters.startDate;
-    } else if (filterName === 'endDate') {
-      delete this.activeFilters.endDate;
-    } else if (filterName === 'searchTerm') {
-      this.filterService.setSearchTerm(''); // Limpiar el término de búsqueda a través del servicio
-    } else if (filterName === 'maxPrice') { // <-- Lógica para limpiar el filtro de precio
-        this.activeFilters.maxPrice = 1000; // Restablecer al valor máximo por defecto
-        // O si tuvieras minPrice, también lo reiniciarías: this.activeFilters.minPrice = 0;
+  /**
+   * Limpia un filtro específico o un grupo de filtros.
+   * @param filterKey La clave del filtro a remover (ej. 'tipo', 'maxPrice')
+   */
+  removeFilter(filterKey: keyof ActiveFilters): void {
+    if (filterKey === 'tipo' || filterKey === 'ubicacion') {
+      this.activeFilters[filterKey] = []; // Limpia el array de tipos o ubicaciones
+    } else if (filterKey === 'maxPrice') {
+      this.activeFilters.maxPrice = 1000; // Restablece el precio máximo al valor por defecto
+    } else if (filterKey === 'startDate' || filterKey === 'endDate') {
+      this.activeFilters[filterKey] = null; // Limpia las fechas
+    } else if (filterKey === 'searchTerm') {
+      this.activeFilters.searchTerm = null; // Limpia el término de búsqueda
     }
-    this.applyFilters();
+    this.updateFilteredMachineries(); // Vuelve a aplicar los filtros
   }
 
-  // --- Lógica principal de filtrado ---
-  private applyFilters() {
-    let tempMachineries = [...this.allMachineries];
+  /**
+   * Restablece todos los filtros a sus valores por defecto.
+   * También se encarga de desmarcar los checkboxes en la UI.
+   */
+  clearAllFilters(): void {
+    // Desmarcar todos los checkboxes de la sidebar (interacción con el DOM)
+    document
+      .querySelectorAll('.filters-sidebar input[type="checkbox"]')
+      .forEach((element) => {
+        const checkbox = element as HTMLInputElement;
+        if (checkbox) {
+          checkbox.checked = false;
+        }
+      });
 
-    // 1. Filtro por búsqueda de texto
-    if (this.activeFilters.searchTerm && this.activeFilters.searchTerm.trim() !== '') {
-      const searchTermLower = this.activeFilters.searchTerm.toLowerCase().trim();
-      tempMachineries = tempMachineries
+    // Restablecer el objeto activeFilters a sus valores iniciales
+    this.activeFilters = {
+      tipo: [],
+      ubicacion: [],
+      maxPrice: 1000,
+      startDate: null,
+      endDate: null,
+      searchTerm: null,
+    };
+    this.updateFilteredMachineries(); // Vuelve a aplicar los filtros
+  }
+
+  /**
+   * Aplica la lógica de filtrado a la lista completa de maquinarias.
+   * Este método se llama cada vez que un filtro cambia para re-evaluar la lista `filteredMachineries$`.
+   */
+  private updateFilteredMachineries(): void {
+    // `combineLatest` se suscribe a `machineries$` (los datos base)
+    // y a un observable que "dispara" cuando los filtros cambian.
+    // Como `activeFilters` no es un BehaviorSubject, la forma de "disparar"
+    // es re-evaluar la cadena de Observables desde `machineries$`.
+    this.filteredMachineries$ = combineLatest([
+      this.machineries$, // Observable de todas las maquinarias disponibles
+      // Puedes añadir un observable dummy aquí si necesitas que combineLatest reaccione
+      // a cambios en `activeFilters` sin que `machineries$` emita.
+      // Por ejemplo, `of(this.activeFilters)` o un `BehaviorSubject<ActiveFilters>`
+      // que se actualice en cada `onFilterChange` etc.
+      // Para esta estructura, la lógica de filtrado se aplica en el `map`
+      // cada vez que `machineries$` emite, o cuando `updateFilteredMachineries` es llamado.
+    ]).pipe(
+      map(([allMachineries]) => {
+        let filtered = allMachineries;
+
+        // 1. Filtrar por tipo (coincide con 'nombre' del backend)
+        if (this.activeFilters.tipo.length > 0) {
+          filtered = filtered.filter((m) =>
+            this.activeFilters.tipo.includes(m.nombre)
+          );
+        }
+
+        // 2. Filtrar por localidad (coincide con 'sucursal.nombre' del backend)
+        if (this.activeFilters.ubicacion.length > 0) {
+          filtered = filtered.filter(
+            (m) =>
+              m.sucursal &&
+              this.activeFilters.ubicacion.includes(m.sucursal.nombre)
+          );
+        }
+
+        // 3. Filtrar por precio máximo (coincide con 'precio' del backend)
+        if (this.activeFilters.maxPrice !== 1000) {
+          // Si el slider no está en el máximo por defecto
+          filtered = filtered.filter(
+            (m) => m.precio <= this.activeFilters.maxPrice
+          );
+        }
+
+        // 4. Filtrar por fechas (lógica de disponibilidad basada en 'estado' y 'nextAvailableDate')
+        // Esta lógica es más compleja y depende de cómo el backend maneje la disponibilidad.
+        // Aquí se asume una lógica simple: si la máquina está disponible, se muestra.
+        // Si está reservada, se muestra si su próxima fecha disponible es antes del rango de búsqueda.
+        if (this.activeFilters.startDate && this.activeFilters.endDate) {
+          const start = new Date(this.activeFilters.startDate);
+          const end = new Date(this.activeFilters.endDate);
+
+          filtered = filtered.filter((m) => {
+            // Si la máquina está disponible, siempre la incluimos (está lista para alquilar)
+            if (m.estado === MachineryStatus.DISPONIBLE) {
+              return true;
+            }
+            // Si la máquina está entregada o en checkeo (considerado 'reservado' en frontend)
+            // y tiene una próxima fecha disponible (si el backend la provee)
+            if (
+              (m.estado === MachineryStatus.ENTREGADO ||
+                m.estado === MachineryStatus.CHECKEO) &&
+              m.nextAvailableDate
+            ) {
+              const machineAvailableDate = new Date(m.nextAvailableDate);
+              // Solo se incluye si la máquina estará disponible ANTES o EN la fecha de inicio del filtro
+              return machineAvailableDate <= start;
+            }
+            // Si está en mantenimiento, no está disponible
+            if (m.estado === MachineryStatus.EN_MANTENIMIENTO) {
+              return false;
+            }
+            return false; // Por defecto, no se incluye
+          });
+        }
+
+        // 5. Filtrar por término de búsqueda (coincide con 'marca', 'modelo', 'nombre' del backend)
+        if (this.activeFilters.searchTerm) {
+          const searchTerm = this.activeFilters.searchTerm.toLowerCase();
+          filtered = filtered.filter(
+            (m) =>
+              m.marca.toLowerCase().includes(searchTerm) || // Busca en la marca
+              m.modelo.toLowerCase().includes(searchTerm) || // Busca en el modelo
+              m.nombre.toLowerCase().includes(searchTerm) || // Busca en el nombre (que usamos como tipo/descripción)
+              // Si tuvieras una propiedad 'description' real del backend:
+              // (m.description ?? '').toLowerCase().includes(searchTerm)
+              false // Si no hay más campos relevantes para la búsqueda
+          );
+        }
+
+        return filtered;
+      }),
+      startWith([]) // Emite un array vacío al inicio, antes de que los datos se carguen
+    );
+  }
+}

@@ -1,112 +1,90 @@
 // src/app/services/machinery.service.ts
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs'; // <-- ¡IMPORTANTE! Vuelve a importar 'of'
-// import { HttpClient } from '@angular/common/http'; // Ya no es necesario si usas datos locales
-import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
 import { Machinery, MachineryStatus } from '../models/machinery.model';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root',
 })
 export class MachineryService {
+  private _apiUrl = 'http://localhost:3001/maquinas'; // Tu endpoint del backend
+  private machineriesSubject = new BehaviorSubject<Machinery[]>([]);
+  machineries$: Observable<Machinery[]> =
+    this.machineriesSubject.asObservable();
 
-    // Vuelven a estar tus datos de maquinaria definidos directamente en el servicio
-    private machines: Machinery[] = [
-        {
-            id: 'M001',
-            brand: 'Caterpillar',
-            model: '420F',
-            type: 'Retroexcavadora',
-            pricePerDay: 150,
-            availability: true,
-            status: MachineryStatus.AVAILABLE,
-            cancellationPolicy: 'full',
-            imageUrl: '', 
-            location: 'Quilmes',
-            nextAvailableDate: 'Inmediato'
-        },
-        {
-            id: 'M002',
-            brand: 'Bobcat',
-            model: 'S70',
-            type: 'Minicargadora',
-            pricePerDay: 120,
-            availability: false,
-            status: MachineryStatus.RESERVED,
-            cancellationPolicy: 'percentage',
-            imageUrl: '',
-            location: 'Florencio Varela',
-            nextAvailableDate: '2025-06-15'
-        },
-        {
-            id: 'M003',
-            brand: 'Dynapac',
-            model: 'CA250',
-            type: 'Compactadora',
-            pricePerDay: 200,
-            availability: false,
-            status: MachineryStatus.AVAILABLE,  
-            cancellationPolicy: 'full',
-            imageUrl: '',
-            location: 'La Plata',
-            nextAvailableDate: 'No disponible'
-        },
-        {
-            id: 'M004',
-            brand: 'JLG',
-            model: '20MVL',
-            type: 'Plataforma Elevadora',
-            pricePerDay: 180,
-            availability: true,
-            status: MachineryStatus.AVAILABLE,
-            cancellationPolicy: 'full',
-            imageUrl: '',
-            location: 'La Plata',
-            nextAvailableDate: 'Inmediato'
-        },
-        {
-            id: 'M005',
-            brand: 'John Deere',
-            model: '310SL',
-            type: 'Retroexcavadora',
-            pricePerDay: 160,
-            availability: true,
-            status: MachineryStatus.AVAILABLE,
-            cancellationPolicy: 'full',
-            imageUrl: '',
-            location: 'Berazategui',
-            nextAvailableDate: 'Inmediato'
-        }
-    ];
+  constructor(private http: HttpClient) {
+    this.fetchMachineriesFromBackend().subscribe(
+      (machineries) => {
+        this.machineriesSubject.next(machineries);
+        console.log('Datos de maquinarias cargados del backend:', machineries);
+      },
+      (error) =>
+        console.error('Error al cargar maquinarias del backend:', error)
+    );
+  }
 
-    // La URL del backend ya no es necesaria por ahora
-    // private apiUrl = 'http://localhost:3001/api/machineries';
+  private fetchMachineriesFromBackend(): Observable<Machinery[]> {
+    return this.http.get<Machinery[]>(this._apiUrl).pipe(
+      catchError((error) => {
+        console.error('Error al obtener maquinarias del backend:', error);
+        return of([]); // Devuelve un array vacío en caso de error
+      })
+    );
+  }
 
-    // ¡IMPORTANTE! Quita la inyección de HttpClient del constructor
-    // Si no usas HttpClient, no lo inyectes
-    // constructor(private http: HttpClient) { } // <-- ELIMINA ESTA LÍNEA
+  getMachineries(): Observable<Machinery[]> {
+    return this.machineries$;
+  }
 
-    constructor() { } // <-- Vuelve a un constructor vacío o sin parámetros
+  // Si getAvailableMachineries significa 'estado: disponible' y no está 'deletedAt'
+  getAvailableMachineries(): Observable<Machinery[]> {
+    return this.machineries$.pipe(
+      map((machineries) =>
+        machineries.filter(
+          (m) => m.estado === MachineryStatus.DISPONIBLE && m.deletedAt === null // Filtrar por estado y borrado lógico
+        )
+      )
+    );
+  }
 
-    getMachineries(): Observable<Machinery[]> {
-        // Usa 'of' para retornar un Observable de tus datos locales
-        return of(this.machines).pipe(
-            map(machines => machines.filter(m => m.status !== MachineryStatus.OUT_OF_SERVICE))
-        );
-    }
+  getMachineryById(id: string): Observable<Machinery | undefined> {
+    // Convertirlo a number para la comparación.
+    const numericId = parseInt(id, 10);
+    return this.machineries$.pipe(
+      map((machineries) => machineries.find((m) => m.id === numericId))
+    );
+  }
 
-    getMachineryTypes(): Observable<string[]> {
-        // Usa 'of' para retornar un Observable de tus datos locales
-        return of(this.machines).pipe(
-            map(machines => [...new Set(machines.map(m => m.type))])
-        );
-    }
+  getMachineryTypes(): Observable<string[]> {
+    return this.machineries$.pipe(
+      map((machineries) => [...new Set(machineries.map((m) => m.nombre))])
+    );
+  }
 
-    getMachineryLocations(): Observable<string[]> {
-        // Usa 'of' para retornar un Observable de tus datos locales
-        return of(this.machines).pipe(
-            map(machines => [...new Set(machines.map(m => m.location))].sort())
-        );
-    }
-    
+  getMachineryLocations(): Observable<string[]> {
+    // Asumiendo que el backend ahora incluye 'sucursal.nombre':
+    return this.machineries$.pipe(
+      map((machineries) => [
+        ...new Set(
+          machineries
+            .filter((m) => m.sucursal && m.sucursal.nombre) // Solo si tiene sucursal y nombre
+            .map((m) => m.sucursal!.nombre) // El ! es para asegurar a TS que no es undefined
+        ),
+      ])
+    );
+    // Si el backend NO incluye sucursal, esto devolverá un array vacío o un error.
+    // En ese caso se deben obtener las sucursales de otro endpoint (`/sucursales`)
+    // o hardcodear algunas ubicaciones si es temporal.
+  }
+
+  // addMachinery(newMachine: Partial<Machinery>): Observable<Machinery> {
+  //   return this.http.post<Machinery>(this._apiUrl, newMachine).pipe(
+  //     tap(addedMachine => {
+  //       const current = this.machineriesSubject.getValue();
+  //       this.machineriesSubject.next([...current, addedMachine]);
+  //     })
+  //   );
+  // }
 }

@@ -190,24 +190,6 @@ footer {
     /* Pequeño padding para que la X no esté tan pegada */
 }
 
-/* NUEVO: Estilos para el botón de búsqueda (la lupa) */
-.search-button {
-    background-color: #ff9800;
-    /* Color naranja de tu tema */
-    border: none;
-    border-radius: 0 25px 25px 0;
-    /* Bordes redondeados solo a la derecha */
-    padding: 8px 20px;
-    /* Ajusta este padding para el ancho del botón */
-    cursor: pointer;
-    height: 100%;
-    display: flex;
-    /* Sigue siendo flex para centrar contenido si lo tuviera, pero ahora vacío */
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s ease;
-    margin-left: auto; }
-
 
 .search-button:hover {
     background-color: #e08e00;
@@ -215,15 +197,11 @@ footer {
 }
 
 
-
-/* ... (Resto de tus estilos existentes) ... */
-
 /* Ajustes para el historial y sugerencias */
 .history-section {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #e08e00;
     padding-bottom: 5px;
     margin-bottom: 5px;
-    /* Asegura que el padding horizontal sea consistente con las sugerencias */
 }
 
 .history-section ul {
@@ -255,4 +233,104 @@ footer {
 .no-results {
     padding: 10px 15px;
     /* Asegura el padding */
+}
+
+
+.app-header {
+    background-color: var(--primary-color);
+    /* Color principal para el encabezado */
+    color: #ffffff;
+    padding: 0.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+    position: sticky;
+    /* Hace que el header se quede arriba al hacer scroll */
+    top: 0;
+    z-index: 1000;
+    /* Asegura que esté por encima de otros elementos */
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.app-logo {
+    height: 40px;
+    /* Ajusta la altura del logo según tu imagen */
+    width: auto;
+    /* Mantiene la proporción */
+    margin-right: 10px;
+    /* Espacio entre el logo y el texto (si hubiera) */
+}
+
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    /* Espacio entre los elementos de navegación */
+}
+
+.main-nav a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.main-nav a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    /* Fondo sutil al pasar el ratón */
+    text-decoration: none;
+}
+
+.main-nav .admin-toggle-btn {
+    background-color: rgba(255, 255, 255, 0.15);
+    /* Botones de admin con fondo más tenue */
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    margin-left: 1rem;
+    /* Espacio con el último enlace */
+}
+
+.main-nav .admin-toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: #ffffff;
+}
+
+/* Media queries para responsividad (opcional pero recomendado) */
+@media (max-width: 768px) {
+    .app-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+
+    .main-nav {
+        margin-top: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+        width: 100%;
+    }
+
+    .main-nav a,
+    .main-nav .admin-toggle-btn {
+        width: calc(100% - 1.6rem);
+        /* Ajuste para padding */
+        text-align: center;
+        margin-left: 0;
+        /* Elimina margen extra */
+    }
 }
