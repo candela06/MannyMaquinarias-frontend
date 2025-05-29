@@ -1,10 +1,19 @@
-import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+// src/app/app.component.ts
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Inject,
+  PLATFORM_ID,
+} from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, Observable } from 'rxjs'; // Importa Observable
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { FilterService } from '../services/filter.service';
+import { AuthService } from '../services/auth.service'; // <--- Importa AuthService
+import { AsyncPipe } from '@angular/common'; // <--- Importa AsyncPipe para usar | async
 
 @Component({
   selector: 'app-root',
@@ -13,10 +22,11 @@ import { FilterService } from '../services/filter.service';
     RouterOutlet,
     RouterLink,
     CommonModule,
-    FormsModule
+    FormsModule,
+    AsyncPipe, // <--- Añade AsyncPipe a los imports
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'Manny Maquinarias';
@@ -25,10 +35,24 @@ export class AppComponent implements OnInit, OnDestroy {
 
   showSuggestions: boolean = false;
   allPossibleSuggestions: string[] = [
-    'Retrocargadora', 'Minicargadora', 'Compactadora', 'Plataforma Elevadora',
-    'Caterpillar', 'Bobcat', 'Dynapac', 'Komatsu', 'John Deere',
-    'Quilmes', 'Bernal', 'Florencio Varela', 'La Plata', 'Avellaneda',
-    'Retroexcavadora', 'Excavadora', 'Grúa', 'Montacargas'
+    'Retrocargadora',
+    'Minicargadora',
+    'Compactadora',
+    'Plataforma Elevadora',
+    'Caterpillar',
+    'Bobcat',
+    'Dynapac',
+    'Komatsu',
+    'John Deere',
+    'Quilmes',
+    'Bernal',
+    'Florencio Varela',
+    'La Plata',
+    'Avellaneda',
+    'Retroexcavadora',
+    'Excavadora',
+    'Grúa',
+    'Montacargas',
   ];
   filteredSuggestions: string[] = [];
   searchHistory: string[] = [];
@@ -36,26 +60,30 @@ export class AppComponent implements OnInit, OnDestroy {
   private searchInputSubject = new Subject<string>();
   private subscriptions: Subscription = new Subscription();
 
+  isLoggedIn$: Observable<boolean>; // <--- Declara el Observable para el estado de login
+
   constructor(
     private filterService: FilterService,
     private router: Router,
+    private authService: AuthService, // <--- Inyecta AuthService
     @Inject(PLATFORM_ID) private platformId: Object
-  ) { }
+  ) {
+    this.isLoggedIn$ = this.authService.isLoggedIn$; // <--- Inicializa el observable
+  }
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.searchInputSubject.pipe(
-        debounceTime(300),
-        distinctUntilChanged()
-      ).subscribe(term => {
-        this.updateSuggestions(term);
-      })
+      this.searchInputSubject
+        .pipe(debounceTime(300), distinctUntilChanged())
+        .subscribe((term) => {
+          this.updateSuggestions(term);
+        })
     );
 
     this.loadSearchHistory();
 
     this.subscriptions.add(
-      this.filterService.searchTerm$.subscribe(term => {
+      this.filterService.searchTerm$.subscribe((term) => {
         if (term !== this.globalSearchTerm) {
           this.globalSearchTerm = term;
           this.updateSuggestions(term);
@@ -94,10 +122,16 @@ export class AppComponent implements OnInit, OnDestroy {
   updateSuggestions(term: string): void {
     if (term.length > 0) {
       const lowerCaseTerm = term.toLowerCase();
-      this.filteredSuggestions = this.allPossibleSuggestions.filter(suggestion =>
-        suggestion.toLowerCase().includes(lowerCaseTerm) &&
-        !this.searchHistory.some(historyItem => historyItem.toLowerCase() === suggestion.toLowerCase())
-      ).slice(0, 5);
+      this.filteredSuggestions = this.allPossibleSuggestions
+        .filter(
+          (suggestion) =>
+            suggestion.toLowerCase().includes(lowerCaseTerm) &&
+            !this.searchHistory.some(
+              (historyItem) =>
+                historyItem.toLowerCase() === suggestion.toLowerCase()
+            )
+        )
+        .slice(0, 5);
     } else {
       this.filteredSuggestions = [];
     }
@@ -126,7 +160,9 @@ export class AppComponent implements OnInit, OnDestroy {
   private addSearchToHistory(term: string): void {
     if (term.trim() === '') return;
 
-    this.searchHistory = this.searchHistory.filter(item => item.toLowerCase() !== term.toLowerCase());
+    this.searchHistory = this.searchHistory.filter(
+      (item) => item.toLowerCase() !== term.toLowerCase()
+    );
     this.searchHistory.unshift(term);
 
     if (this.searchHistory.length > 5) {
@@ -138,9 +174,15 @@ export class AppComponent implements OnInit, OnDestroy {
   private saveSearchHistory(): void {
     if (isPlatformBrowser(this.platformId)) {
       try {
-        localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
+        localStorage.setItem(
+          'searchHistory',
+          JSON.stringify(this.searchHistory)
+        );
       } catch (e) {
-        console.error('Error al guardar el historial de búsqueda en localStorage', e);
+        console.error(
+          'Error al guardar el historial de búsqueda en localStorage',
+          e
+        );
       }
     }
   }
@@ -153,7 +195,10 @@ export class AppComponent implements OnInit, OnDestroy {
           this.searchHistory = JSON.parse(history);
         }
       } catch (e) {
-        console.error('Error al cargar el historial de búsqueda de localStorage', e);
+        console.error(
+          'Error al cargar el historial de búsqueda de localStorage',
+          e
+        );
       }
     }
   }
@@ -163,11 +208,11 @@ export class AppComponent implements OnInit, OnDestroy {
       event.preventDefault();
       event.stopPropagation();
     }
-    this.searchHistory = this.searchHistory.filter(item => item !== term);
+    this.searchHistory = this.searchHistory.filter((item) => item !== term);
     this.saveSearchHistory();
     if (this.globalSearchTerm === term) {
-        this.globalSearchTerm = '';
-        this.filterService.setSearchTerm('');
+      this.globalSearchTerm = '';
+      this.filterService.setSearchTerm('');
     }
     this.showSuggestions = true;
     this.updateSuggestions(this.globalSearchTerm);
@@ -177,5 +222,10 @@ export class AppComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.showSuggestions = false;
     }, 150);
+  }
+
+  // <--- Nuevo método para el cierre de sesión
+  logout(): void {
+    this.authService.logout();
   }
 }

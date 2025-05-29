@@ -16,10 +16,23 @@
           <a routerLink="/catalogo" class="nav-link">catalogo</a>
         </li>
         <li class="nav-item">
-          <a routerLink="/login" class="nav-link">Login</a>
+          <ng-container *ngIf="!(isLoggedIn$ | async)">
+            <a routerLink="/login" class="nav-link">Iniciar Sesión</a>
+          </ng-container>
         </li>
         <li class="nav-item">
-          <a routerLink="/register" class="nav-link">Registro</a>
+          <ng-container *ngIf="!(isLoggedIn$ | async)">
+            <a routerLink="/register" class="nav-link">Registrarse</a>
+          </ng-container>
+        </li>
+        <li class="nav-item">
+          <button
+            *ngIf="isLoggedIn$ | async"
+            class="nav-link"
+            (click)="logout()"
+          >
+            Cerrar Sesión
+          </button>
         </li>
       </ul>
     </div>

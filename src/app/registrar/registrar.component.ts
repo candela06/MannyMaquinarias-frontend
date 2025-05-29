@@ -1,87 +1,133 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+// src/app/registrar/registrar.component.ts
+import { Component, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+  AbstractControl,
+  ValidatorFn,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-
-interface Usuario {
-  email: string;
-  contrasena: string;
-  fechaNacimiento: string; 
-}
+import { AuthService, RegisterData } from '../../services/auth.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   standalone: true,
   selector: 'app-registrar',
-  imports: [ReactiveFormsModule, FormsModule, CommonModule],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule, HttpClientModule],
   templateUrl: './registrar.component.html',
-  styleUrls: ['./registrar.component.css']
+  styleUrls: ['./registrar.component.css'],
 })
-export class RegistrarComponent {
-  registroForm: FormGroup;
-
-
-  usuariosRegistrados: Usuario[] = [
-    { email: 'enzobat07@gmail.com', contrasena: 'enzo05', fechaNacimiento: '2001-25-11' },
-    { email: 'maria@gmail.com', contrasena: 'maria123', fechaNacimiento: '1985-06-12' }
-  ];
+export class RegistrarComponent implements OnInit {
+  registroForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
-  ) {
+    private router: Router,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    // Mantén el formulario con los campos que tienes en tu HTML
     this.registroForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       contrasena: ['', [Validators.required, Validators.minLength(6)]],
-      fechaNacimiento: ['', [Validators.required, this.mayorDeEdadValidator]]
+      fechaNacimiento: ['', [Validators.required, this.mayorDeEdadValidator()]],
     });
   }
 
   registrar() {
     if (this.registroForm.invalid) {
-      Swal.fire('Error', 'Por favor, complete todos los datos correctamente', 'error');
+      this.registroForm.markAllAsTouched();
+      Swal.fire(
+        'Error',
+        'Por favor, complete todos los datos correctamente',
+        'error'
+      );
       return;
     }
 
-    const { email, contrasena, fechaNacimiento } = this.registroForm.value;
+    const { email, password, fechaNacimiento } = this.registroForm.value;
 
-    // Regla 1: Mail único
-    const existeEmail = this.usuariosRegistrados.some(u => u.email.toLowerCase() === email.toLowerCase());
-    if (existeEmail) {
-      Swal.fire('Error', 'El email ya se encuentra en nuestro sistema', 'error');
-      return;
-    }
+    // Aquí "autocompletamos" los datos que faltan con valores por defecto.
+    // **¡Asegúrate de que estos nombres de campo coincidan exactamente con lo que tu backend espera!**
+    // (basado en la captura de Postman)
+    const userData: RegisterData = {
+      email: email,
+      password: password,
+      fechaNacimiento: fechaNacimiento,
+      dni: '00000000', // Valor por defecto. Puedes usar un valor genérico o un string vacío si tu backend lo permite.
+      // Considera si tu backend valida unicidad para DNI; si es así, este valor fijo causará problemas.
+      nombreUsuario: 'usuario_default', // Valor por defecto
+      nombre: 'SinNombre', // Valor por defecto
+      apellido: 'SinApellido', // Valor por defecto
+      direccion: 'Direccion Desconocida', // Valor por defecto
+      edad: 18, // Valor por defecto, o puedes calcularlo desde fechaNacimiento si lo necesitas y el backend no lo calcula.
+      // Podrías poner 0 si el backend lo acepta, pero 18 asegura la validación de edad.
+    };
 
-    // Regla 2: Mínimo 6 caracteres -> ya validado en el form, pero verificamos por seguridad
-    if (contrasena.length < 6) {
-      Swal.fire('Error', 'La contraseña debe tener al menos 6 caracteres', 'error');
-      return;
-    }
+    // Si tu backend espera 'password' en lugar de 'contrasena', ajusta aquí:
+    // const userData: RegisterData = {
+    //   email: email,
+    //   password: contrasena, // <-- CAMBIAR SI EL BACKEND ESPERA 'password'
+    //   fechaNacimiento: fechaNacimiento,
+    //   dni: '00000000',
+    //   nombreUsuario: 'usuario_default',
+    //   nombre: 'SinNombre',
+    //   apellido: 'SinApellido',
+    //   direccion: 'Direccion Desconocida',
+    //   edad: 18
+    // };
 
-    // Regla 3: Mayor de 18 años -> ya validado por el validador pero chequeamos
-    if (this.mayorDeEdadValidator({ value: fechaNacimiento }) !== null) {
-      Swal.fire('Error', 'La persona tiene que ser mayor de 18 años', 'error');
-      return;
-    }
-    this.usuariosRegistrados.push({ email, contrasena, fechaNacimiento });
-
-    Swal.fire('Registro exitoso', 'Usuario registrado correctamente', 'success').then(() => {
-      this.router.navigate(['/login']);
+    this.authService.register(userData).subscribe({
+      next: (response) => {
+        if (response) {
+          Swal.fire(
+            'Registro exitoso',
+            'Usuario registrado correctamente',
+            'success'
+          ).then(() => {
+            this.router.navigate(['/login']);
+          });
+        }
+      },
+      error: (err) => {
+        // El SweetAlert de error ya es manejado por el catchError en auth.service.ts.
+        // La consola del navegador mostrará el error HTTP completo.
+        console.error(
+          'Error en el registro desde el componente (esto no debería dispararse si el AuthService lo maneja):',
+          err
+        );
+      },
     });
   }
 
-  mayorDeEdadValidator(control: any) {
-    const fechaNacimiento = new Date(control.value);
-    if (isNaN(fechaNacimiento.getTime())) {
-      return { fechaInvalida: true };
-    }
+  mayorDeEdadValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const fechaNacimientoStr = control.value;
+      if (!fechaNacimientoStr) {
+        return null;
+      }
 
-    const hoy = new Date();
-    const edadDifMs = hoy.getTime() - fechaNacimiento.getTime();
-    const edadDate = new Date(edadDifMs);
-    const edad = Math.abs(edadDate.getUTCFullYear() - 1970);
+      const fechaNacimiento = new Date(fechaNacimientoStr);
+      if (isNaN(fechaNacimiento.getTime())) {
+        return { fechaInvalida: true };
+      }
 
-    return edad >= 18 ? null : { menorDeEdad: true };
+      const hoy = new Date();
+      let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+      const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+      const dia = hoy.getDate() - fechaNacimiento.getDate();
+
+      if (mes < 0 || (mes === 0 && dia < 0)) {
+        edad--;
+      }
+
+      return edad >= 18 ? null : { menorDeEdad: true };
+    };
   }
 }
-
