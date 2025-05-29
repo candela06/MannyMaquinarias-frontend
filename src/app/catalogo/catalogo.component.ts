@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Para directivas como *ngIf, *ngFor, y pipes
 import { FormsModule } from '@angular/forms'; // Para [(ngModel)]
 import { RouterLink } from '@angular/router'; // Para [routerLink]
-import { Machinery,MachineryStatus } from '../modles/machinery.model';
+import { Machinery, MachineryStatus } from '../modles/machinery.model';
 import { MachineryService } from '../../services/machinery.service';
 import { Observable, combineLatest, of } from 'rxjs'; // Importa Observables y operadores necesarios
 import { map, startWith } from 'rxjs/operators';
@@ -39,7 +39,7 @@ export class CatalogoComponent implements OnInit {
   activeFilters: ActiveFilters = {
     tipo: [], // Inicialmente sin tipos seleccionados
     ubicacion: [], // Inicialmente sin ubicaciones seleccionadas
-    maxPrice: 1000, // Valor máximo por defecto para el slider de precio
+    maxPrice: 2000000, // Valor máximo por defecto para el slider de precio
     startDate: null, // Fecha de inicio de alquiler no seleccionada
     endDate: null, // Fecha de fin de alquiler no seleccionada
     searchTerm: null, // Término de búsqueda vacío
@@ -113,7 +113,7 @@ export class CatalogoComponent implements OnInit {
     if (filterKey === 'tipo' || filterKey === 'ubicacion') {
       this.activeFilters[filterKey] = []; // Limpia el array de tipos o ubicaciones
     } else if (filterKey === 'maxPrice') {
-      this.activeFilters.maxPrice = 1000; // Restablece el precio máximo al valor por defecto
+      this.activeFilters.maxPrice = 2000000; // Restablece el precio máximo al valor por defecto
     } else if (filterKey === 'startDate' || filterKey === 'endDate') {
       this.activeFilters[filterKey] = null; // Limpia las fechas
     } else if (filterKey === 'searchTerm') {
@@ -141,7 +141,7 @@ export class CatalogoComponent implements OnInit {
     this.activeFilters = {
       tipo: [],
       ubicacion: [],
-      maxPrice: 1000,
+      maxPrice: 2000000,
       startDate: null,
       endDate: null,
       searchTerm: null,
@@ -187,7 +187,7 @@ export class CatalogoComponent implements OnInit {
         }
 
         // 3. Filtrar por precio máximo (coincide con 'precio' del backend)
-        if (this.activeFilters.maxPrice !== 1000) {
+        if (this.activeFilters.maxPrice !== 2000000) {
           // Si el slider no está en el máximo por defecto
           filtered = filtered.filter(
             (m) => m.precio <= this.activeFilters.maxPrice

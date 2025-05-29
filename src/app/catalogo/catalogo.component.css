@@ -220,11 +220,12 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.8rem;
+    
 }
 
 .active-filter-tag {
     background-color: var(--primary-color);
-    color: #ffffff;
+    color: #c46a00;
     padding: 0.4rem 0.8rem;
     border-radius: 20px;
     /* Bordes muy redondeados (píldora) */
