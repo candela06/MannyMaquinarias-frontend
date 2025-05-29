@@ -21,12 +21,12 @@ export interface RegisterData {
   email: string;
   password: string;
   fechaNacimiento?: string; // Es opcional si el backend no lo requiere explícitamente como string obligatorio
-  dni: string; // Agregado
-  nombreUsuario: string; // Agregado
-  nombre: string; // Agregado
-  apellido: string; // Agregado
-  direccion: string; // Agregado
-  edad: number; // Agregado
+  dni?: string; // Agregado
+  nombreUsuario?: string; // Agregado
+  nombre?: string; // Agregado
+  apellido?: string; // Agregado
+  direccion?: string; // Agregado
+  edad?: number; // Agregado
 }
 
 @Injectable({

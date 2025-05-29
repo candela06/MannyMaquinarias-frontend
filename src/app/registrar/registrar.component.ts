@@ -32,7 +32,7 @@ export class RegistrarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Mantén el formulario con los campos que tienes en tu HTML
+    // El formulario solo contiene los campos que están en tu HTML
     this.registroForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       contrasena: ['', [Validators.required, Validators.minLength(6)]],
@@ -51,37 +51,20 @@ export class RegistrarComponent implements OnInit {
       return;
     }
 
-    const { email, password, fechaNacimiento } = this.registroForm.value;
-
-    // Aquí "autocompletamos" los datos que faltan con valores por defecto.
-    // **¡Asegúrate de que estos nombres de campo coincidan exactamente con lo que tu backend espera!**
-    // (basado en la captura de Postman)
     const userData: RegisterData = {
-      email: email,
-      password: password,
-      fechaNacimiento: fechaNacimiento,
-      dni: '00000000', // Valor por defecto. Puedes usar un valor genérico o un string vacío si tu backend lo permite.
-      // Considera si tu backend valida unicidad para DNI; si es así, este valor fijo causará problemas.
-      nombreUsuario: 'usuario_default', // Valor por defecto
-      nombre: 'SinNombre', // Valor por defecto
-      apellido: 'SinApellido', // Valor por defecto
-      direccion: 'Direccion Desconocida', // Valor por defecto
-      edad: 18, // Valor por defecto, o puedes calcularlo desde fechaNacimiento si lo necesitas y el backend no lo calcula.
-      // Podrías poner 0 si el backend lo acepta, pero 18 asegura la validación de edad.
+      email: this.registroForm.value.email,
+      password: this.registroForm.value.contrasena,
+      fechaNacimiento: this.registroForm.value.fechaNacimiento,
+      // dni: '',
+      // nombreUsuario: '',
+      // nombre: '',
+      // apellido: '',
+      // direccion: '',
+      // edad: 0
     };
 
-    // Si tu backend espera 'password' en lugar de 'contrasena', ajusta aquí:
-    // const userData: RegisterData = {
-    //   email: email,
-    //   password: contrasena, // <-- CAMBIAR SI EL BACKEND ESPERA 'password'
-    //   fechaNacimiento: fechaNacimiento,
-    //   dni: '00000000',
-    //   nombreUsuario: 'usuario_default',
-    //   nombre: 'SinNombre',
-    //   apellido: 'SinApellido',
-    //   direccion: 'Direccion Desconocida',
-    //   edad: 18
-    // };
+    // Es crucial que tu interfaz RegisterData en auth.service.ts refleje esto
+    // o que los campos opcionales estén marcados con '?'
 
     this.authService.register(userData).subscribe({
       next: (response) => {
@@ -96,8 +79,8 @@ export class RegistrarComponent implements OnInit {
         }
       },
       error: (err) => {
-        // El SweetAlert de error ya es manejado por el catchError en auth.service.ts.
-        // La consola del navegador mostrará el error HTTP completo.
+        // El SweetAlert de error ya es manejado por el catchError en auth.service.ts
+        // La consola del navegador seguirá mostrando el error HTTP completo de la red.
         console.error(
           'Error en el registro desde el componente (esto no debería dispararse si el AuthService lo maneja):',
           err
