@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -37,8 +37,9 @@ export class AppComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private filterService : FilterService,
-    private router: Router
+    private filterService: FilterService,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit(): void {
@@ -135,21 +136,25 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private saveSearchHistory(): void {
-    try {
-      localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
-    } catch (e) {
-      console.error('Error al guardar el historial de búsqueda en localStorage', e);
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
+      } catch (e) {
+        console.error('Error al guardar el historial de búsqueda en localStorage', e);
+      }
     }
   }
 
   private loadSearchHistory(): void {
-    try {
-      const history = localStorage.getItem('searchHistory');
-      if (history) {
-        this.searchHistory = JSON.parse(history);
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        const history = localStorage.getItem('searchHistory');
+        if (history) {
+          this.searchHistory = JSON.parse(history);
+        }
+      } catch (e) {
+        console.error('Error al cargar el historial de búsqueda de localStorage', e);
       }
-    } catch (e) {
-      console.error('Error al cargar el historial de búsqueda de localStorage', e);
     }
   }
 
@@ -174,6 +179,3 @@ export class AppComponent implements OnInit, OnDestroy {
     }, 150);
   }
 }
-
-
-

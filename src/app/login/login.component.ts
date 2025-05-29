@@ -32,7 +32,7 @@ export class LoginComponent {
     // Simulación de login exitoso
     if (email === 'enzo@gmail.com' && password === 'enzo05') {
       Swal.fire('¡Bienvenido!', 'Sesión iniciada correctamente', 'success').then(() => {
-        this.router.navigate(['/']);
+        this.router.navigate(['/catalogo']);
       });
     } else {
       Swal.fire('Error', 'Credenciales inválidas', 'error');
