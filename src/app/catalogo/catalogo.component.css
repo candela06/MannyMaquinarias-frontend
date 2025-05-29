@@ -48,7 +48,7 @@
 }
 
 .clear-all-btn {
-    background-color: var(--primary-color);
+    background-color: #c46a00;
     color: #ffffff;
     border: none;
     padding: 0.6rem 1.2rem;
@@ -61,9 +61,10 @@
 }
 
 .clear-all-btn:hover {
-    background-color: #c46a00;
+    background-color: #ffffff;
     /* Tono más oscuro al pasar el ratón */
     transform: translateY(-2px);
+    color: black;
 }
 
 .filter-group {
@@ -386,7 +387,7 @@
 
 .view-details-button {
     display: inline-block;
-    background-color: var(--primary-color);
+    background-color: #c46a00;
     color: #ffffff;
     padding: 0.8rem 1.5rem;
     border-radius: 8px;
