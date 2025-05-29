@@ -1,0 +1,530 @@
+/* src/app/catalog/catalog-list/catalog-list.component.css */
+
+.catalog-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    /* Por defecto en columna para móviles */
+    padding: 1.5rem;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 1.5rem auto;
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    /* Bordes redondeados para el contenedor principal */
+    box-shadow: 0 4px 15px var(--shadow-color);
+}
+
+@media (min-width: 768px) {
+    .catalog-page-wrapper {
+        flex-direction: row;
+        /* En fila para pantallas más grandes */
+    }
+}
+
+/* --- Sidebar de Filtros --- */
+.filters-sidebar {
+    flex: 0 0 280px;
+    /* Ancho fijo en pantallas grandes */
+    background-color: var(--card-background);
+    padding: 1.5rem;
+    border-radius: 12px;
+    /* Bordes redondeados */
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-header h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.clear-all-btn {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    /* Bordes redondeados */
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.clear-all-btn:hover {
+    background-color: #c46a00;
+    /* Tono más oscuro al pasar el ratón */
+    transform: translateY(-2px);
+}
+
+.filter-group {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-group:last-child {
+    border-bottom: none;
+    /* No hay borde en el último grupo */
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.filter-group h3 {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.filter-options .checkbox-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--light-text-color);
+}
+
+.filter-options input[type="checkbox"] {
+    margin-right: 0.8rem;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+    /* Color del checkbox */
+    border-radius: 4px;
+    /* Bordes redondeados para checkboxes */
+}
+
+.see-more-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    transition: text-decoration 0.3s ease;
+}
+
+.see-more-btn:hover {
+    text-decoration: underline;
+}
+
+/* Rango de Precios Slider */
+.price-range-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    border-radius: 5px;
+}
+
+.price-range-slider:hover {
+    opacity: 1;
+}
+
+.price-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    cursor: pointer;
+    border-radius: 50%;
+    /* Pulgar redondo */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.price-range-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.price-display {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Fechas de Alquiler */
+.date-filter-options label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--light-text-color);
+}
+
+.date-filter-options input[type="date"] {
+    width: 100%;
+    padding: 0.6rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    /* Bordes redondeados */
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    /* Incluye padding y borde en el ancho */
+}
+
+/* --- Contenido Principal del Catálogo --- */
+.catalog-main-content {
+    flex: 1;
+    /* Ocupa el espacio restante */
+    background-color: var(--card-background);
+    /* Fondo para el contenido principal */
+    padding: 1.5rem;
+    border-radius: 12px;
+    /* Bordes redondeados */
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.top-bar-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+@media (min-width: 600px) {
+    .top-bar-controls {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+/* Etiquetas de Filtros Activos */
+.active-filters-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.active-filter-tag {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    /* Bordes muy redondeados (píldora) */
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.active-filter-tag button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    padding: 0;
+    transition: transform 0.2s ease;
+}
+
+.active-filter-tag button:hover {
+    transform: scale(1.1);
+}
+
+/* Dropdown de Ordenar por */
+.sort-by-dropdown span {
+    font-weight: 500;
+    color: var(--text-color);
+    margin-right: 0.5rem;
+}
+
+.sort-by-dropdown select {
+    padding: 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    /* Bordes redondeados */
+    font-size: 0.95rem;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+/* --- Cuadrícula de Maquinarias --- */
+.machinery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* Columnas responsivas */
+    gap: 1.5rem;
+}
+
+.machinery-card {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    /* Bordes redondeados */
+    overflow: hidden;
+    /* Para que la imagen no se salga */
+    box-shadow: 0 2px 10px var(--shadow-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    /* Contenido de la tarjeta en columna */
+}
+
+.machinery-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.machinery-card img {
+    width: 100%;
+    height: 200px;
+    /* Altura fija para las imágenes */
+    object-fit: cover;
+    /* Recorta la imagen para cubrir el área */
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-details {
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    /* Para que los detalles ocupen el espacio restante */
+}
+
+.card-details h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+    color: var(--primary-color);
+    line-height: 1.3;
+}
+
+.card-details p {
+    font-size: 0.95rem;
+    color: var(--light-text-color);
+    margin-bottom: 0.5rem;
+}
+
+.card-details .current-price {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    /* Precio con color principal */
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.card-status {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--light-text-color);
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-status span {
+    font-weight: 600;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    margin-left: 0.5rem;
+}
+
+/* Colores para los estados */
+.status-available {
+    background-color: #e6ffe6;
+    /* Verde claro */
+    color: #28a745;
+    /* Verde oscuro */
+}
+
+.status-reserved {
+    background-color: #fff3e6;
+    /* Naranja claro */
+    color: #ff9800;
+    /* Naranja oscuro */
+}
+
+.status-unavailable {
+    background-color: #ffe6e6;
+    /* Rojo claro */
+    color: #dc3545;
+    /* Rojo oscuro */
+}
+
+.card-next-available {
+    font-size: 0.85rem;
+    color: var(--light-text-color);
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.card-button-wrapper {
+    margin-top: auto;
+    /* Empuja el botón al final de la tarjeta */
+    text-align: center;
+}
+
+.view-details-button {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    /* Bordes redondeados */
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    width: calc(100% - 2.4rem);
+    /* Ajuste para padding */
+    max-width: 200px;
+    /* Ancho máximo para el botón */
+}
+
+.view-details-button:hover {
+    background-color: #c46a00;
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.no-results-message {
+    grid-column: 1 / -1;
+    /* Ocupa todas las columnas en la cuadrícula */
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--light-text-color);
+    padding: 2rem;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    margin-top: 1.5rem;
+}
+
+/* Estilos para el componente de detalle de maquinaria */
+.detalle-container {
+    background-color: var(--card-background);
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 900px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.detalle-container h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.detalle-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    /* Para que la imagen completa sea visible */
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.detalle-info p {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-color);
+}
+
+.detalle-info strong {
+    color: var(--primary-color);
+}
+
+.detalle-info .status-info {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+}
+
+.detalle-info .status-info span {
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    margin-left: 1rem;
+}
+
+/* Los colores de estado son los mismos que en el catálogo */
+
+.rent-button {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-top: 1.5rem;
+    align-self: center;
+    /* Centra el botón en el contenedor flex */
+}
+
+.rent-button:hover {
+    background-color: #c46a00;
+    transform: translateY(-3px);
+}
+
+.access-denied-message {
+    text-align: center;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 600px;
+    background-color: var(--card-background);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px var(--shadow-color);
+    color: var(--text-color);
+}
+
+.access-denied-message p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.access-denied-message button {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 0 0.5rem;
+}
+
+.access-denied-message button:hover {
+    background-color: #c46a00;
+    transform: translateY(-2px);
+}

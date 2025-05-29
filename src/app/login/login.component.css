@@ -1,0 +1,28 @@
+/* Fondo general naranja claro */
+.bg-orange-theme {
+    background-color: #fff3e0; /* naranja suave */
+  }
+  
+  .text-orange {
+    color: #f57c00; /* naranja fuerte */
+  }
+  
+
+  .btn-orange {
+    background-color: #f57c00;
+    border-color: #f57c00;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-orange:hover {
+    background-color: #ef6c00;
+    border-color: #ef6c00;
+  }
+  
+  /* Texto general */
+  body {
+    color: #212121; /* negro suave */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  

@@ -1,0 +1,37 @@
+<div *ngIf="machinery$ | async as machine; else loading" class="detalle-container">
+    <h2>{{ machine.marca }} {{ machine.modelo }}</h2>
+
+    <img [src]="machine.imageUrl || 'https://placehold.co/600x400/e0e0e0/333333?text=No+Image'"
+        [alt]="'Imagen de ' + machine.modelo" class="detalle-image">
+
+    <div class="detalle-info">
+        <p><strong>Tipo:</strong> {{ machine.nombre }}</p>
+        <p><strong>Precio por día:</strong> ${{ machine.precio }}</p>
+        <p><strong>Localidad:</strong> {{ machine.sucursal?.nombre || 'Desconocida' }}</p>
+
+        <div class="status-info">
+            <strong>Estado:</strong>
+            <span [ngClass]="{
+                    'status-available': machine.estado === MachineryStatus.DISPONIBLE,
+                    'status-reserved': machine.estado === MachineryStatus.ENTREGADO || machine.estado === MachineryStatus.CHECKEO,
+                    'status-unavailable': machine.estado === MachineryStatus.EN_MANTENIMIENTO
+                }">
+                {{ machine.estado }}
+            </span>
+        </div>
+
+        <p *ngIf="machine.description"><strong>Descripción:</strong> {{ machine.description }}</p>
+        <p *ngIf="machine.cancellationPolicy"><strong>Política de cancelación:</strong> {{ machine.cancellationPolicy }}
+        </p>
+        <p *ngIf="machine.nextAvailableDate"><strong>Próxima disponibilidad:</strong> {{ machine.nextAvailableDate }}
+        </p>
+    </div>
+
+    <button class="rent-button">Alquilar esta Maquinaria</button>
+</div>
+
+<ng-template #loading>
+    <div class="detalle-container">
+        <p>Cargando detalles de la maquinaria...</p>
+    </div>
+</ng-template>

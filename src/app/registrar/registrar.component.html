@@ -1,0 +1,68 @@
+<div class="container d-flex justify-content-center align-items-center min-vh-100 bg-orange-theme">
+  <div class="card shadow p-4 border-0" style="width: 100%; max-width: 450px; border-radius: 1rem; background-color: #fff;">
+    <h2 class="text-center mb-4 text-orange fw-bold">Crear Cuenta</h2>
+
+    <form [formGroup]="registroForm" (ngSubmit)="registrar()" class="needs-validation" novalidate>
+
+      <!-- Email -->
+      <div class="form-floating mb-3">
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          class="form-control" 
+          placeholder="correo@ejemplo.com"
+          [class.is-invalid]="registroForm.get('email')?.invalid && registroForm.get('email')?.touched"
+        />
+        <label for="email">Correo Electrónico</label>
+        <div class="invalid-feedback">
+          <div *ngIf="registroForm.get('email')?.errors?.['required']">El correo es obligatorio</div>
+          <div *ngIf="registroForm.get('email')?.errors?.['email']">El correo no es válido</div>
+        </div>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="form-floating mb-3">
+        <input 
+          type="password" 
+          id="contrasena" 
+          formControlName="contrasena" 
+          class="form-control" 
+          placeholder="********"
+          [class.is-invalid]="registroForm.get('contrasena')?.invalid && registroForm.get('contrasena')?.touched"
+        />
+        <label for="contrasena">Contraseña</label>
+        <div class="invalid-feedback">
+          <div *ngIf="registroForm.get('contrasena')?.errors?.['required']">La contraseña es obligatoria</div>
+          <div *ngIf="registroForm.get('contrasena')?.errors?.['minlength']">Mínimo 6 caracteres</div>
+        </div>
+      </div>
+
+      <!-- Fecha de nacimiento -->
+      <div class="form-floating mb-4">
+        <input 
+          type="date" 
+          id="fechaNacimiento" 
+          formControlName="fechaNacimiento" 
+          class="form-control" 
+          placeholder="1990-01-01"
+          [class.is-invalid]="registroForm.get('fechaNacimiento')?.invalid && registroForm.get('fechaNacimiento')?.touched"
+        />
+        <label for="fechaNacimiento">Fecha de Nacimiento</label>
+        <div class="invalid-feedback">
+          <div *ngIf="registroForm.get('fechaNacimiento')?.errors?.['required']">La fecha es obligatoria</div>
+          <div *ngIf="registroForm.get('fechaNacimiento')?.errors?.['menorDeEdad']">Debes tener más de 18 años</div>
+        </div>
+      </div>
+
+      <!-- Botón -->
+      <div class="d-grid">
+        <button class="btn btn-orange btn-lg text-white" type="submit" [disabled]="registroForm.invalid">
+          Registrarse
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
