@@ -1,393 +1,417 @@
 /* src/app/detalle-maquinaria/detalle-maquinaria.component.css */
 
-.detail-page-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    /* Alinea al inicio verticalmente */
-    min-height: calc(100vh - var(--header-height, 60px) - var(--footer-height, 0));
-    /* Ajusta según tu layout */
-    background-color: #f8f8f8;
-    /* Fondo suave */
-    padding: 30px 20px;
+:host {
+  display: block; /* Para que el componente ocupe su propio espacio */
 }
 
+.detail-page-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente el card */
+  align-items: center; /* Alinea al inicio verticalmente el card */
+  min-height: calc(100vh - var(--header-height, 60px) - var(--footer-height, 0));
+  background-color: var(--secondary-color); /* Usa la variable del tema */
+  padding: 30px 20px;
+  box-sizing: border-box; /* Incluir padding en el tamaño total */
+}
+
+/* Este estilo es para centrar los mensajes de carga/no encontrado si el card no se muestra */
+.detail-page-container.flex-center-message {
+    align-items: center; /* Centra verticalmente los mensajes */
+}
+
+
 .detail-card {
-    display: flex;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    /* Asegura que los bordes redondeados se apliquen a todo */
-    width: 100%;
-    max-width: 1000px;
-    /* Ancho máximo para el card principal */
-    min-height: 550px;
-    /* Altura mínima para que no sea demasiado pequeño */
+  display: flex;
+  background-color: var(--card-background); /* Usa la variable del tema */
+  border-radius: 12px;
+  box-shadow: 0 8px 25px var(--shadow-color); /* Usa la variable del tema */
+  overflow: hidden; /* Asegura que los bordes redondeados se apliquen a todo */
+  width: 100%;
+  max-width: 1000px; /* Ancho máximo para el card principal */
+  min-height: 550px; /* Altura mínima para que no sea demasiado pequeño */
 }
 
 /* --- Sección de Imagen (izquierda) --- */
 .image-section {
-    flex: 1;
-    /* Toma la mitad del espacio */
-    padding: 25px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #f0f0f0;
-    /* Un fondo ligeramente diferente para la sección de imagen */
-    border-right: 1px solid #eee;
-    /* Separador */
+  flex: 1; /* Toma la mitad del espacio */
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary-color); /* Fondo ligeramente diferente para la sección de imagen, usando variable */
+  border-right: 1px solid var(--border-color); /* Separador, usando variable */
 }
 
 .main-image-wrapper {
-    width: 100%;
-    max-width: 450px;
-    /* Ajusta el tamaño de la imagen principal */
-    height: 300px;
-    /* Altura fija para la imagen principal */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
+  width: 100%;
+  max-width: 450px; /* Ajusta el tamaño de la imagen principal */
+  height: 300px; /* Altura fija para la imagen principal */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .main-detail-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    /* Ajusta la imagen sin recortar */
-    border-radius: 8px;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Ajusta la imagen sin recortar */
+  border-radius: 8px;
 }
 
 .thumbnail-gallery {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
 }
 
 .thumbnail-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 2px solid #ddd;
-    cursor: pointer;
-    transition: border-color 0.3s ease;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid var(--border-color); /* Usando variable */
+  cursor: pointer;
+  transition: border-color 0.3s ease;
 }
 
 .thumbnail-image:hover {
-    border-color: #ff9800;
-    /* Naranja de tu marca */
+  border-color: var(--primary-color); /* Naranja de tu marca */
 }
 
 /* --- Sección de Detalles (derecha) --- */
 .details-section {
-    flex: 1;
-    /* Toma la otra mitad del espacio */
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    /* Para posicionar el botón de atrás */
+  flex: 1; /* Toma la otra mitad del espacio */
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  position: relative; /* Para posicionar el botón de atrás */
 }
 
 .back-button {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background: none;
-    border: none;
-    color: #555;
-    font-size: 1.1em;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: color 0.3s ease;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  color: var(--light-text-color); /* Usando variable */
+  font-size: 1.1em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.3s ease;
 }
 
 .back-button:hover {
-    color: #ff9800;
-    /* Naranja de tu marca */
+  color: var(--primary-color); /* Naranja de tu marca */
 }
 
 .arrow-icon {
-    font-size: 1.5em;
-    /* Un poco más grande para la flecha */
-    line-height: 1;
-    /* Asegura que la flecha no añada espacio extra */
+  font-size: 1.5em; /* Un poco más grande para la flecha */
+  line-height: 1; /* Asegura que la flecha no añada espacio extra */
 }
 
 .machine-title {
-    font-size: 2.2em;
-    color: #333;
-    margin-top: 20px;
-    margin-bottom: 5px;
-    line-height: 1.2;
+  font-size: 2.2em;
+  color: var(--text-color); /* Usa la variable del tema */
+  margin-top: 0;
+  margin-bottom: 5px;
+  line-height: 1.2;
 }
 
 .machine-type {
-    font-size: 1.2em;
-    color: #666;
-    margin-bottom: 20px;
+  font-size: 1.2em;
+  color: var(--light-text-color); /* Usa la variable del tema */
+  margin-bottom: 20px;
 }
 
 .price-info {
-    margin-bottom: 25px;
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
 }
 
 .current-price {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #ff9800;
-    /* Naranja de tu marca */
+  font-size: 2.5em;
+  font-weight: bold;
+  color: var(--primary-color); /* Naranja de tu marca */
+}
+
+.price-per-day {
+  font-size: 1.2em;
+  color: var(--light-text-color); /* Usa la variable del tema */
+  font-weight: 500;
 }
 
 .old-price {
-    font-size: 1.2em;
-    color: #999;
-    text-decoration: line-through;
+  font-size: 1.2em;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.basic-info-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Una columna por defecto */
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.basic-info-grid p strong {
+  color: var(--text-color); /* Usa la variable del tema */
+}
+
+.status-info {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-info strong {
+  color: var(--text-color); /* Usa la variable del tema */
 }
 
 /* --- Pestañas de Información --- */
 .info-tabs {
-    display: flex;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 20px;
+  display: flex;
+  border-bottom: 1px solid var(--border-color); /* Usando variable */
+  margin-bottom: 20px;
 }
 
 .tab-button {
-    background: none;
-    border: none;
-    padding: 10px 15px;
-    font-size: 1em;
-    color: #777;
-    cursor: pointer;
-    transition: color 0.3s ease, border-bottom 0.3s ease;
-    border-bottom: 2px solid transparent;
-    /* Para el subrayado */
+  background: none;
+  border: none;
+  padding: 10px 15px;
+  font-size: 1em;
+  color: var(--light-text-color); /* Usando variable */
+  cursor: pointer;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+  border-bottom: 2px solid transparent; /* Para el subrayado */
+  white-space: nowrap;
 }
 
 .tab-button:hover {
-    color: #333;
+  color: var(--text-color); /* Usando variable */
 }
 
 .tab-button.active {
-    color: #ff9800;
-    /* Naranja activo */
-    font-weight: bold;
-    border-bottom: 2px solid #ff9800;
-    /* Subrayado naranja */
+  color: var(--primary-color); /* Naranja activo */
+  font-weight: bold;
+  border-bottom: 2px solid var(--primary-color); /* Subrayado naranja */
 }
 
 .tab-content {
-    flex-grow: 1;
-    /* Permite que el contenido ocupe el espacio restante */
+  flex-grow: 1; /* Permite que el contenido ocupe el espacio restante */
+  padding-top: 10px;
 }
 
 .description-content p,
-.availability-content p {
-    margin-bottom: 10px;
-    line-height: 1.5;
-    color: #444;
+.availability-content p,
+.policies-content p {
+  margin-bottom: 10px;
+  line-height: 1.5;
+  color: var(--text-color); /* Usando variable */
 }
 
 .description-content strong,
-.availability-content strong {
-    color: #333;
+.availability-content strong,
+.policies-content strong {
+  color: var(--text-color); /* Usando variable */
 }
 
 /* --- Estilos para Disponibilidad --- */
-.availability-content h3 {
-    color: #333;
-    margin-bottom: 15px;
-    font-size: 1.3em;
+.availability-content h3,
+.policies-content h3 {
+  color: var(--text-color); /* Usando variable */
+  margin-bottom: 15px;
+  font-size: 1.3em;
 }
 
 .date-pickers {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  align-items: center;
 }
 
 .date-pickers label {
-    font-weight: bold;
-    color: #555;
+  font-weight: bold;
+  color: var(--light-text-color); /* Usando variable */
 }
 
 .date-pickers input[type="date"] {
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1em;
-    outline: none;
-    transition: border-color 0.3s ease;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color); /* Usando variable */
+  border-radius: 5px;
+  font-size: 1em;
+  outline: none;
+  transition: border-color 0.3s ease;
+  flex: 1;
+  min-width: 150px;
 }
 
 .date-pickers input[type="date"]:focus {
-    border-color: #ff9800;
-    /* Naranja al enfocar */
-    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+  border-color: var(--primary-color); /* Naranja al enfocar */
+  box-shadow: 0 0 0 2px rgba(234, 126, 0, 0.2); /* Sombra basada en primary-color */
 }
 
 .availability-status {
-    margin-top: 15px;
-    padding: 10px;
-    border-top: 1px dashed #eee;
-    padding-top: 20px;
+  margin-top: 15px;
+  padding: 10px;
+  border-top: 1px dashed var(--border-color); /* Usando variable */
+  padding-top: 20px;
 }
 
 .availability-status p {
-    font-size: 1em;
-    color: #555;
+  font-size: 1em;
+  color: var(--light-text-color); /* Usando variable */
 }
 
 .status-available {
-    color: green;
-    font-weight: bold;
+  color: #28a745; /* Verde para disponible */
+  font-weight: bold;
 }
 
 .status-reserved {
-    color: orange;
-    font-weight: bold;
+  color: #ffc107; /* Amarillo/naranja para reservado/entregado/checkeo */
+  font-weight: bold;
 }
 
 .status-unavailable {
-    color: red;
-    font-weight: bold;
+  color: #dc3545; /* Rojo para no disponible/mantenimiento */
+  font-weight: bold;
 }
 
 .temp-message {
-    font-size: 0.9em;
-    color: #777;
-    margin-top: 20px;
-    font-style: italic;
-    border-left: 3px solid #ff9800;
-    padding-left: 10px;
+  font-size: 0.9em;
+  color: var(--light-text-color); /* Usando variable */
+  margin-top: 10px;
+  font-style: italic;
+  border-left: 3px solid var(--primary-color); /* Usando variable */
+  padding-left: 10px;
+  background-color: var(--secondary-color); /* Usando variable para el fondo suave */
+  padding: 8px 10px;
+  border-radius: 4px;
 }
 
 /* --- Botones de Acción --- */
 .action-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: auto;
-    /* Empuja los botones al final de la sección */
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-}
-
-.rent-button,
-.favorite-button {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.1em;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  gap: 15px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color); /* Usando variable */
+  justify-content: center; /* Centrar el botón de alquiler si solo hay uno */
 }
 
 .rent-button {
-    flex-grow: 1;
-    /* Que ocupe el mayor espacio posible */
-    background-color: #ff9800;
-    /* Naranja principal */
-    color: white;
+  flex-grow: 1; /* Que ocupe el mayor espacio posible */
+  background-color: var(--primary-color); /* Naranja principal */
+  color: white;
+  padding: 12px 25px; /* Mantener padding original */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1em;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  max-width: 400px; /* Limitar el ancho del botón para que no sea demasiado largo */
 }
 
 .rent-button:hover:not(:disabled) {
-    background-color: #e08e00;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+  background-color: #e08e00; /* Un tono un poco más oscuro que --primary-color */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(234, 126, 0, 0.3); /* Sombra basada en primary-color */
 }
 
 .rent-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-    opacity: 0.7;
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
-.favorite-button {
-    background-color: #f0f0f0;
-    /* Gris claro */
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-    /* No se encoge */
-}
+/* Se eliminó el .favorite-button y sus estilos asociados */
 
-.favorite-button:hover {
-    background-color: #e5e5e5;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.heart-icon {
-    font-size: 1.2em;
-}
 
 /* --- Mensajes de carga/no encontrados --- */
 .loading-message,
 .not-found-message {
-    text-align: center;
-    margin-top: 50px;
-    font-size: 1.2em;
-    color: #777;
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.2em;
+  color: var(--light-text-color); /* Usando variable */
+  padding: 20px;
+  border-radius: 8px;
+  background-color: var(--card-background); /* Usando variable */
+  box-shadow: 0 2px 10px var(--shadow-color); /* Usando variable */
 }
 
 /* Media Queries para responsividad */
 @media (max-width: 768px) {
-    .detail-card {
-        flex-direction: column;
-        /* Apila las secciones en pantallas pequeñas */
-        max-width: 90%;
-    }
+  .detail-card {
+    flex-direction: column; /* Apila las secciones en pantallas pequeñas */
+    max-width: 90%;
+    min-height: auto; /* Permite que la altura se ajuste automáticamente */
+  }
 
-    .image-section {
-        border-right: none;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 20px;
-    }
+  .image-section {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color); /* Usando variable */
+    padding-bottom: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 
-    .details-section {
-        padding: 25px;
-    }
+  .details-section {
+    padding: 25px 15px; /* Ajusta padding para pantallas pequeñas */
+  }
 
-    .back-button {
-        position: static;
-        /* Quita el posicionamiento absoluto */
-        margin-bottom: 15px;
-        /* Espacio debajo del botón */
-    }
+  .back-button {
+    position: static; /* Quita el posicionamiento absoluto */
+    margin-bottom: 15px; /* Espacio debajo del botón */
+  }
 
-    .main-image-wrapper {
-        height: 250px;
-    }
+  .main-image-wrapper {
+    height: 250px;
+    margin-bottom: 15px; /* Ajusta margen */
+  }
 
-    .action-buttons {
-        flex-direction: column;
-        /* Apila los botones de acción */
-        gap: 10px;
-    }
+  .thumbnail-gallery {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 
-    .rent-button,
-    .favorite-button {
-        width: 100%;
-        /* Ocupa todo el ancho disponible */
-        max-width: none;
-    }
+  .action-buttons {
+    flex-direction: column; /* Apila los botones de acción */
+    gap: 10px;
+  }
 
-    .price-info {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    } }
+  .rent-button {
+    width: 100%; /* Ocupa todo el ancho disponible */
+    max-width: none; /* Eliminar limitación de ancho */
+    padding: 15px; /* Aumenta el padding para botones más grandes */
+  }
+
+  .price-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .tab-button {
+    font-size: 0.9em;
+    padding: 8px 12px;
+  }
+
+  .date-pickers {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+

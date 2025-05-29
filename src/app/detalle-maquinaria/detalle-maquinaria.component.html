@@ -1,57 +1,166 @@
-<div
-  *ngIf="machinery$ | async as machine; else loading"
-  class="detalle-container"
->
-  <h2>{{ machine.marca }} {{ machine.modelo }}</h2>
-
-  <img
-    [src]="
-      machine.imageUrl ||
-      'https://placehold.co/600x400/e0e0e0/333333?text=No+Image'
-    "
-    [alt]="'Imagen de ' + machine.modelo"
-    class="detalle-image"
-  />
-
-  <div class="detalle-info">
-    <p><strong>Tipo:</strong> {{ machine.nombre }}</p>
-    <p><strong>Precio por día:</strong> ${{ machine.precio }}</p>
-    <p>
-      <strong>Localidad:</strong> {{ machine.sucursal.nombre || "Desconocida" }}
-    </p>
-
-    <div class="status-info">
-      <strong>Estado:</strong>
-      <span
-        [ngClass]="{
-          'status-available': machine.estado === MachineryStatus.DISPONIBLE,
-          'status-reserved':
-            machine.estado === MachineryStatus.ENTREGADO ||
-            machine.estado === MachineryStatus.CHECKEO,
-          'status-unavailable':
-            machine.estado === MachineryStatus.EN_MANTENIMIENTO
-        }"
-      >
-        {{ machine.estado }}
-      </span>
+<div classt="detail-page-container">
+  <div
+    *ngIf="machinery$ | async as machine; else loadingOrNotFound"
+    class="detail-card"
+  >
+    <div class="image-section">
+      <div class="main-image-wrapper">
+        <img
+          [src]="
+            machine.imageUrl ||
+            'https://placehold.co/600x400/e0e0e0/333333?text=No+Image+Available'
+          "
+          [alt]="'Imagen de ' + machine.marca + ' ' + machine.modelo"
+          class="main-detail-image"
+        />
+      </div>
     </div>
 
-    <p *ngIf="machine.description">
-      <strong>Descripción:</strong> {{ machine.description }}
-    </p>
-    <p *ngIf="machine.cancellationPolicy">
-      <strong>Política de cancelación:</strong> {{ machine.cancellationPolicy }}
-    </p>
-    <p *ngIf="machine.nextAvailableDate">
-      <strong>Próxima disponibilidad:</strong> {{ machine.nextAvailableDate }}
-    </p>
-  </div>
+    <div class="details-section">
+      <h1 class="machine-title">{{ machine.marca }} {{ machine.modelo }}</h1>
+      <p class="machine-type">{{ machine.nombre }}</p>
 
-  <button class="rent-button">Alquilar esta Maquinaria</button>
+      <div class="price-info">
+        <span class="current-price">${{ machine.precio }}</span>
+        <span class="price-per-day">/ día</span>
+      </div>
+
+      <div class="basic-info-grid">
+        <p>
+          <strong>Localidad:</strong>
+          {{ machine.sucursal.nombre || "Desconocida" }}
+        </p>
+        <div class="status-info">
+          <strong>Estado:</strong>
+          <span
+            [ngClass]="{
+              'status-available': machine.estado === MachineryStatus.DISPONIBLE,
+              'status-reserved':
+                machine.estado === MachineryStatus.ENTREGADO ||
+                machine.estado === MachineryStatus.CHECKEO,
+              'status-unavailable':
+                machine.estado === MachineryStatus.EN_MANTENIMIENTO
+            }"
+          >
+            {{ machine.estado | titlecase }}
+          </span>
+        </div>
+      </div>
+
+      <div class="info-tabs">
+        <button
+          class="tab-button"
+          [class.active]="activeTab === 'description'"
+          (click)="activeTab = 'description'"
+        >
+          Descripción
+        </button>
+        <button
+          class="tab-button"
+          [class.active]="activeTab === 'availability'"
+          (click)="activeTab = 'availability'"
+        >
+          Disponibilidad
+        </button>
+        <button
+          class="tab-button"
+          [class.active]="activeTab === 'policies'"
+          (click)="activeTab = 'policies'"
+        >
+          Políticas
+        </button>
+      </div>
+
+      <div class="tab-content">
+        <div *ngIf="activeTab === 'description'" class="description-content">
+          <p *ngIf="machine.description; else noDescription">
+            {{ machine.description }}
+          </p>
+          <ng-template #noDescription>
+            <p>No hay descripción disponible para esta maquinaria.</p>
+          </ng-template>
+        </div>
+
+        <div *ngIf="activeTab === 'availability'" class="availability-content">
+          <h3>Estado y Próxima Disponibilidad</h3>
+          <p>
+            Esta maquinaria se encuentra actualmente:
+            <span
+              [ngClass]="{
+                'status-available':
+                  machine.estado === MachineryStatus.DISPONIBLE,
+                'status-reserved':
+                  machine.estado === MachineryStatus.ENTREGADO ||
+                  machine.estado === MachineryStatus.CHECKEO,
+                'status-unavailable':
+                  machine.estado === MachineryStatus.EN_MANTENIMIENTO
+              }"
+            >
+              {{ machine.estado | titlecase }}</span
+            >.
+          </p>
+          <p *ngIf="machine.nextAvailableDate">
+            Se espera que esté disponible a partir del:
+            <strong>{{
+              machine.nextAvailableDate | date : "dd/MM/yyyy"
+            }}</strong>
+          </p>
+          <p
+            *ngIf="
+              !machine.nextAvailableDate &&
+              machine.estado !== MachineryStatus.DISPONIBLE
+            "
+          >
+            No se ha especificado una fecha de próxima disponibilidad.
+          </p>
+
+          <div class="date-pickers">
+            <label for="startDate">Fecha de Inicio:</label>
+            <input type="date" id="startDate" name="startDate" />
+            <label for="endDate">Fecha de Fin:</label>
+            <input type="date" id="endDate" name="endDate" />
+          </div>
+          <p class="temp-message">
+            *Selecciona las fechas para verificar la disponibilidad exacta.
+          </p>
+        </div>
+
+        <div *ngIf="activeTab === 'policies'" class="policies-content">
+          <h3>Política de Cancelación</h3>
+          <p *ngIf="machine.cancellationPolicy; else noCancellationPolicy">
+            {{ machine.cancellationPolicy }}
+          </p>
+          <ng-template #noCancellationPolicy>
+            <p>
+              No hay una política de cancelación específica para esta
+              maquinaria.
+            </p>
+          </ng-template>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button
+          class="rent-button"
+          [disabled]="machine.estado !== MachineryStatus.DISPONIBLE"
+        >
+          Alquilar esta Maquinaria
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<ng-template #loading>
-  <div class="detalle-container">
-    <p>Cargando detalles de la maquinaria...</p>
+<ng-template #loadingOrNotFound>
+  <div class="detail-page-container">
+    <div *ngIf="!(machinery$ | async)" class="loading-message">
+      <p>Cargando detalles de la maquinaria...</p>
+    </div>
+    <div
+      *ngIf="!(machinery$ | async) && !loadingInitial"
+      class="not-found-message"
+    >
+      <p>Maquinaria no encontrada o ID inválido.</p>
+    </div>
   </div>
 </ng-template>
