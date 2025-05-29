@@ -5,42 +5,34 @@ export enum MachineryStatus {
   ENTREGADO = 'entregado',
   EN_MANTENIMIENTO = 'en mantenimiento',
   CHECKEO = 'checkeo',
-  // falta el estado 'reservado'
+  // Si tu backend usa 'reservado', agrégalo aquí:
+  // RESERVADO = 'reservado',
+}
+
+export interface Sucursal {
+  id: number;
+  nombre: string;
+  direccion: string;
+  // Añade cualquier otra propiedad de la sucursal que tu backend envíe
 }
 
 export interface Machinery {
   id: number;
-  nombre: string;
+  nombre: string; // Tipo de maquinaria (ej. "Excavadora")
   marca: string;
   modelo: string;
   estado: MachineryStatus;
   precio: number;
 
-  // Estas son propiedades que el backend incluirá automáticamente si timestamps: true
-  createdAt?: string; // Fechas como string 'YYYY-MM-DDTHH:mm:ss.sssZ'
-  updatedAt?: string; // O Date si vas a parsearlas
-  deletedAt?: string | null; // Para borrado lógico, puede ser null
+  // Propiedades del backend (confirmadas por Postman y tus comentarios)
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt: string | null; // Es importante que sea 'string | null'
 
-  // Propiedades que el frontend usaba pero no existen directamente en el modelo Maquina de Sequelize
-  // Las marcamos como opcionales (con ?) y las manejaremos con valores por defecto o derivadas
-  // Si en el futuro el backend las provee (ej. a través de includes o nuevas columnas),
-  // las haremos obligatorias.
-
-  // 'location' del frontend probablemente sea 'sucursal.nombre' del backend
-  // Si el backend incluye la sucursal, el JSON se verá así:
-  // "sucursal": { "id": 1, "nombre": "Sucursal Centro", "direccion": "..." }
-  sucursal?: {
-    id: number;
-    nombre: string;
-    direccion: string;
-  };
-
-  // Otros campos que podrían ser necesarios si el backend los provee o se derivan
-  // Si necesitas estos, y no están en el modelo Maquina, el BE debe añadirlos.
-  imageUrl?: string; // Para mostrar una imagen en el frontend
-  description?: string;
-  availability?: boolean; // Puede derivarse de `estado === 'disponible'`
-  isDeleted?: boolean; // Puede derivarse de `deletedAt !== null`
-  cancellationPolicy?: string; // Si se relaciona con PoliticaCancelacion, el BE debe incluirla.
-  nextAvailableDate?: string | null; // Si se relaciona con Reservas, el BE debe incluirlas.
+  // Propiedades que deberías confirmar si tu backend las envía:
+  imageUrl: string; // Si no la envía, el frontend debe manejar un placeholder
+  description: string;
+  cancellationPolicy: string;
+  sucursal: Sucursal; // Debe ser el objeto Sucursal completo
+  nextAvailableDate: string | null; // Debe ser string para fechas ISO del backend o null
 }
