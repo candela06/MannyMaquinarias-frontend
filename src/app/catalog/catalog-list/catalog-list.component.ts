@@ -45,6 +45,7 @@ export class CatalogListComponent implements OnInit {
     searchTerm: null, // Término de búsqueda vacío
   };
 
+  selectedSort: string = 'precioAsc';
   constructor(private machineryService: MachineryService) {}
 
   ngOnInit(): void {
@@ -238,6 +239,31 @@ export class CatalogListComponent implements OnInit {
               // (m.description ?? '').toLowerCase().includes(searchTerm)
               false // Si no hay más campos relevantes para la búsqueda
           );
+        }
+
+        switch (this.selectedSort) {
+          case 'precioAsc':
+            filtered.sort(
+              (a, b) =>
+                parseFloat(a.precio as any) - parseFloat(b.precio as any)
+            );
+            break;
+          case 'precioDesc':
+            filtered.sort(
+              (a, b) =>
+                parseFloat(b.precio as any) - parseFloat(a.precio as any)
+            );
+            break;
+          case 'reciente':
+            // Asumiendo que 'createdAt' es una fecha válida.
+            // Si tu backend no devuelve 'createdAt' en cada máquina, esto puede fallar.
+            // Asegúrate de que `createdAt` sea un string de fecha ISO 8601
+            filtered.sort((a, b) => {
+              const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+              const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+              return dateB - dateA; // Más reciente primero (descendente)
+            });
+            break;
         }
 
         return filtered;
