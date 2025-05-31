@@ -1,0 +1,267 @@
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+      <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4 p-md-5">
+          <h2 class="card-title text-center mb-4 text-orange fw-bold">
+            Registrar Nueva Máquina
+          </h2>
+          <form [formGroup]="maquinaForm" (ngSubmit)="registrarMaquina()">
+            <div class="mb-3">
+              <label for="numeroSerie" class="form-label fw-bold"
+                >Número de Serie:</label
+              >
+              <input
+                type="text"
+                id="numeroSerie"
+                formControlName="numeroSerie"
+                class="form-control"
+                [class.is-invalid]="
+                  numeroSerie?.invalid &&
+                  (numeroSerie?.dirty || numeroSerie?.touched)
+                "
+              />
+              <div
+                *ngIf="
+                  numeroSerie?.invalid &&
+                  (numeroSerie?.dirty || numeroSerie?.touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="numeroSerie?.errors?.['required']">
+                  El número de serie es obligatorio.
+                </div>
+                <div *ngIf="numeroSerie?.errors?.['pattern']">
+                  El número de serie solo puede contener letras, números y
+                  guiones.
+                </div>
+                <div
+                  *ngIf="
+                    numeroSerie?.errors?.['minlength'] ||
+                    numeroSerie?.errors?.['maxlength']
+                  "
+                >
+                  El número de serie debe tener entre 3 y 50 caracteres.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="nombre" class="form-label fw-bold">Nombre:</label>
+              <input
+                type="text"
+                id="nombre"
+                formControlName="nombre"
+                class="form-control"
+                [class.is-invalid]="
+                  nombre?.invalid && (nombre?.dirty || nombre?.touched)
+                "
+              />
+              <div
+                *ngIf="nombre?.invalid && (nombre?.dirty || nombre?.touched)"
+                class="invalid-feedback"
+              >
+                <div *ngIf="nombre?.errors?.['required']">
+                  El nombre de la máquina es obligatorio.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="marca" class="form-label fw-bold">Marca:</label>
+              <input
+                type="text"
+                id="marca"
+                formControlName="marca"
+                class="form-control"
+                [class.is-invalid]="
+                  marca?.invalid && (marca?.dirty || marca?.touched)
+                "
+              />
+              <div
+                *ngIf="marca?.invalid && (marca?.dirty || marca?.touched)"
+                class="invalid-feedback"
+              >
+                <div *ngIf="marca?.errors?.['required']">
+                  La marca es obligatoria.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="modelo" class="form-label fw-bold">Modelo:</label>
+              <input
+                type="text"
+                id="modelo"
+                formControlName="modelo"
+                class="form-control"
+                [class.is-invalid]="
+                  modelo?.invalid && (modelo?.dirty || modelo?.touched)
+                "
+              />
+              <div
+                *ngIf="modelo?.invalid && (modelo?.dirty || modelo?.touched)"
+                class="invalid-feedback"
+              >
+                <div *ngIf="modelo?.errors?.['required']">
+                  El modelo es obligatorio.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="categoria" class="form-label fw-bold"
+                >Categoría:</label
+              >
+              <input
+                type="text"
+                id="categoria"
+                formControlName="categoria"
+                class="form-control"
+                [class.is-invalid]="
+                  categoria?.invalid && (categoria?.dirty || categoria?.touched)
+                "
+              />
+              <div
+                *ngIf="
+                  categoria?.invalid && (categoria?.dirty || categoria?.touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="categoria?.errors?.['required']">
+                  La categoría es obligatoria.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="anio" class="form-label fw-bold">Año:</label>
+              <input
+                type="number"
+                id="anio"
+                formControlName="anio"
+                class="form-control"
+                [class.is-invalid]="
+                  anio?.invalid && (anio?.dirty || anio?.touched)
+                "
+              />
+              <div
+                *ngIf="anio?.invalid && (anio?.dirty || anio?.touched)"
+                class="invalid-feedback"
+              >
+                <div *ngIf="anio?.errors?.['required']">
+                  El año es obligatorio.
+                </div>
+                <div *ngIf="anio?.errors?.['min']">
+                  El año debe ser posterior a 1900.
+                </div>
+                <div *ngIf="anio?.errors?.['max']">
+                  El año no puede ser en el futuro.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="porcentajeDevolucion" class="form-label fw-bold"
+                >Porcentaje de Devolución:</label
+              >
+              <input
+                type="number"
+                id="porcentajeDevolucion"
+                formControlName="porcentajeDevolucion"
+                class="form-control"
+                [class.is-invalid]="
+                  porcentajeDevolucion?.invalid &&
+                  (porcentajeDevolucion?.dirty || porcentajeDevolucion?.touched)
+                "
+              />
+              <div
+                *ngIf="
+                  porcentajeDevolucion?.invalid &&
+                  (porcentajeDevolucion?.dirty || porcentajeDevolucion?.touched)
+                "
+                class="invalid-feedback"
+              >
+                <div *ngIf="porcentajeDevolucion?.errors?.['required']">
+                  El porcentaje de devolución es obligatorio.
+                </div>
+                <div
+                  *ngIf="
+                    porcentajeDevolucion?.errors?.['min'] ||
+                    porcentajeDevolucion?.errors?.['max']
+                  "
+                >
+                  El porcentaje de devolución debe estar entre 0 y 100.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="precio" class="form-label fw-bold">Precio:</label>
+              <input
+                type="number"
+                id="precio"
+                formControlName="precio"
+                class="form-control"
+                [class.is-invalid]="
+                  precio?.invalid && (precio?.dirty || precio?.touched)
+                "
+              />
+              <div
+                *ngIf="precio?.invalid && (precio?.dirty || precio?.touched)"
+                class="invalid-feedback"
+              >
+                <div *ngIf="precio?.errors?.['required']">
+                  El precio es obligatorio.
+                </div>
+                <div *ngIf="precio?.errors?.['min']">
+                  El precio debe ser mayor a 0.
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="imagen" class="form-label fw-bold"
+                >Imagen de la Máquina:</label
+              >
+              <input
+                type="file"
+                id="imagen"
+                class="form-control"
+                (change)="onFileSelected($event)"
+                accept=".jpg,.jpeg,.png"
+                [class.is-invalid]="
+                  imagen?.invalid && (imagen?.dirty || imagen?.touched)
+                "
+              />
+              <div
+                *ngIf="imagen?.invalid && (imagen?.dirty || imagen?.touched)"
+                class="invalid-feedback"
+              >
+                <div *ngIf="imagen?.errors?.['required']">
+                  La imagen es obligatoria.
+                </div>
+                <div *ngIf="imagen?.errors?.['formatoImagenInvalido']">
+                  Formato de imagen inválido. Solo se permiten JPG, JPEG o PNG.
+                </div>
+              </div>
+              <small class="form-text text-muted"
+                >Formatos permitidos: JPG, JPEG, PNG.</small
+              >
+            </div>
+
+            <div class="d-grid gap-2">
+              <button
+                type="submit"
+                class="btn btn-orange btn-lg fw-bold"
+                [disabled]="maquinaForm.invalid || !selectedFile"
+              >
+                Registrar Máquina
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

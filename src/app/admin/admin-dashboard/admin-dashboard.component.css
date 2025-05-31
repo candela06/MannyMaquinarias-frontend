@@ -1,0 +1,30 @@
+/* src/app/admin/admin-dashboard/admin-dashboard.component.css */
+
+.admin-option-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.admin-option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.text-orange {
+    color: #ff5722;
+    /* Tu color naranja */
+}
+
+.btn-outline-orange {
+    color: #ff5722;
+    border-color: #ff5722;
+}
+
+.btn-outline-orange:hover {
+    background-color: #ff5722;
+    color: white;
+}
+
+/* Asegúrate de que Bootstrap Icons esté importado en tu proyecto.
+     Normalmente en styles.css o angular.json:
+     @import '~bootstrap-icons/font/bootstrap-icons.css';
+  */

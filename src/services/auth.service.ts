@@ -20,7 +20,7 @@ export interface AuthResponse {
 export interface RegisterData {
   email: string;
   password: string;
-  fechaNacimiento?: string; // Es opcional si el backend no lo requiere explícitamente como string obligatorio
+  fechaNacimiento: string; // Es opcional si el backend no lo requiere explícitamente como string obligatorio
   dni?: string; // Agregado
   nombreUsuario?: string; // Agregado
   nombre?: string; // Agregado
@@ -41,6 +41,9 @@ export class AuthService {
   private _currentUser = new BehaviorSubject<any>(null);
   currentUser$ = this._currentUser.asObservable();
 
+  private _isAdmin = new BehaviorSubject<boolean>(false);
+  isAdmin$ = this._isAdmin.asObservable();
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -49,6 +52,8 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       this._isLoggedIn.next(this.hasToken());
       this._currentUser.next(this.getStoredUser());
+      // Lógica temporal: si hay token, asumimos que es admin para desarrollo
+      this._isAdmin.next(this.hasToken()); // Asume admin si hay token
     }
   }
 
@@ -153,5 +158,13 @@ export class AuthService {
 
   getCurrentUser(): any {
     return this._currentUser.getValue();
+  }
+
+  get isAdmin(): boolean {
+    return this._isAdmin.getValue();
+  }
+
+  toggleAdminStatus(status: boolean): void {
+    this._isAdmin.next(status);
   }
 }

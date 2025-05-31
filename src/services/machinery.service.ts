@@ -1,18 +1,31 @@
 // src/app/services/machinery.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { Machinery, MachineryStatus } from '../app/modles/machinery.model';
 
-
-
+/**
+ * @description Interfaz que define la estructura de los datos de una máquina
+ * tal como se envían desde el frontend al backend para su registro.
+ */
+export interface MaquinaData {
+  numeroSerie: string;
+  nombre: string;
+  marca: string;
+  modelo: string;
+  categoria: string;
+  anio: number;
+  porcentajeDevolucion: number;
+  precio: number;
+  // La imagen se envía como parte de FormData, no en este objeto directamente.
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class MachineryService {
-  private _apiUrl = 'http://localhost:3001/maquinas'; // Tu endpoint del backend
+  private _apiUrl = 'http://localhost:3001/maquinas';
   private machineriesSubject = new BehaviorSubject<Machinery[]>([]);
   machineries$: Observable<Machinery[]> =
     this.machineriesSubject.asObservable();
@@ -35,6 +48,36 @@ export class MachineryService {
         return of([]); // Devuelve un array vacío en caso de error
       })
     );
+  }
+
+  registrarMaquina(maquinaData: FormData): Observable<any> {
+    return this.http
+      .post<any>(`${this._apiUrl}/registrar`, maquinaData)
+      .pipe(catchError(this.handleError));
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'Ocurrió un error desconocido.';
+    if (error.error instanceof ErrorEvent) {
+      // Error del lado del cliente o de la red
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // El backend devolvió un código de respuesta fallido.
+      // El cuerpo de la respuesta puede contener pistas.
+      console.error(
+        `Código de error del backend: ${error.status}, ` +
+          `Cuerpo: ${JSON.stringify(error.error)}`
+      );
+
+      if (error.status === 400 && error.error && error.error.error) {
+        errorMessage = `Error de validación: ${error.error.error}`; // Mensaje del backend
+      } else if (error.status === 409 && error.error && error.error.error) {
+        errorMessage = `Conflicto: ${error.error.error}`; // Por ejemplo, DNI ya existe
+      } else if (error.error && error.error.message) {
+        errorMessage = error.error.message;
+      }
+    }
+    return throwError(() => new Error(errorMessage)); // Propagar el error
   }
 
   getMachineries(): Observable<Machinery[]> {

@@ -51,7 +51,7 @@
         type="range"
         min="0"
         max="2000000"
-        [(ngModel)]="activeFilters.maxPrice"
+        (ngModel)="(activeFilters.maxPrice)"
         (input)="onPriceRangeChange()"
         class="price-range-slider"
       />
@@ -67,14 +67,14 @@
         <input
           type="date"
           id="startDate"
-          [(ngModel)]="activeFilters.startDate"
+          (ngModel)="(activeFilters.startDate)"
           (change)="onDateChange()"
         />
         <label for="endDate">Hasta:</label>
         <input
           type="date"
           id="endDate"
-          [(ngModel)]="activeFilters.endDate"
+          (ngModel)="(activeFilters.endDate)"
           (change)="onDateChange()"
         />
       </div>
@@ -182,7 +182,7 @@
 
           <div class="card-button-wrapper">
             <a
-              [routerLink]="['/detalle', machine.id]"
+              routerLink="['/detalle', machine.id]"
               class="view-details-button"
             >
               Ver
