@@ -8,6 +8,8 @@ import { SharedComponent } from './shared/shared.component';
 import { DetalleMaquinariaComponent } from './detalle-maquinaria/detalle-maquinaria.component';
 import { RegistrarMaquinaComponent } from './admin/gestion-maquinas/registrar-maquina/registrar-maquina.component';
 import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard.component';
+import { GestionarMaquinasComponent } from './admin/gestion-maquinas/gestionar-maquinas/gestionar-maquinas.component'; // ¡NUEVO! Importamos el componente
+import { ModificarMaquinaComponent } from './admin/gestion-maquinas/modificar-maquina/modificar-maquina.component'; // ¡NUEVO! Importamos el componente de modificación
 
 export const routes: Routes = [
   { path: '', component: PantallaInicioComponent }, // ← Inicio principal
@@ -18,6 +20,11 @@ export const routes: Routes = [
   { path: 'detalle/:id', component: DetalleMaquinariaComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent },
   { path: 'admin/maquinas/registrar', component: RegistrarMaquinaComponent },
+  { path: 'admin/maquinas/listar', component: GestionarMaquinasComponent },
+  {
+    path: 'admin/maquinas/modificar',
+    component: ModificarMaquinaComponent,
+  },
 
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

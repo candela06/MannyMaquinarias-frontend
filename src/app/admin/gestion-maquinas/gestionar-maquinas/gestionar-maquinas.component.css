@@ -1,0 +1,57 @@
+/* src/app/admin/gestion-maquinas/gestionar-maquinas/gestionar-maquinas.component.css */
+
+.admin-option-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.admin-option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.admin-option-card .card-body {
+    padding: 1.5rem;
+}
+
+.admin-option-card .card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.admin-option-card .card-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+    /* Color gris para la descripción */
+}
+
+.admin-option-card .btn-primary {
+    background-color: white;
+    border-color: #e08e00;
+    color: #e08e00;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.admin-option-card .btn-primary:hover {
+    background-color: #e08e00;
+    border-color: #e08e00;
+    color: white;
+}
+
+/* Colores personalizados */
+.text-orange {
+    color: #e08e00;
+    /* Naranja de Bootstrap */
+}
+
+.btn-orange {
+    background-color: #e08e00;
+    border-color: #e08e00;
+    color: white;
+}
+
+.btn-orange:hover {
+    background-color: white;
+    color: black;
+    border-color: #e08e00; }

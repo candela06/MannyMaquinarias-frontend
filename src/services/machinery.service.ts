@@ -58,6 +58,19 @@ export class MachineryService {
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * @description Actualiza la información de una máquina existente en el backend.
+   * @param {number} id - El ID de la máquina a actualizar.
+   * @param {FormData} maquinaData - Objeto FormData que contiene los datos actualizados de la máquina
+   * (incluyendo la imagen si fue cambiada, o no si se mantiene la anterior).
+   * @returns {Observable<any>} Un Observable que emite la respuesta del backend.
+   */
+  actualizarMaquina(id: number, maquinaData: FormData): Observable<any> {
+    // Asumiendo un endpoint como /maquinas/update/:id para actualizar una máquina.
+    // El backend debe manejar si la imagen se incluye o no en el FormData.
+    return this.http.put(`${this._apiUrl}/update/${id}`, maquinaData);
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error desconocido.';
     if (error.error instanceof ErrorEvent) {
@@ -97,7 +110,7 @@ export class MachineryService {
     );
   }
 
-  getMachineryById(id: string): Observable<Machinery | undefined> {
+  getMachineryById(id: number): Observable<Machinery | undefined> {
     // Convertirlo a number para la comparación.
     const numericId = parseInt(id, 10);
     return this.machineries$.pipe(
@@ -117,8 +130,8 @@ export class MachineryService {
       map((machineries) => [
         ...new Set(
           machineries
-            .filter((m) => m.sucursal && m.sucursal.nombre) // Solo si tiene sucursal y nombre
-            .map((m) => m.sucursal!.nombre) // El ! es para asegurar a TS que no es undefined
+            .filter((m) => m.sucursal && m.sucursal.localidad) // Solo si tiene sucursal y nombre
+            .map((m) => m.sucursal!.localidad) // El ! es para asegurar a TS que no es undefined
         ),
       ])
     );

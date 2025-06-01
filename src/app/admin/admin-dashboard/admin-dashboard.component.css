@@ -10,7 +10,7 @@
 }
 
 .text-orange {
-    color: #ff5722;
+    color: #e08e00;
     /* Tu color naranja */
 }
 
@@ -20,11 +20,7 @@
 }
 
 .btn-outline-orange:hover {
-    background-color: #ff5722;
+    background-color: #e08e00;
     color: white;
+    border-color: #e08e00;
 }
-
-/* Asegúrate de que Bootstrap Icons esté importado en tu proyecto.
-     Normalmente en styles.css o angular.json:
-     @import '~bootstrap-icons/font/bootstrap-icons.css';
-  */
