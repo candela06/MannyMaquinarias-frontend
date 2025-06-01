@@ -18,14 +18,14 @@ export interface MaquinaData {
   anio: number;
   porcentajeDevolucion: number;
   precio: number;
-  // La imagen se envía como parte de FormData, no en este objeto directamente.
+  // La imagen y sucursal_id se envían como parte de FormData, no en este objeto directamente.
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class MachineryService {
-  private _apiUrl = 'http://localhost:3001/maquinas';
+  private _apiUrl = 'http://localhost:3001';
   private machineriesSubject = new BehaviorSubject<Machinery[]>([]);
   machineries$: Observable<Machinery[]> =
     this.machineriesSubject.asObservable();
@@ -42,7 +42,8 @@ export class MachineryService {
   }
 
   private fetchMachineriesFromBackend(): Observable<Machinery[]> {
-    return this.http.get<Machinery[]>(this._apiUrl).pipe(
+    // Asumiendo que listarMaquinas (GET) es en /maquinas
+    return this.http.get<Machinery[]>(`${this._apiUrl}/maquinas`).pipe(
       catchError((error) => {
         console.error('Error al obtener maquinarias del backend:', error);
         return of([]); // Devuelve un array vacío en caso de error
@@ -51,8 +52,9 @@ export class MachineryService {
   }
 
   registrarMaquina(maquinaData: FormData): Observable<any> {
+    // El endpoint de POST es /maquinas/add
     return this.http
-      .post<any>(`${this._apiUrl}/registrar`, maquinaData)
+      .post<any>(`${this._apiUrl}/maquinas/add`, maquinaData)
       .pipe(catchError(this.handleError));
   }
 

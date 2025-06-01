@@ -14,7 +14,7 @@
           <h5 class="card-title fw-bold text-dark">{{ option.title }}</h5>
           <p class="card-text text-muted">{{ option.description }}</p>
           <a
-            routerLink="option.route"
+            [routerLink]="option.route"
             class="btn btn-outline-orange mt-auto stretched-link"
           >
             Ir a {{ option.title }}
@@ -23,4 +23,5 @@
       </div>
     </div>
   </div>
+  <router-outlet></router-outlet>
 </div>

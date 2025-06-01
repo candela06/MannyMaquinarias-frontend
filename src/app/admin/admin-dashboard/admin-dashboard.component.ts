@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router'; // Necesario para routerLink
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
-  imports: [CommonModule], // Importar RouterModule
+  imports: [CommonModule, RouterModule], // Importar RouterModule
 })
 export class AdminDashboardComponent {
   /**

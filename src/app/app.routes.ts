@@ -16,15 +16,8 @@ export const routes: Routes = [
   { path: 'catalogo', component: CatalogoComponent },
   { path: 'preguntas-frecuentes', component: SharedComponent },
   { path: 'detalle/:id', component: DetalleMaquinariaComponent },
+  { path: 'admin-dashboard', component: AdminDashboardComponent },
+  { path: 'admin/maquinas/registrar', component: RegistrarMaquinaComponent },
 
-  {
-    path: 'admin',
-    component: AdminDashboardComponent, // <--- Este es el componente que se debería cargar para /admin
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, // <--- Otra posible causa!
-      { path: 'dashboard', component: AdminDashboardComponent },
-      { path: 'maquinas/registrar', component: RegistrarMaquinaComponent },
-    ],
-  },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
