@@ -34,9 +34,9 @@ import { Policy } from '../../../modles/policy.model';
 export class ModificarMaquinaComponent implements OnInit {
   modificarMaquinaForm!: FormGroup;
   maquinaId: number | null = null; // ID de la máquina a modificar
-  currentMaquina: Machinery | null = null; // Datos de la máquina actualmente cargada
+  currentMaquina: Machinery | undefined | null; // Datos de la máquina actualmente cargada
   selectedFile: File | null = null; // Nuevo archivo de imagen seleccionado
-  currentImageUrl: string | null = null; // URL de la imagen actual de la máquina
+  currentImageUrl: string | undefined | null; // URL de la imagen actual de la máquina
 
   todasLasSucursales: Branch[] = [];
   politicasCancelacion: Policy[] = [];

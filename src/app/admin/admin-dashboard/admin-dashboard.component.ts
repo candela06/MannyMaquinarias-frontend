@@ -36,7 +36,7 @@ export class AdminDashboardComponent {
       title: 'Gestionar Usuarios',
       description: 'Administrar cuentas de usuario y roles.',
       icon: 'bi-people-fill',
-      route: '/admin/usuarios', // crear este componente
+      route: '/admin/usuarios/gestion', // crear este componente
     },
   ];
 

@@ -182,7 +182,7 @@ export class CatalogoComponent implements OnInit {
           filtered = filtered.filter(
             (m) =>
               m.sucursal &&
-              this.activeFilters.ubicacion.includes(m.sucursal.nombre)
+              this.activeFilters.ubicacion.includes(m.sucursal.localidad)
           );
         }
 

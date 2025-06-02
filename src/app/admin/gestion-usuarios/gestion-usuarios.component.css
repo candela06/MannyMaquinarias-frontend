@@ -1,0 +1,51 @@
+/* src/app/admin/gestion-usuario/gestion-usuarios/gestion-usuarios.component.css */
+
+.admin-option-card {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.admin-option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.admin-option-card .card-body {
+    padding: 1.5rem;
+}
+
+.admin-option-card .card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.admin-option-card .card-text {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.admin-option-card .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.admin-option-card .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.text-orange {
+    color: #fd7e14;
+}
+
+.btn-orange {
+    background-color: #fd7e14;
+    border-color: #fd7e14;
+    color: white;
+}
+
+.btn-orange:hover {
+    background-color: #e66a00;
+    border-color: #e66a00; }

@@ -1,0 +1,30 @@
+<div class="container mt-4 mb-5">
+  <div class="card p-4 shadow-sm">
+    <h2 class="text-center mb-4 text-orange fw-bold">Gestión de Usuarios</h2>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+      <div class="col" *ngFor="let option of userManagementOptions">
+        <div class="card h-100 text-center admin-option-card">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <i class="bi {{ option.icon }} display-4 text-orange mb-3"></i>
+            <h5 class="card-title fw-bold text-dark">{{ option.title }}</h5>
+            <p class="card-text text-muted">{{ option.description }}</p>
+            <button
+              [routerLink]="option.route"
+              class="btn btn-primary mt-3"
+              (click)="logClick(option.route)"
+            >
+              Ir a {{ option.title.split(" ")[0] }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-5">
+      <button class="btn btn-secondary" [routerLink]="['/admin/dashboard']">
+        Volver al Panel de Administración
+      </button>
+    </div>
+  </div>
+</div>

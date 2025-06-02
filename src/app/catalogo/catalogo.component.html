@@ -140,7 +140,7 @@
           <h3>{{ machine.marca }} {{ machine.modelo }}</h3>
           <p class="card-type">Tipo: {{ machine.nombre }}</p>
           <p class="card-location">
-            Localidad: {{ machine.sucursal?.nombre || "Desconocida" }}
+            Localidad: {{ machine.sucursal?.localidad || "Desconocida" }}
           </p>
           <p
             class="card-price"

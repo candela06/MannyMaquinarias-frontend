@@ -10,6 +10,8 @@ import { RegistrarMaquinaComponent } from './admin/gestion-maquinas/registrar-ma
 import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard.component';
 import { GestionarMaquinasComponent } from './admin/gestion-maquinas/gestionar-maquinas/gestionar-maquinas.component'; // ¡NUEVO! Importamos el componente
 import { ModificarMaquinaComponent } from './admin/gestion-maquinas/modificar-maquina/modificar-maquina.component'; // ¡NUEVO! Importamos el componente de modificación
+import { GestionarUsuariosComponent } from './admin/gestion-usuarios/gestion-usuarios.component';
+import { ListaNegraComponent } from './admin/gestion-usuarios/lista-negra/lista-negra.component';
 
 export const routes: Routes = [
   { path: '', component: PantallaInicioComponent }, // ← Inicio principal
@@ -25,6 +27,8 @@ export const routes: Routes = [
     path: 'admin/maquinas/modificar',
     component: ModificarMaquinaComponent,
   },
+  { path: 'admin/usuarios/gestion', component: GestionarUsuariosComponent }, // Ruta para el panel de gestión de usuarios
+  { path: 'admin/usuarios/lista-negra', component: ListaNegraComponent }, // Ruta para ver la lista negra
 
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

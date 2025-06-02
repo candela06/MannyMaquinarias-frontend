@@ -112,7 +112,7 @@ export class MachineryService {
 
   getMachineryById(id: number): Observable<Machinery | undefined> {
     // Convertirlo a number para la comparación.
-    const numericId = parseInt(id, 10);
+    const numericId = id;
     return this.machineries$.pipe(
       map((machineries) => machineries.find((m) => m.id === numericId))
     );
