@@ -12,7 +12,8 @@ import { GestionarMaquinasComponent } from './admin/gestion-maquinas/gestionar-m
 import { ModificarMaquinaComponent } from './admin/gestion-maquinas/modificar-maquina/modificar-maquina.component'; // ¡NUEVO! Importamos el componente de modificación
 import { GestionarUsuariosComponent } from './admin/gestion-usuarios/gestion-usuarios.component';
 import { ListaNegraComponent } from './admin/gestion-usuarios/lista-negra/lista-negra.component';
-
+import { adminGuard } from './guards/admin.guard';
+import { eliminarUsuario } from './admin/gestion-usuarios/eliminar-usuario/eliminar-usuario.component';
 export const routes: Routes = [
   { path: '', component: PantallaInicioComponent }, // ← Inicio principal
   { path: 'login', component: LoginComponent },
@@ -20,15 +21,40 @@ export const routes: Routes = [
   { path: 'catalogo', component: CatalogoComponent },
   { path: 'preguntas-frecuentes', component: SharedComponent },
   { path: 'detalle/:id', component: DetalleMaquinariaComponent },
-  { path: 'admin-dashboard', component: AdminDashboardComponent },
-  { path: 'admin/maquinas/registrar', component: RegistrarMaquinaComponent },
-  { path: 'admin/maquinas/listar', component: GestionarMaquinasComponent },
+  {
+    path: 'admin-dashboard',
+    component: AdminDashboardComponent,
+    canActivate: [adminGuard],
+  },
+  {
+    path: 'admin/maquinas/registrar',
+    component: RegistrarMaquinaComponent,
+    canActivate: [adminGuard],
+  },
+  {
+    path: 'admin/maquinas/listar',
+    component: GestionarMaquinasComponent,
+    canActivate: [adminGuard],
+  },
   {
     path: 'admin/maquinas/modificar',
     component: ModificarMaquinaComponent,
+    canActivate: [adminGuard],
   },
-  { path: 'admin/usuarios/gestion', component: GestionarUsuariosComponent }, // Ruta para el panel de gestión de usuarios
-  { path: 'admin/usuarios/lista-negra', component: ListaNegraComponent }, // Ruta para ver la lista negra
-
+  {
+    path: 'admin/usuarios/gestion',
+    component: GestionarUsuariosComponent,
+    canActivate: [adminGuard],
+  }, // Ruta para el panel de gestión de usuarios
+  {
+    path: 'admin/usuarios/lista-negra',
+    component: ListaNegraComponent,
+    canActivate: [adminGuard],
+  }, // Ruta para ver la lista negra
+  {
+    path: 'admin/usuarios/eliminar-usuario',
+    component: eliminarUsuario,
+    canActivate: [adminGuard],
+  },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

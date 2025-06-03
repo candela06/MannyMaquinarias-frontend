@@ -1,0 +1,81 @@
+<div class="container mt-4 mb-5">
+  <div class="card p-4 shadow-sm">
+    <h2 class="text-center mb-4 text-orange fw-bold">
+      Gestión de Usuarios del Sistema
+    </h2>
+
+    <div class="d-flex justify-content-end gap-2 mb-4">
+      <button
+        class="btn btn-danger"
+        (click)="openDeleteUserConfirmationInput()"
+      >
+        <i class="bi bi-person-dash-fill me-2"></i>Eliminar Usuario del Sistema
+      </button>
+      <button class="btn btn-primary" [routerLink]="['/admin/usuarios/crear']">
+        <i class="bi bi-person-plus-fill me-2"></i>Crear Nuevo Usuario
+      </button>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center my-5">
+      <div class="spinner-border text-orange" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando usuarios...</p>
+    </div>
+
+    <div *ngIf="!isLoading">
+      <div
+        *ngIf="users.length === 0"
+        class="alert alert-info text-center"
+        role="alert"
+      >
+        <i class="bi bi-info-circle-fill me-2"></i>No se encontraron usuarios en
+        el sistema.
+      </div>
+
+      <div *ngIf="users.length > 0" class="table-responsive">
+        <table class="table table-hover table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Apellido</th>
+              <th scope="col">Email</th>
+              <th scope="col">Nombre de Usuario</th>
+              <th scope="col">DNI</th>
+              <th scope="col">Rol</th>
+              <th scope="col">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td>{{ user.id }}</td>
+              <td>{{ user.nombre || "N/A" }}</td>
+              <td>{{ user.apellido || "N/A" }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.nombreUsuario || "N/A" }}</td>
+              <td>{{ user.dni || "N/A" }}</td>
+              <td>{{ user.rol?.nombre || "N/A" }}</td>
+              <td>
+                <span
+                  [ngClass]="{
+                    'text-danger': user.eliminado,
+                    'text-success': !user.eliminado
+                  }"
+                >
+                  {{ user.eliminado ? "Eliminado" : "Activo" }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="text-center mt-5">
+      <button class="btn btn-secondary" [routerLink]="['/admin/dashboard']">
+        Volver al Panel de Administración
+      </button>
+    </div>
+  </div>
+</div>

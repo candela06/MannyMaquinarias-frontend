@@ -9,7 +9,16 @@ export interface User {
   email: string;
   nombreUsuario: string;
   dni: string;
-  // Otros campos si fueran necesarios, como createdAt, updatedAt
+  edad?: number;
+  rol_id: number;
+  rol?: {
+    id: number;
+    nombre: string;
+  };
+  // --- PROPIEDADES PARA BORRADO LÓGICO ---
+  eliminado?: boolean; // True si el usuario está lógicamente eliminado
+  fecha_eliminacion?: Date; // Fecha en que fue eliminado
+
   createdAt?: string;
   updatedAt?: string;
 }

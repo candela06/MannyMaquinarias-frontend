@@ -34,10 +34,11 @@
             Cerrar Sesión
           </button>
         </li>
-        <li class="nav-item">
-          <ng-container *ngIf="isLoggedIn$ | async">
-            <a routerLink="/admin-dashboard" class="nav-link">Panel Admin</a>
-          </ng-container>
+        <li
+          class="nav-item"
+          *ngIf="(authService.isLoggedIn$ | async) && authService.isAdmin"
+        >
+          <a class="nav-link" routerLink="/admin-dashboard">Panel Admin</a>
         </li>
       </ul>
     </div>

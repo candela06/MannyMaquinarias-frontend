@@ -65,7 +65,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private filterService: FilterService,
     private router: Router,
-    private authService: AuthService, // <--- Inyecta AuthService
+    public authService: AuthService, // <--- Inyecta AuthService
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isLoggedIn$ = this.authService.isLoggedIn$; // <--- Inicializa el observable

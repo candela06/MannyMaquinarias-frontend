@@ -20,24 +20,18 @@ export class GestionarUsuariosComponent {
    */
   userManagementOptions = [
     {
-      title: 'Ver Lista Negra',
+      title: 'Lista Negra',
       description: 'Consultar la lista de clientes con restricciones.',
       icon: 'bi-person-fill-exclamation', // Icono para lista negra
       route: '/admin/usuarios/lista-negra', // <--- RUTA A LA LISTA NEGRA
     },
+
     {
-      title: 'Agregar Usuario',
-      description: 'Añadir un usuario a la lista negra.',
-      icon: 'bi-person-plus-fill',
-      route: '/admin/usuarios/agregar', // FUTURO: Componente para añadir usuario
-    },
-    {
-      title: 'Modificar Permisos',
-      description: 'Cambiar roles o permisos de usuarios.',
+      title: 'Usuarios',
+      description: 'Ver, eliminar, crear usuarios y asignarles permisos',
       icon: 'bi-person-gear',
-      route: '/admin/usuarios/permisos', // FUTURO: Componente para modificar permisos
+      route: '/admin/usuarios/eliminar-usuario',
     },
-    // Podrían agregarse más opciones aquí como "Listar todos los usuarios", etc.
   ];
 
   /**
