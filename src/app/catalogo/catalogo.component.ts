@@ -106,6 +106,16 @@ export class CatalogoComponent implements OnInit {
   }
 
   /**
+   * @description Maneja los cambios en la barra de búsqueda.
+   * El `[(ngModel)]` ya actualiza `activeFilters.searchTerm`.
+   * Dispara la re-evaluación de los filtros.
+   */
+  onSearchTermChange(): void {
+    // <-- ¡NUEVO MÉTODO!
+    this.updateFilteredMachineries(); // Vuelve a aplicar los filtros
+  }
+
+  /**
    * Limpia un filtro específico o un grupo de filtros.
    * @param filterKey La clave del filtro a remover (ej. 'tipo', 'maxPrice')
    */
@@ -231,12 +241,9 @@ export class CatalogoComponent implements OnInit {
           const searchTerm = this.activeFilters.searchTerm.toLowerCase();
           filtered = filtered.filter(
             (m) =>
-              m.marca.toLowerCase().includes(searchTerm) || // Busca en la marca
-              m.modelo.toLowerCase().includes(searchTerm) || // Busca en el modelo
-              m.nombre.toLowerCase().includes(searchTerm) || // Busca en el nombre (que usamos como tipo/descripción)
-              // Si tuvieras una propiedad 'description' real del backend:
-              // (m.description ?? '').toLowerCase().includes(searchTerm)
-              false // Si no hay más campos relevantes para la búsqueda
+              m.marca.toLowerCase().includes(searchTerm) ||
+              m.modelo.toLowerCase().includes(searchTerm) ||
+              m.nombre.toLowerCase().includes(searchTerm)
           );
         }
 

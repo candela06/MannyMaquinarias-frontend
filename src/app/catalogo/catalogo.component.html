@@ -7,6 +7,18 @@
       </button>
     </div>
 
+    <!-- Barra de búsqueda por palabras clave -->
+    <div class="filter-group">
+      <h3>Buscar por palabra clave</h3>
+      <input
+        type="text"
+        placeholder="Ej: Retroexcavadora, Caterpillar"
+        [(ngModel)]="activeFilters.searchTerm"
+        (input)="onSearchTermChange()"
+        class="form-control"
+      />
+    </div>
+
     <div class="filter-group">
       <h3>Categoría</h3>
       <div class="filter-options">
