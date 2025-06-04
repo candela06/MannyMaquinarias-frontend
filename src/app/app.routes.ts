@@ -14,6 +14,9 @@ import { GestionarUsuariosComponent } from './admin/gestion-usuarios/gestion-usu
 import { ListaNegraComponent } from './admin/gestion-usuarios/lista-negra/lista-negra.component';
 import { adminGuard } from './guards/admin.guard';
 import { eliminarUsuario } from './admin/gestion-usuarios/eliminar-usuario/eliminar-usuario.component';
+//import { AsignarRol } from './admin/gestion-usuarios/asignar-rol/asignar-rol.component';
+import { HistorialReservasComponent } from './reservas/historial-reservas/historial-reservas.component'; // <-- ¡Importa el nuevo componente!
+
 export const routes: Routes = [
   { path: '', component: PantallaInicioComponent }, // ← Inicio principal
   { path: 'login', component: LoginComponent },
@@ -21,6 +24,8 @@ export const routes: Routes = [
   { path: 'catalogo', component: CatalogoComponent },
   { path: 'preguntas-frecuentes', component: SharedComponent },
   { path: 'detalle/:id', component: DetalleMaquinariaComponent },
+  { path: 'mis-reservas', component: HistorialReservasComponent },
+
   {
     path: 'admin-dashboard',
     component: AdminDashboardComponent,
@@ -56,5 +61,6 @@ export const routes: Routes = [
     component: eliminarUsuario,
     canActivate: [adminGuard],
   },
+  //{ path: 'admin/usuarios/asignar-rol', component: AsignarRol, canActivate: [adminGuard]},
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

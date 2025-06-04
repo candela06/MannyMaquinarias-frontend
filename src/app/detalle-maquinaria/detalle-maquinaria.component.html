@@ -1,58 +1,159 @@
-<div
-  *ngIf="machinery$ | async as machine; else loading"
-  class="detalle-container"
->
-  <h2>{{ machine.marca }} {{ machine.modelo }}</h2>
+<!-- src/app/public/detalle-maquinaria/detalle-maquinaria.component.html -->
 
-  <img
-    [src]="
-      machine.imageUrl ||
-      'https://placehold.co/600x400/e0e0e0/333333?text=No+Image'
-    "
-    [alt]="'Imagen de ' + machine.modelo"
-    class="detalle-image"
-  />
-
-  <div class="detalle-info">
-    <p><strong>Tipo:</strong> {{ machine.nombre }}</p>
-    <p><strong>Precio por día:</strong> ${{ machine.precio }}</p>
-    <p>
-      <strong>Localidad:</strong>
-      {{ machine.sucursal?.localidad || "Desconocida" }}
-    </p>
-
-    <div class="status-info">
-      <strong>Estado:</strong>
-      <span
-        [ngClass]="{
-          'status-available': machine.estado === MachineryStatus.DISPONIBLE,
-          'status-reserved':
-            machine.estado === MachineryStatus.ENTREGADO ||
-            machine.estado === MachineryStatus.CHECKEO,
-          'status-unavailable':
-            machine.estado === MachineryStatus.EN_MANTENIMIENTO
-        }"
-      >
-        {{ machine.estado }}
-      </span>
+<!-- Contenedor principal de la página de detalle con clases de Bootstrap -->
+<div class="container my-5">
+  <!-- Sección de carga y error -->
+  <ng-container *ngIf="machinery$ | async as machine; else loadingOrNotFound">
+    <div class="text-left mt-5">
+      <!-- CORRECCIÓN AQUÍ: Cambiado de <button> a <a> y mantenido las clases de Bootstrap para el estilo -->
+      <a class="btn btn-secondary" [routerLink]="['/catalogo']"> Atrás </a>
     </div>
+    <!-- Contenido de la máquina si se encuentra -->
+    <div class="card shadow-lg rounded-lg border-0">
+      <div class="row g-0">
+        <!-- Columna de imagen (izquierda) -->
+        <div
+          class="col-md-6 bg-light p-3 d-flex align-items-center justify-content-center"
+        >
+          <img
+            [src]="
+              machine.imageUrl ||
+              'https://placehold.co/600x400/e0e0e0/333333?text=No+Image'
+            "
+            [alt]="'Imagen de ' + machine.modelo"
+            class="img-fluid rounded shadow-sm"
+            onerror="this.onerror=null; this.src='https://placehold.co/600x400/e0e0e0/333333?text=No+Image';"
+          />
+        </div>
 
-    <p *ngIf="machine.description">
-      <strong>Descripción:</strong> {{ machine.description }}
-    </p>
-    <p *ngIf="machine.cancellationPolicy">
-      <strong>Política de cancelación:</strong> {{ machine.cancellationPolicy }}
-    </p>
-    <p *ngIf="machine.nextAvailableDate">
-      <strong>Próxima disponibilidad:</strong> {{ machine.nextAvailableDate }}
-    </p>
-  </div>
+        <!-- Columna de detalles de la máquina (derecha) -->
+        <div class="col-md-6 p-4 d-flex flex-column justify-content-center">
+          <!-- Título y tipo/categoría -->
+          <h1 class="card-title display-5 fw-bold text-dark mb-2">
+            {{ machine.marca }} {{ machine.modelo }}
+          </h1>
+          <p class="text-muted fs-5 mb-3">Categoría: {{ machine.categoria }}</p>
+          <p class="text-muted fs-5 mb-3">Tipo: {{ machine.nombre }}</p>
 
-  <button class="rent-button">Alquilar esta Maquinaria</button>
+          <!-- Precio y estado -->
+          <div class="d-flex align-items-center mb-3 flex-wrap">
+            <p
+              class="fs-4 fw-bold text-success me-3 mb-0"
+              *ngIf="machine.precio"
+            >
+              Precio: ${{ machine.precio }} / día
+            </p>
+            <div class="d-flex align-items-center">
+              <span class="fw-semibold text-secondary me-2">Estado:</span>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-success': machine.estado === MachineryStatus.DISPONIBLE,
+                  'bg-warning text-dark':
+                    machine.estado === MachineryStatus.ENTREGADO ||
+                    machine.estado === MachineryStatus.CHECKEO,
+                  'bg-danger':
+                    machine.estado === MachineryStatus.EN_MANTENIMIENTO
+                }"
+              >
+                {{ machine.estado }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Próxima fecha disponible (solo si aplica) -->
+          <p
+            class="text-info fst-italic mb-3"
+            *ngIf="
+              (machine.estado === MachineryStatus.ENTREGADO ||
+                machine.estado === MachineryStatus.CHECKEO) &&
+              machine.nextAvailableDate
+            "
+          >
+            Disponible a partir de:
+            {{ machine.nextAvailableDate | date : "fullDate" }}
+          </p>
+
+          <!-- Descripción (si la propiedad 'description' existe en el modelo) -->
+          <div class="mb-4" *ngIf="machine.description">
+            <h3 class="fs-5 fw-semibold text-dark mb-2">Descripción:</h3>
+            <p class="text-secondary">
+              {{ machine.description }}
+            </p>
+          </div>
+
+          <!-- Ubicación (si la sucursal y localidad existen) -->
+          <p
+            class="text-secondary fs-5 mb-4"
+            *ngIf="machine.sucursal?.localidad"
+          >
+            Ubicación:
+            <span class="fw-bold text-dark">{{
+              machine.sucursal?.localidad
+            }}</span>
+          </p>
+
+          <!-- Política de Cancelación (si la propiedad 'cancellationPolicy' existe en el modelo) -->
+          <p
+            class="text-secondary fs-5 mb-4"
+            *ngIf="machine.cancellationPolicy?.id"
+          >
+            Política de Cancelación:
+            <span class="fw-bold text-dark">{{
+              machine.cancellationPolicy?.id
+            }}</span>
+          </p>
+
+          <!-- Botón de Alquilar Ahora -->
+          <button
+            class="btn btn-orange btn-lg w-100 py-3 rounded-pill shadow-sm"
+            [disabled]="machine.estado !== MachineryStatus.DISPONIBLE"
+            (click)="onRentNow(machine.id)"
+          >
+            Alquilar Ahora
+          </button>
+          <p
+            *ngIf="machine.estado !== MachineryStatus.DISPONIBLE"
+            class="text-danger text-center mt-2"
+          >
+            Esta máquina no está disponible para alquiler en este momento.
+          </p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Plantilla para estados de carga o no encontrado -->
+  <ng-template #loadingOrNotFound>
+    <div class="text-center my-5 p-5 bg-white rounded-lg shadow-sm">
+      <div
+        *ngIf="!machinery$ && (machinery$ | async) === undefined"
+        class="spinner-border text-primary"
+        role="status"
+        style="width: 3rem; height: 3rem"
+      >
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p
+        class="mt-3 fs-5 text-muted"
+        *ngIf="!machinery$ && (machinery$ | async) === undefined"
+      >
+        Cargando detalles de la máquina...
+      </p>
+      <div *ngIf="(machinery$ | async) === undefined" class="mt-3">
+        <p class="fs-5 text-danger">Máquina no encontrada o ID inválido.</p>
+        <button class="btn btn-secondary mt-3" (click)="goBack()">
+          Volver al Catálogo
+        </button>
+      </div>
+    </div>
+  </ng-template>
 </div>
 
-<ng-template #loading>
-  <div class="detalle-container">
-    <p>Cargando detalles de la maquinaria...</p>
-  </div>
-</ng-template>
+<!-- Enlace al CDN de Bootstrap CSS (asegúrate de que esté cargado globalmente o aquí) -->
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+  crossorigin="anonymous"
+/>

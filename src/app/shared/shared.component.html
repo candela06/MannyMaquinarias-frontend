@@ -1,1 +1,26 @@
-<p>shared works!</p>
+<div class="faq-container">
+  <h1 class="faq-title">Preguntas Frecuentes (FAQ)</h1>
+
+  <!-- Mensaje de lista vacía si no hay FAQs -->
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- Lista de FAQs si hay alguna -->
+  <div *ngIf="!errorMessage && faqs.length > 0" class="faq-list">
+    <div *ngFor="let faq of faqs" class="faq-item">
+      <div class="faq-question" (click)="toggleFAQ(faq.id)">
+        <h3>{{ faq.question }}</h3>
+        <span class="toggle-icon">{{
+          expandedFAQId === faq.id ? "-" : "+"
+        }}</span>
+      </div>
+      <div
+        class="faq-answer"
+        [ngClass]="{ expanded: expandedFAQId === faq.id }"
+      >
+        <p>{{ faq.answer }}</p>
+      </div>
+    </div>
+  </div>
+</div>

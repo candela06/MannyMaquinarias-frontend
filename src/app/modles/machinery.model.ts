@@ -43,6 +43,10 @@ export interface Machinery {
   description?: string;
   availability?: boolean; // Puede derivarse de `estado === 'disponible'`
   isDeleted?: boolean; // Puede derivarse de `deletedAt !== null`
-  cancellationPolicy?: number; // Si se relaciona con PoliticaCancelacion, el BE debe incluirla.
+  cancellationPolicy?: {
+    id: number;
+    porcentajeRembolso: number;
+    descripcion: string;
+  }; // Si se relaciona con PoliticaCancelacion, el BE debe incluirla.
   nextAvailableDate?: string | null; // Si se relaciona con Reservas, el BE debe incluirlas.
 }
