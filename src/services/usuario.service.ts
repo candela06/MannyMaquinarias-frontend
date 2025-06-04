@@ -1,5 +1,9 @@
 // src/app/services/usuario.service.ts
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 // Importa el Auth service si necesitas el token para las llamadas a la API de usuario
@@ -9,16 +13,39 @@ import { User } from '../app/modles/user.model';
   providedIn: 'root',
 })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:3001/users'; // Ejemplo de endpoint para usuarios
+  private apiUrl = 'http://localhost:3001/usuarios'; // Ejemplo de endpoint para usuarios
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
+  // Helper para obtener los headers con el token de autorización
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    });
+  }
   // Ejemplo: Obtener el perfil del usuario logueado
   // (Asumiendo que necesitas enviar el token en los headers)
-  getProfile(): Observable<any> {
+  getPerfil(): Observable<any> {
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
     return this.http.get<any>(`${this.apiUrl}/profile`, { headers });
+  }
+
+  /**
+   * @description Actualiza los datos del perfil del usuario logueado.
+   * @param {Partial<User>} userData - Un objeto con los datos a actualizar del perfil.
+   * @returns {Observable<any>} Un Observable que emite la respuesta del backend.
+   */
+  updatePerfil(userData: Partial<User>): Observable<any> {
+    // Asumo que el backend tiene un endpoint PUT /usuarios/perfil para actualizar el usuario logueado
+    // y que requiere autenticación.
+    return this.http
+      .put<any>(`${this.apiUrl}/perfil`, userData, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -41,6 +68,21 @@ export class UsuarioService {
   eliminarUsuario(email: string): Observable<any> {
     return this.http
       .delete<any>(`${this.apiUrl}/eliminar/${email}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
+   * @description Envía una petición DELETE al backend para eliminar la cuenta del propio usuario logueado.
+   * El backend identifica al usuario a través del token JWT.
+   * @returns {Observable<any>} Un Observable que emite la respuesta del backend.
+   */
+  eliminarCuentaPropia(): Observable<any> {
+    // Asumo que el backend tiene un endpoint DELETE /usuarios/eliminar-propia
+    // y que usa el token JWT para identificar al usuario.
+    return this.http
+      .delete<any>(`${this.apiUrl}/eliminar-propia`, {
+        headers: this.getAuthHeaders(),
+      })
       .pipe(catchError(this.handleError));
   }
 

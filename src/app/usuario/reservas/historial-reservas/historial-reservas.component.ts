@@ -3,8 +3,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Para directivas como *ngIf, *ngFor
 import { RouterLink } from '@angular/router'; // Para enlaces de navegación
-import { ReservaService } from '../../../services/reserva.service'; // Asegúrate de la ruta correcta
-import { Reserva } from '../../modles/reserva.model'; // Asegúrate de la ruta correcta
+import { ReservaService } from '../../../../services/reserva.service'; // Asegúrate de la ruta correcta
+import { Reserva } from '../../../modles/reserva.model'; // Asegúrate de la ruta correcta
 import { Observable, of } from 'rxjs'; // Importa Observable y of
 import { catchError, tap } from 'rxjs/operators'; // Importa operadores
 import Swal from 'sweetalert2'; // Para mensajes de error/éxito

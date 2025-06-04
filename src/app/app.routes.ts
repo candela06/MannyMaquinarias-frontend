@@ -15,7 +15,11 @@ import { ListaNegraComponent } from './admin/gestion-usuarios/lista-negra/lista-
 import { adminGuard } from './guards/admin.guard';
 import { eliminarUsuario } from './admin/gestion-usuarios/eliminar-usuario/eliminar-usuario.component';
 //import { AsignarRol } from './admin/gestion-usuarios/asignar-rol/asignar-rol.component';
-import { HistorialReservasComponent } from './reservas/historial-reservas/historial-reservas.component'; // <-- ¡Importa el nuevo componente!
+import { HistorialReservasComponent } from './usuario/reservas/historial-reservas/historial-reservas.component'; // <-- ¡Importa el nuevo componente!
+import { UsuarioDashboardComponent } from './usuario/usuario.component';
+import { ModificarUsuarioComponent } from './usuario/modificar-usuario/modificar-usuario.component';
+import { authGuard } from './guards/auth.guard';
+import { EliminarCuentaPropiaComponent } from './usuario/eliminar-usuario/eliminar-usuario.component'; // <-- ¡NUEVO!
 
 export const routes: Routes = [
   { path: '', component: PantallaInicioComponent }, // ← Inicio principal
@@ -24,8 +28,27 @@ export const routes: Routes = [
   { path: 'catalogo', component: CatalogoComponent },
   { path: 'preguntas-frecuentes', component: SharedComponent },
   { path: 'detalle/:id', component: DetalleMaquinariaComponent },
-  { path: 'mis-reservas', component: HistorialReservasComponent },
+  {
+    path: 'eliminar-micuenta',
+    component: EliminarCuentaPropiaComponent,
+    canActivate: [authGuard],
+  },
 
+  {
+    path: 'mis-reservas',
+    component: HistorialReservasComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'user-dashboard',
+    component: UsuarioDashboardComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'user-modificar',
+    component: ModificarUsuarioComponent,
+    canActivate: [authGuard],
+  },
   {
     path: 'admin-dashboard',
     component: AdminDashboardComponent,

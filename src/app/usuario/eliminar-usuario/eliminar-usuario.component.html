@@ -1,0 +1,32 @@
+<!-- src/app/usuario/eliminar-usuario/eliminar-usuario.component.html -->
+
+<div class="container my-5">
+  <div class="card shadow-lg rounded-lg border-0 p-4 text-center">
+    <h1 class="display-4 fw-bold text-danger mb-4">Eliminar Mi Cuenta</h1>
+    <p class="fs-5 text-muted mb-4">
+      Si deseas dejar de usar nuestros servicios, puedes eliminar tu cuenta. Ten
+      en cuenta que esta acción es irreversible y tu cuenta será marcada como
+      eliminada.
+    </p>
+    <p class="fs-6 text-danger mb-5">
+      No podrás eliminar tu cuenta si tienes reservas pendientes activas.
+    </p>
+
+    <button
+      type="button"
+      class="btn btn-danger btn-lg"
+      (click)="eliminarCuenta()"
+      [disabled]="isDeleting"
+    >
+      <span
+        *ngIf="isDeleting"
+        class="spinner-border spinner-border-sm me-2"
+        role="status"
+        aria-hidden="true"
+      ></span>
+      {{ isDeleting ? "Eliminando..." : "Eliminar Mi Cuenta" }}
+    </button>
+
+    <a class="btn btn-secondary mt-3" routerLink="/user-dashboard">Volver</a>
+  </div>
+</div>
