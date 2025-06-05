@@ -83,6 +83,7 @@ export class ModificarUsuarioComponent implements OnInit {
       dni: this.user.dni,
       edad: this.user.edad,
       nombreUsuario: this.user.nombreUsuario,
+      direccion: this.user.direccion,
       // El email y password no se modifican desde aquí por seguridad
     };
 

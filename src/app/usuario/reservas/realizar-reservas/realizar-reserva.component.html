@@ -1,0 +1,200 @@
+<!-- src/app/usuario/reservas/realizar-reservas/realizar-reserva.component.html -->
+
+<div class="container my-5">
+  <div *ngIf="isLoadingMachine" class="text-center my-5">
+    <div
+      class="spinner-border text-primary"
+      role="status"
+      style="width: 3rem; height: 3rem"
+    >
+      <span class="visually-hidden">Cargando máquina...</span>
+    </div>
+    <p class="mt-3 fs-5 text-muted">
+      Cargando detalles de la máquina para la reserva...
+    </p>
+  </div>
+
+  <div *ngIf="!isLoadingMachine && machinery">
+    <h1 class="text-center display-4 fw-bold text-dark mb-4">
+      Reservar Máquina: {{ machinery.nombre }}
+    </h1>
+    <p class="text-center text-muted">
+      {{ machinery.marca }} {{ machinery.modelo }} (Número de Serie:
+      {{ machinery.numeroSerie }})
+    </p>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow-lg p-4">
+          <div class="row">
+            <!-- Imagen de la Máquina -->
+            <div
+              class="col-md-5 d-flex align-items-center justify-content-center"
+            >
+              <img
+                [src]="
+                  machinery.imageUrl ||
+                  'https://placehold.co/400x300/e0e0e0/333333?text=No+Image'
+                "
+                class="img-fluid rounded mb-3"
+                alt="Imagen de {{ machinery.modelo }}"
+              />
+            </div>
+            <!-- Detalles de la Máquina en la Tarjeta -->
+            <div class="col-md-7">
+              <h4 class="card-title mb-3">Detalles Clave</h4>
+              <p>
+                <strong>Precio por día:</strong> ${{
+                  machinery.precio | number : "1.2-2"
+                }}
+              </p>
+              <p>
+                <strong>Estado:</strong>
+                <span
+                  [ngClass]="{
+                    'badge bg-success':
+                      machinery.estado === MachineryStatus.DISPONIBLE,
+                    'badge bg-warning text-dark':
+                      machinery.estado === MachineryStatus.ENTREGADO ||
+                      machinery.estado === MachineryStatus.CHECKEO,
+                    'badge bg-danger':
+                      machinery.estado === MachineryStatus.EN_MANTENIMIENTO
+                  }"
+                >
+                  {{ machinery.estado }}
+                </span>
+              </p>
+              <p
+                *ngIf="
+                  (machinery.estado === MachineryStatus.ENTREGADO ||
+                    machinery.estado === MachineryStatus.CHECKEO) &&
+                  machinery.nextAvailableDate
+                "
+              >
+                <strong>Disponible a partir de:</strong>
+                {{ machinery.nextAvailableDate | date : "fullDate" }}
+              </p>
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <form (ngSubmit)="makeReservation()">
+            <div class="mb-3">
+              <label for="startDate" class="form-label">Fecha de Inicio:</label>
+              <input
+                type="date"
+                id="startDate"
+                class="form-control"
+                [(ngModel)]="selectedStartDate"
+                name="startDate"
+                [min]="getMinStartDate()"
+                (change)="onDatesChange()"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="endDate" class="form-label">Fecha de Fin:</label>
+              <input
+                type="date"
+                id="endDate"
+                class="form-control"
+                [(ngModel)]="selectedEndDate"
+                name="endDate"
+                [min]="getMinEndDate()"
+                (change)="onDatesChange()"
+                required
+              />
+            </div>
+
+            <div
+              class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded shadow-sm"
+            >
+              <h4 class="mb-0">Precio Total Estimado:</h4>
+              <span class="fs-3 fw-bold text-primary"
+                >${{ calculatedPrice | number : "1.2-2" }}</span
+              >
+            </div>
+
+            <button
+              type="submit"
+              class="btn btn-success btn-lg w-100 mb-3"
+              [disabled]="isReservationButtonDisabled"
+            >
+              <span
+                *ngIf="isMakingReservation"
+                class="spinner-border spinner-border-sm me-2"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              {{ isMakingReservation ? "Confirmando..." : "Confirmar Reserva" }}
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary w-100"
+              [routerLink]="['/detalle', machinery.id]"
+            >
+              Volver al Detalle de la Máquina
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="!isLoadingMachine && !machinery"
+    class="alert alert-warning text-center my-5"
+    role="alert"
+  >
+    <p class="mb-0 fs-5">
+      No se encontró la máquina solicitada o hubo un error al cargarla.
+    </p>
+    <button class="btn btn-secondary mt-3" routerLink="/catalogo">
+      Volver al Catálogo
+    </button>
+  </div>
+</div>
+
+<!-- Estilos CSS básicos para el detalle de la reserva -->
+<style>
+  body {
+    font-family: "Inter", sans-serif;
+    background-color: #f0f2f5;
+  }
+  .container {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .img-fluid {
+    max-height: 250px; /* Tamaño de la imagen en el formulario de reserva */
+    object-fit: contain;
+    width: 100%;
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #e9ecef;
+  }
+  .card-title {
+    color: #333;
+    font-weight: bold;
+  }
+  .badge {
+    padding: 0.5em 0.7em;
+    font-size: 0.85em;
+    border-radius: 0.5rem;
+  }
+  .status-available {
+    background-color: #28a745;
+    color: #fff;
+  }
+  .status-reserved {
+    background-color: #ffc107;
+    color: #212529;
+  }
+  .status-unavailable {
+    background-color: #dc3545;
+    color: #fff;
+  }
+</style>

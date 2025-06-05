@@ -8,23 +8,53 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Reserva } from '../app/modles/reserva.model'; // Asegúrate de que la ruta sea correcta
-import { AuthService } from './auth.service';
+import { Reserva } from '../app/modles/reserva.model';
+import { AuthService } from './auth.service'; // Importa el AuthService
+
+// Interfaz para los datos que se envían al backend para crear una reserva
+export interface ReservaData {
+  precio?: number;
+  fecha_inicio: string; // Formato YYYY-MM-DD para compatibilidad con input type="date" y backend
+  fecha_fin: string; // Formato YYYY-MM-DD
+  usuario_id: number; // <-- AÑADIDO: Incluimos usuario_id en la interfaz
+  maquina_id: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ReservaService {
   private apiUrl = 'http://localhost:3001/reservas'; // URL base para las reservas
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService // Inyecta AuthService para obtener el token
+  ) {}
 
   // Helper para obtener los headers con el token de autorización
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
+    if (!token) {
+      console.warn('AuthService: No se encontró token de autenticación.');
+      return new HttpHeaders({ 'Content-Type': 'application/json' });
+    }
     return new HttpHeaders({
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     });
+  }
+
+  /**
+   * @description Crea una nueva reserva en el backend.
+   * @param {ReservaData} reservaData - Objeto con los datos de la reserva (precio, fechas, id_usuario, id_maquina).
+   * @returns {Observable<any>} Un Observable que emite la respuesta del backend.
+   */
+  crearReserva(reservaData: ReservaData): Observable<any> {
+    return this.http
+      .post<any>(`${this.apiUrl}/add`, reservaData, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(catchError(this.handleErrorCrearReserva));
   }
 
   /**
@@ -33,13 +63,10 @@ export class ReservaService {
    * @returns {Observable<Reserva[]>} Un Observable que emite un array de objetos Reserva.
    */
   getHistorialReservas(): Observable<Reserva[]> {
-    // Obtiene el objeto completo del usuario actual desde AuthService
     const currentUser = this.authService.getCurrentUser();
-    const userId = currentUser ? currentUser.id : null; // Extrae el ID si el usuario existe
+    const userId = currentUser ? currentUser.id : null;
 
     if (!userId) {
-      // Si no hay ID de usuario (no logueado o ID no disponible), lanza un error.
-      // El componente HistorialReservasComponent lo capturará y mostrará un mensaje.
       return throwError(
         () =>
           new Error(
@@ -48,34 +75,53 @@ export class ReservaService {
       );
     }
 
-    // Construye la URL con el parámetro de consulta usuarioId
     const url = `${this.apiUrl}/?usuarioId=${userId}`;
-
-    // Envía la petición GET incluyendo los headers de autorización
-    // El interceptor AuthInterceptor también debería añadir el token automáticamente.
     return this.http
       .get<Reserva[]>(url, { headers: this.getAuthHeaders() })
-      .pipe(catchError(this.handleError));
+      .pipe(catchError(this.handleErrorHistorial));
   }
 
-  private handleError(error: HttpErrorResponse) {
+  // Manejador de errores para la creación de reservas
+  private handleErrorCrearReserva(error: HttpErrorResponse) {
+    let errorMessage = 'Ocurrió un error al intentar realizar la reserva.';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error de conexión: ${error.error.message}`;
+    } else {
+      console.error(
+        `Código de error del backend (crearReserva): ${error.status}, ` +
+          `Cuerpo: ${JSON.stringify(error.error)}`
+      );
+      if (error.status === 400 && error.error && error.error.error) {
+        errorMessage = error.error.error;
+      } else if (error.status === 401 || error.status === 403) {
+        errorMessage =
+          'No autorizado para realizar la reserva. Por favor, inicia sesión.';
+      } else if (error.error && error.error.message) {
+        errorMessage = error.error.message;
+      }
+    }
+    return throwError(() => new Error(errorMessage));
+  }
+
+  // Manejador de errores para el historial de reservas
+  private handleErrorHistorial(error: HttpErrorResponse) {
     let errorMessage =
       'Ocurrió un error desconocido al cargar el historial de reservas.';
     if (error.error instanceof ErrorEvent) {
-      errorMessage = `Error: ${error.error.message}`;
+      errorMessage = `Error de conexión: ${error.error.message}`;
     } else {
       console.error(
-        `Código de error del backend: ${error.status}, ` +
+        `Código de error del backend (historial): ${error.status}, ` +
           `Cuerpo: ${JSON.stringify(error.error)}`
       );
       if (error.status === 401 || error.status === 403) {
         errorMessage = 'No autorizado. Por favor, inicia sesión de nuevo.';
       } else if (error.error && error.error.error) {
-        errorMessage = error.error.error; // Mensaje de error del backend
+        errorMessage = error.error.error;
       } else if (error.error && error.error.message) {
         errorMessage = error.error.message;
       }
     }
-    return throwError(() => new Error(errorMessage)); // Propagar el error
+    return throwError(() => new Error(errorMessage));
   }
 }

@@ -20,7 +20,7 @@ import { UsuarioDashboardComponent } from './usuario/usuario.component';
 import { ModificarUsuarioComponent } from './usuario/modificar-usuario/modificar-usuario.component';
 import { authGuard } from './guards/auth.guard';
 import { EliminarCuentaPropiaComponent } from './usuario/eliminar-usuario/eliminar-usuario.component'; // <-- ¡NUEVO!
-
+import { RealizarReservaComponent } from './usuario/reservas/realizar-reservas/realizar-reserva.component';
 export const routes: Routes = [
   { path: '', component: PantallaInicioComponent }, // ← Inicio principal
   { path: 'login', component: LoginComponent },
@@ -39,6 +39,13 @@ export const routes: Routes = [
     component: HistorialReservasComponent,
     canActivate: [authGuard],
   },
+
+  {
+    path: 'realizar-reserva/:id',
+    component: RealizarReservaComponent,
+    canActivate: [authGuard],
+  },
+
   {
     path: 'user-dashboard',
     component: UsuarioDashboardComponent,

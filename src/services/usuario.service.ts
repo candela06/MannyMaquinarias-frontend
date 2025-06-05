@@ -13,7 +13,7 @@ import { User } from '../app/modles/user.model';
   providedIn: 'root',
 })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:3001/usuarios'; // Ejemplo de endpoint para usuarios
+  private apiUrl = 'http://localhost:3001';
 
   constructor(private http: HttpClient, private authService: AuthService) {}
 
@@ -30,7 +30,7 @@ export class UsuarioService {
   getPerfil(): Observable<any> {
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
-    return this.http.get<any>(`${this.apiUrl}/`, { headers });
+    return this.http.get<any>(`${this.apiUrl}/usuarios`, { headers });
   }
 
   /**
@@ -42,7 +42,7 @@ export class UsuarioService {
     // Asumo que el backend tiene un endpoint PUT /usuarios/perfil para actualizar el usuario logueado
     // y que requiere autenticación.
     return this.http
-      .put<any>(`${this.apiUrl}/update`, userData, {
+      .put<any>(`${this.apiUrl}/usuarios/update`, userData, {
         headers: this.getAuthHeaders(),
       })
       .pipe(catchError(this.handleError));
@@ -55,7 +55,7 @@ export class UsuarioService {
   getAllUsers(): Observable<User[]> {
     // Asumo que el backend tiene un endpoint GET /usuarios para listar todos los usuarios
     return this.http
-      .get<User[]>(this.apiUrl)
+      .delete<any>(`${this.apiUrl}`)
       .pipe(catchError(this.handleError));
   }
 
@@ -67,7 +67,7 @@ export class UsuarioService {
    */
   eliminarUsuario(email: string): Observable<any> {
     return this.http
-      .delete<any>(`${this.apiUrl}/eliminar/${email}`)
+      .delete<any>(`${this.apiUrl}/usuarios/eliminar/${email}`)
       .pipe(catchError(this.handleError));
   }
 
@@ -80,7 +80,7 @@ export class UsuarioService {
     // Asumo que el backend tiene un endpoint DELETE /usuarios/eliminar-propia
     // y que usa el token JWT para identificar al usuario.
     return this.http
-      .delete<any>(`${this.apiUrl}/eliminar-propia`, {
+      .delete<any>(`${this.apiUrl}usuarios/eliminar`, {
         headers: this.getAuthHeaders(),
       })
       .pipe(catchError(this.handleError));
