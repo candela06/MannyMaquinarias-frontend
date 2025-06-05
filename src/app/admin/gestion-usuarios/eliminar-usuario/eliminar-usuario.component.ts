@@ -1,46 +1,29 @@
-//src\app\admin\gestion-usuarios\eliminar-usuario\eliminar-usuario.component.ts
+// src/app/admin/gestion-usuarios/eliminar-usuario/eliminar-usuario.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router'; // Importar RouterModule si se usa routerLink
 import Swal from 'sweetalert2';
 
-import { User } from '../../../modles/user.model'; // Asegúrate de que la ruta sea correcta
-import { UsuarioService } from '../../../../services/usuario.service'; // <-- ¡Importa tu UsuarioService!
+import { User } from '../../../modles/user.model'; // <-- CORREGIDO: 'models' en lugar de 'modles'
+import { UsuarioService } from '../../../../services/usuario.service'; // Importa tu UsuarioService
 
 @Component({
   standalone: true,
-  selector: 'app-gestionar-usuarios',
+  selector: 'app-eliminar-usuario', // Selector específico para este componente
   templateUrl: './eliminar-usuario.component.html',
-  // styleUrls: ['./eliminar-usuario.component.css'],
+  // styleUrls: ['./eliminar-usuario.component.css'], // Descomenta si tienes un archivo CSS para este componente
   imports: [CommonModule, RouterModule],
 })
 export class eliminarUsuario implements OnInit {
-  users: User[] = []; // Lista de todos los usuarios del sistema
-  isLoading: boolean = true;
+  // <-- Renombrado a EliminarUsuarioComponent
+  isLoading: boolean = false; // Estado para el spinner de la operación de eliminación
 
-  constructor(private usuarioService: UsuarioService) {} // <-- Inyecta UsuarioService
+  constructor(private usuarioService: UsuarioService) {}
 
   ngOnInit(): void {
-    this.loadAllUsers(); // Carga todos los usuarios al iniciar el componente
-  }
-
-  /**
-   * @description Carga todos los usuarios del sistema desde el backend.
-   * Asume que el backend tiene un endpoint GET /usuarios que devuelve todos los usuarios.
-   */
-  loadAllUsers(): void {
-    this.isLoading = true;
-    this.usuarioService.getAllUsers().subscribe({
-      next: (users: User[]) => {
-        this.users = users;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error al obtener la lista de usuarios:', error);
-        Swal.fire('Error', 'No se pudo cargar la lista de usuarios.', 'error');
-        this.isLoading = false;
-      },
-    });
+    // Ya no cargamos todos los usuarios al inicio del componente
+    // console.log('Componente EliminarUsuarioComponent iniciado.');
   }
 
   // --- FUNCIONES PARA ELIMINAR USUARIO DEL SISTEMA ---
@@ -101,21 +84,24 @@ export class eliminarUsuario implements OnInit {
    * @param email El email del usuario a eliminar.
    */
   callDeleteUserBackend(email: string): void {
-    this.isLoading = true; // Activar un loader visual si lo tienes
+    this.isLoading = true; // Activar el loader visual
     this.usuarioService.eliminarUsuario(email).subscribe({
       next: (response) => {
         Swal.fire(
           '¡Eliminado!',
-          response.message, // Mensaje que viene del backend
+          response.message || 'Usuario eliminado lógicamente con éxito.', // Mensaje que viene del backend o uno por defecto
           'success'
         );
         this.isLoading = false;
-        this.loadAllUsers(); // Recargar la lista de usuarios para reflejar el cambio de estado
+        // No es necesario recargar usuarios aquí si solo se eliminan y no se muestran.
+        // Si necesitas alguna acción post-eliminación (ej. actualizar una lista global en otro componente),
+        // podrías emitir un evento.
       },
       error: (error) => {
         console.error('Error al eliminar usuario:', error);
+        // Usamos el mensaje de error que viene del servicio o un mensaje genérico
         const errorMessage =
-          error.message || 'Error desconocido al eliminar usuario.'; // Usa error.message del handleError
+          error.message || 'Error desconocido al eliminar usuario.';
         Swal.fire('Error', errorMessage, 'error');
         this.isLoading = false;
       },

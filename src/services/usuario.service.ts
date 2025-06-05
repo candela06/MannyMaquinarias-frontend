@@ -3,6 +3,7 @@ import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
+  HttpParams,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
@@ -52,10 +53,20 @@ export class UsuarioService {
    * @description Obtiene una lista de todos los usuarios del sistema.
    * @returns {Observable<User[]>} Un Observable que emite un array de usuarios.
    */
-  getAllUsers(): Observable<User[]> {
-    // Asumo que el backend tiene un endpoint GET /usuarios para listar todos los usuarios
+  /**
+   * @description Obtiene una lista de usuarios filtrados por rol.
+   * Si se envía un rol vacío, el backend debería devolver todos los usuarios.
+   * @param {string} role - El rol por el que filtrar. Puede ser una cadena vacía para todos los usuarios.
+   * @returns {Observable<User[]>} Un Observable que emite un array de usuarios.
+   */
+  getUsersByRole(role: string): Observable<User[]> {
+    let params = new HttpParams();
+    params = params.set('rol', role);
     return this.http
-      .delete<any>(`${this.apiUrl}`)
+      .get<User[]>(`${this.apiUrl}/rol`, {
+        headers: this.getAuthHeaders(),
+        params: params,
+      })
       .pipe(catchError(this.handleError));
   }
 
