@@ -30,7 +30,7 @@ export class UsuarioService {
   getPerfil(): Observable<any> {
     const token = this.authService.getToken();
     const headers = { Authorization: `Bearer ${token}` };
-    return this.http.get<any>(`${this.apiUrl}/profile`, { headers });
+    return this.http.get<any>(`${this.apiUrl}/`, { headers });
   }
 
   /**
@@ -42,7 +42,7 @@ export class UsuarioService {
     // Asumo que el backend tiene un endpoint PUT /usuarios/perfil para actualizar el usuario logueado
     // y que requiere autenticación.
     return this.http
-      .put<any>(`${this.apiUrl}/perfil`, userData, {
+      .put<any>(`${this.apiUrl}/update`, userData, {
         headers: this.getAuthHeaders(),
       })
       .pipe(catchError(this.handleError));

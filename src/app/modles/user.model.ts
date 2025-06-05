@@ -10,6 +10,7 @@ export interface User {
   nombreUsuario: string;
   dni: string;
   edad?: number;
+  direccion: string;
   rol_id: number;
   rol?: {
     id: number;
