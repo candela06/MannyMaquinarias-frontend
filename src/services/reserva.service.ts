@@ -16,7 +16,6 @@ export interface ReservaData {
   precio?: number;
   fecha_inicio: string; // Formato YYYY-MM-DD para compatibilidad con input type="date" y backend
   fecha_fin: string; // Formato YYYY-MM-DD
-  usuario_id: number; // <-- AÑADIDO: Incluimos usuario_id en la interfaz
   maquina_id: number;
 }
 

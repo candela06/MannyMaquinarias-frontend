@@ -10,11 +10,11 @@ import {
   tap,
   catchError,
   debounceTime,
-  distinctUntilChanged,
+  // distinctUntilChanged, // <-- COMENTADO/ELIMINADO TEMPORALMENTE PARA DEPURACIÓN
 } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
-import { Machinery, MachineryStatus } from '../../../modles/machinery.model'; // <-- RUTA CORREGIDA AQUÍ
+import { Machinery, MachineryStatus } from '../../../modles/machinery.model';
 import { MachineryService } from '../../../../services/machinery.service';
 import {
   ReservaService,
@@ -27,12 +27,12 @@ import { AuthService } from '../../../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './realizar-reserva.component.html',
-  // styleUrls: ['./reservar.component.css'], // Si tienes un archivo CSS para este componente, descomenta esta línea
+  // styleUrls: ['./reservar.component.css'],
 })
 export class RealizarReservaComponent implements OnInit {
   machineId: number | null = null;
   machinery: Machinery | undefined;
-  MachineryStatus = MachineryStatus; // Para usar en la plantilla
+  MachineryStatus = MachineryStatus;
 
   selectedStartDate: string = '';
   selectedEndDate: string = '';
@@ -138,10 +138,18 @@ export class RealizarReservaComponent implements OnInit {
     this.datesChangeSubject
       .pipe(
         debounceTime(300),
-        distinctUntilChanged(), // Asegura que solo se dispara si los valores cambiaron
+        // distinctUntilChanged(), // <-- COMENTADO/ELIMINADO TEMPORALMENTE PARA DEPURACIÓN
         tap(() => {
           console.log(
-            'onDatesChange (debounced): Fechas cambiaron, recalculando precio.'
+            'onDatesChange (debounced): Fechas cambiaron, disparando recálculo.'
+          );
+          console.log(
+            'onDatesChange (debounced): selectedStartDate (valor del input):',
+            this.selectedStartDate
+          );
+          console.log(
+            'onDatesChange (debounced): selectedEndDate (valor del input):',
+            this.selectedEndDate
           );
           this.calculatePrice();
         })
@@ -175,6 +183,8 @@ export class RealizarReservaComponent implements OnInit {
         start.toISOString()
       );
       console.log('calculatePrice: Fecha fin (Date obj):', end.toISOString());
+      console.log('calculatePrice: start.toString():', start.toString()); // <-- Añadido: Formato de cadena completa
+      console.log('calculatePrice: end.toString():', end.toString()); // <-- Añadido: Formato de cadena completa
 
       // Validar que las fechas sean válidas y que la fecha de inicio no sea posterior a la de fin
       if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
@@ -182,8 +192,25 @@ export class RealizarReservaComponent implements OnInit {
         console.warn(
           'calculatePrice: Fechas inválidas (NaN) o fecha de inicio es posterior a la fecha de fin. Precio = 0.'
         );
-        // CORRECCIÓN: No se asigna directamente a isReservationButtonDisabled aquí.
-        // El getter lo evaluará en cada ciclo de detección de cambios.
+        return;
+      }
+
+      // Obtener el precio base de la máquina y validarlo
+      console.log(
+        'calculatePrice: Raw machinery.precio:',
+        this.machinery.precio
+      );
+      const basePrice = parseFloat(this.machinery.precio.toString());
+      console.log(
+        'calculatePrice: Precio base de la máquina (parseFloat):',
+        basePrice
+      );
+
+      if (isNaN(basePrice) || basePrice <= 0) {
+        this.calculatedPrice = 0;
+        console.warn(
+          'calculatePrice: Precio base de la máquina inválido (NaN o <= 0). Precio = 0.'
+        );
         return;
       }
 
@@ -193,26 +220,25 @@ export class RealizarReservaComponent implements OnInit {
       console.log('calculatePrice: Diferencia de tiempo (ms):', diffTime);
       console.log('calculatePrice: Días de alquiler (diffDays):', diffDays);
 
-      // Aseguramos que machinery.precio es un número flotante antes de la multiplicación
-      // Usamos parseFloat y toFixed para controlar la precisión
-      const basePrice = parseFloat(this.machinery.precio.toString());
-      console.log(
-        'calculatePrice: Precio base de la máquina (parseFloat):',
-        basePrice
-      );
+      if (diffDays <= 0) {
+        this.calculatedPrice = 0;
+        console.warn(
+          'calculatePrice: Días de alquiler no válidos (<=0). Precio = 0.'
+        );
+        return;
+      }
 
-      this.calculatedPrice = parseFloat((basePrice * diffDays).toFixed(2)); // Redondea a 2 decimales
+      this.calculatedPrice = parseFloat((basePrice * diffDays).toFixed(2));
       console.log(
         'calculatePrice: Precio calculado FINAL:',
         this.calculatedPrice
       );
     } else {
-      this.calculatedPrice = 0; // Si falta alguna fecha o la máquina, el precio es 0
+      this.calculatedPrice = 0;
       console.log(
         'calculatePrice: Faltan datos para calcular el precio (máquina o fechas). Precio = 0.'
       );
     }
-    // Después de cualquier cálculo, aseguramos que el getter se evalúe de nuevo.
     console.log(
       'calculatePrice: isReservationButtonDisabled final state (después de cálculo):',
       this.isReservationButtonDisabled
@@ -223,20 +249,19 @@ export class RealizarReservaComponent implements OnInit {
     console.log(
       'onDatesChange: Cambio en fechas detectado. Disparando recálculo.'
     );
+    // Los valores de selectedStartDate y selectedEndDate ya están actualizados por [(ngModel)]
     this.datesChangeSubject.next();
   }
 
   getMinStartDate(): string {
     const today = new Date();
-    today.setDate(today.getDate() + 1); // Empieza desde mañana
+    today.setDate(today.getDate() + 1);
     const formattedDate = today.toISOString().split('T')[0];
     console.log('getMinStartDate: Retornando:', formattedDate);
     return formattedDate;
   }
 
   getMinEndDate(): string {
-    // La fecha de fin no puede ser anterior a la de inicio.
-    // Si selectedStartDate no está definida, usa la fecha mínima de inicio.
     const minEndDate = this.selectedStartDate || this.getMinStartDate();
     console.log('getMinEndDate: Retornando:', minEndDate);
     return minEndDate;
@@ -250,41 +275,30 @@ export class RealizarReservaComponent implements OnInit {
     let isDisabled = false;
     let reason = '';
 
-    // 1. Si la máquina se está cargando
     if (this.isLoadingMachine) {
       isDisabled = true;
       reason = 'Cargando máquina...';
-    }
-    // 2. Si la máquina no se ha encontrado o no está definida
-    else if (!this.machinery) {
+    } else if (!this.machinery) {
       isDisabled = true;
       reason = 'Máquina no encontrada.';
-    }
-    // 3. Si la máquina no está disponible para alquiler
-    else if (this.machinery.estado !== MachineryStatus.DISPONIBLE) {
+    } else if (this.machinery.estado !== MachineryStatus.DISPONIBLE) {
       isDisabled = true;
       reason = `Máquina no disponible (${this.machinery.estado}).`;
-    }
-    // 4. Si la reserva ya está en proceso
-    else if (this.isMakingReservation) {
+    } else if (this.isMakingReservation) {
       isDisabled = true;
       reason = 'Realizando reserva...';
-    }
-    // 5. Si las fechas no están seleccionadas o el precio calculado es cero o negativo
-    else if (
+    } else if (
       !this.selectedStartDate ||
       !this.selectedEndDate ||
-      this.calculatedPrice <= 0 // Este es el punto que se ve afectado si calculatePrice devuelve 0
+      this.calculatedPrice <= 0
     ) {
       isDisabled = true;
       reason = 'Fechas no seleccionadas o precio no calculado (>0).';
-    }
-    // 6. Si las fechas son inválidas (fecha de inicio en el pasado o inicio > fin)
-    else {
+    } else {
       const start = new Date(this.selectedStartDate);
       const end = new Date(this.selectedEndDate);
       const today = new Date();
-      today.setHours(0, 0, 0, 0); // Para comparar solo la fecha
+      today.setHours(0, 0, 0, 0);
 
       console.log('isReservationButtonDisabled Getter: Comparando fechas:');
       console.log('  start (parsed):', start.toISOString());
@@ -295,11 +309,9 @@ export class RealizarReservaComponent implements OnInit {
         isDisabled = true;
         reason = 'Fechas seleccionadas no son válidas.';
       } else if (start < today) {
-        // Re-verifica que la fecha de inicio no esté en el pasado
         isDisabled = true;
         reason = 'La fecha de inicio no puede ser en el pasado.';
       } else if (start > end) {
-        // Re-verifica que la fecha de inicio no sea posterior a la de fin
         isDisabled = true;
         reason =
           'La fecha de fin debe ser posterior o igual a la fecha de inicio.';
@@ -316,7 +328,6 @@ export class RealizarReservaComponent implements OnInit {
   }
 
   makeReservation(): void {
-    // Usar el getter para verificar si el botón está deshabilitado
     if (this.isReservationButtonDisabled) {
       console.warn(
         'makeReservation: Botón deshabilitado, no se puede proceder con la reserva. Razón:',
@@ -330,7 +341,6 @@ export class RealizarReservaComponent implements OnInit {
       return;
     }
 
-    // Obtener el ID del usuario logueado
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser || !currentUser.id) {
       Swal.fire(
@@ -341,7 +351,7 @@ export class RealizarReservaComponent implements OnInit {
       console.error('makeReservation: Usuario no logueado o ID no disponible.');
       return;
     }
-    const usuarioId = currentUser.id; // <-- Obtenemos el ID del usuario como un number
+    const usuarioId = currentUser.id;
 
     this.isMakingReservation = true;
     console.log('makeReservation: Iniciando proceso de reserva...');
@@ -350,8 +360,7 @@ export class RealizarReservaComponent implements OnInit {
       precio: this.calculatedPrice,
       fecha_inicio: this.selectedStartDate,
       fecha_fin: this.selectedEndDate,
-      usuario_id: usuarioId, // <-- Ahora enviamos el ID numérico
-      maquina_id: this.machineId!, // ! para asegurar que no es null en este punto
+      maquina_id: this.machineId!,
     };
     console.log('makeReservation: Datos de reserva a enviar:', reservaData);
 
@@ -367,7 +376,7 @@ export class RealizarReservaComponent implements OnInit {
             }.`,
           'success'
         ).then(() => {
-          this.router.navigate(['/catalogo']); // Redirige al catálogo
+          this.router.navigate(['/catalogo']);
         });
       },
       error: (error) => {
@@ -378,7 +387,7 @@ export class RealizarReservaComponent implements OnInit {
         if (error.message) {
           errorMessage = error.message;
         } else if (error.error && error.error.error) {
-          errorMessage = error.error.error; // <-- Muestra el mensaje específico del backend
+          errorMessage = error.error.error;
         }
         Swal.fire('Error', errorMessage, 'error');
       },
