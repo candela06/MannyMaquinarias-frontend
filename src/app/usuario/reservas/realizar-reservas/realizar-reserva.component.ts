@@ -10,11 +10,11 @@ import {
   tap,
   catchError,
   debounceTime,
-  distinctUntilChanged, // <-- Asegúrate de que esto esté importado
+  distinctUntilChanged,
 } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
-import { Machinery, MachineryStatus } from '../../../modles/machinery.model'; // <-- CORREGIDO: 'models' en lugar de 'modles'
+import { Machinery, MachineryStatus } from '../../../modles/machinery.model'; // <-- RUTA CORREGIDA AQUÍ
 import { MachineryService } from '../../../../services/machinery.service';
 import {
   ReservaService,
@@ -39,9 +39,6 @@ export class RealizarReservaComponent implements OnInit {
   calculatedPrice: number = 0;
   isMakingReservation: boolean = false;
   isLoadingMachine: boolean = true;
-
-  // No inicializamos isReservationButtonDisabled aquí como una propiedad,
-  // sino que usamos el getter de abajo para su estado dinámico.
 
   private datesChangeSubject = new Subject<void>();
 
@@ -141,7 +138,7 @@ export class RealizarReservaComponent implements OnInit {
     this.datesChangeSubject
       .pipe(
         debounceTime(300),
-        distinctUntilChanged(), // <-- Asegúrate de que esto esté aquí para evitar recálculos innecesarios
+        distinctUntilChanged(), // Asegura que solo se dispara si los valores cambiaron
         tap(() => {
           console.log(
             'onDatesChange (debounced): Fechas cambiaron, recalculando precio.'
@@ -157,20 +154,69 @@ export class RealizarReservaComponent implements OnInit {
    * y el precio diario de la máquina.
    */
   calculatePrice(): void {
+    console.log('calculatePrice: Iniciando cálculo de precio...');
+    console.log('calculatePrice: machinery:', this.machinery);
+    console.log(
+      'calculatePrice: selectedStartDate (string):',
+      this.selectedStartDate
+    );
+    console.log(
+      'calculatePrice: selectedEndDate (string):',
+      this.selectedEndDate
+    );
+
+    // Aseguramos que machinery y las fechas están presentes
     if (this.machinery && this.selectedStartDate && this.selectedEndDate) {
       const start = new Date(this.selectedStartDate);
       const end = new Date(this.selectedEndDate);
 
-      if (start > end) {
+      console.log(
+        'calculatePrice: Fecha inicio (Date obj):',
+        start.toISOString()
+      );
+      console.log('calculatePrice: Fecha fin (Date obj):', end.toISOString());
+
+      // Validar que las fechas sean válidas y que la fecha de inicio no sea posterior a la de fin
+      if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
         this.calculatedPrice = 0;
-        this.isReservationButtonDisabled;
+        console.warn(
+          'calculatePrice: Fechas inválidas (NaN) o fecha de inicio es posterior a la fecha de fin. Precio = 0.'
+        );
+        // CORRECCIÓN: No se asigna directamente a isReservationButtonDisabled aquí.
+        // El getter lo evaluará en cada ciclo de detección de cambios.
         return;
       }
 
-      const diffTime = end.getTime() - start.getTime();
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      // +1 para incluir el día de inicio en el conteo de días de alquiler
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      this.calculatedPrice = diffDays * this.machinery.precio;
+      console.log('calculatePrice: Diferencia de tiempo (ms):', diffTime);
+      console.log('calculatePrice: Días de alquiler (diffDays):', diffDays);
+
+      // Aseguramos que machinery.precio es un número flotante antes de la multiplicación
+      // Usamos parseFloat y toFixed para controlar la precisión
+      const basePrice = parseFloat(this.machinery.precio.toString());
+      console.log(
+        'calculatePrice: Precio base de la máquina (parseFloat):',
+        basePrice
+      );
+
+      this.calculatedPrice = parseFloat((basePrice * diffDays).toFixed(2)); // Redondea a 2 decimales
+      console.log(
+        'calculatePrice: Precio calculado FINAL:',
+        this.calculatedPrice
+      );
+    } else {
+      this.calculatedPrice = 0; // Si falta alguna fecha o la máquina, el precio es 0
+      console.log(
+        'calculatePrice: Faltan datos para calcular el precio (máquina o fechas). Precio = 0.'
+      );
     }
+    // Después de cualquier cálculo, aseguramos que el getter se evalúe de nuevo.
+    console.log(
+      'calculatePrice: isReservationButtonDisabled final state (después de cálculo):',
+      this.isReservationButtonDisabled
+    );
   }
 
   onDatesChange(): void {
@@ -183,19 +229,22 @@ export class RealizarReservaComponent implements OnInit {
   getMinStartDate(): string {
     const today = new Date();
     today.setDate(today.getDate() + 1); // Empieza desde mañana
-    return today.toISOString().split('T')[0];
+    const formattedDate = today.toISOString().split('T')[0];
+    console.log('getMinStartDate: Retornando:', formattedDate);
+    return formattedDate;
   }
 
   getMinEndDate(): string {
     // La fecha de fin no puede ser anterior a la de inicio.
     // Si selectedStartDate no está definida, usa la fecha mínima de inicio.
-    return this.selectedStartDate || this.getMinStartDate();
+    const minEndDate = this.selectedStartDate || this.getMinStartDate();
+    console.log('getMinEndDate: Retornando:', minEndDate);
+    return minEndDate;
   }
 
   /**
    * @description Getter para determinar si el botón de reserva debe estar deshabilitado.
    * Esto centraliza la lógica para habilitar/deshabilitar el botón en el HTML.
-   * IMPORTANTE: No inicializar como propiedad, sino como getter.
    */
   get isReservationButtonDisabled(): boolean {
     let isDisabled = false;
@@ -225,7 +274,7 @@ export class RealizarReservaComponent implements OnInit {
     else if (
       !this.selectedStartDate ||
       !this.selectedEndDate ||
-      this.calculatedPrice <= 0
+      this.calculatedPrice <= 0 // Este es el punto que se ve afectado si calculatePrice devuelve 0
     ) {
       isDisabled = true;
       reason = 'Fechas no seleccionadas o precio no calculado (>0).';
@@ -237,10 +286,20 @@ export class RealizarReservaComponent implements OnInit {
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Para comparar solo la fecha
 
-      if (start < today) {
+      console.log('isReservationButtonDisabled Getter: Comparando fechas:');
+      console.log('  start (parsed):', start.toISOString());
+      console.log('  end (parsed):', end.toISOString());
+      console.log('  today (midnight):', today.toISOString());
+
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        isDisabled = true;
+        reason = 'Fechas seleccionadas no son válidas.';
+      } else if (start < today) {
+        // Re-verifica que la fecha de inicio no esté en el pasado
         isDisabled = true;
         reason = 'La fecha de inicio no puede ser en el pasado.';
       } else if (start > end) {
+        // Re-verifica que la fecha de inicio no sea posterior a la de fin
         isDisabled = true;
         reason =
           'La fecha de fin debe ser posterior o igual a la fecha de inicio.';
@@ -248,7 +307,7 @@ export class RealizarReservaComponent implements OnInit {
     }
 
     console.log(
-      'isReservationButtonDisabled Getter: Estado:',
+      'isReservationButtonDisabled Getter: Estado FINAL:',
       isDisabled,
       'Razón:',
       reason
@@ -291,7 +350,7 @@ export class RealizarReservaComponent implements OnInit {
       precio: this.calculatedPrice,
       fecha_inicio: this.selectedStartDate,
       fecha_fin: this.selectedEndDate,
-      usuario_id: usuarioId, // <-- CORREGIDO: Ahora enviamos el ID numérico
+      usuario_id: usuarioId, // <-- Ahora enviamos el ID numérico
       maquina_id: this.machineId!, // ! para asegurar que no es null en este punto
     };
     console.log('makeReservation: Datos de reserva a enviar:', reservaData);
@@ -308,7 +367,7 @@ export class RealizarReservaComponent implements OnInit {
             }.`,
           'success'
         ).then(() => {
-          this.router.navigate(['/catalogo']); // <-- Redirige al catálogo, como se solicitó
+          this.router.navigate(['/catalogo']); // Redirige al catálogo
         });
       },
       error: (error) => {
