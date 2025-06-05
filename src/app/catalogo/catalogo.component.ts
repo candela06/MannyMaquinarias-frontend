@@ -39,7 +39,7 @@ export class CatalogoComponent implements OnInit {
   activeFilters: ActiveFilters = {
     tipo: [], // Inicialmente sin tipos seleccionados
     ubicacion: [], // Inicialmente sin ubicaciones seleccionadas
-    maxPrice: 2000000, // Valor máximo por defecto para el slider de precio
+    maxPrice: 100000, // Valor máximo por defecto para el slider de precio
     startDate: null, // Fecha de inicio de alquiler no seleccionada
     endDate: null, // Fecha de fin de alquiler no seleccionada
     searchTerm: null, // Término de búsqueda vacío

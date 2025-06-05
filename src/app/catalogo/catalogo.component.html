@@ -62,8 +62,8 @@
       <input
         type="range"
         min="0"
-        max="2000000"
-        (ngModel)="(activeFilters.maxPrice)"
+        max="100000"
+        [(ngModel)]="activeFilters.maxPrice"
         (input)="onPriceRangeChange()"
         class="price-range-slider"
       />
@@ -79,14 +79,14 @@
         <input
           type="date"
           id="startDate"
-          (ngModel)="(activeFilters.startDate)"
+          [(ngModel)]="activeFilters.startDate"
           (change)="onDateChange()"
         />
         <label for="endDate">Hasta:</label>
         <input
           type="date"
           id="endDate"
-          (ngModel)="(activeFilters.endDate)"
+          [(ngModel)]="activeFilters.endDate"
           (change)="onDateChange()"
         />
       </div>
