@@ -89,6 +89,18 @@ export class MachineryService {
   }
 
   /**
+   * @description Envía una petición DELETE al backend para eliminar lógicamente una máquina por su ID.
+   * @param id El ID de la máquina a eliminar.
+   * @returns Un Observable con la respuesta del backend.
+   */
+  eliminarMaquina(id: number): Observable<any> {
+    // La URL debe incluir el ID de la máquina como parte de la ruta
+    return this.http
+      .delete<any>(`${this._apiUrl}/maquinas/delete/${id}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  /**
    * @description Actualiza la información de una máquina existente en el backend.
    * @param {number} id - El ID de la máquina a actualizar.
    * @param {FormData} maquinaData - Objeto FormData que contiene los datos actualizados de la máquina
