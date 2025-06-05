@@ -12,6 +12,6 @@ export class PolicyService {
 
   // Asumimos un endpoint como /politicas_cancelacion que devuelve la lista
   getPolicies(): Observable<Policy[]> {
-    return this.http.get<Policy[]>(`${this.apiUrl}/politicas_cancelacion`);
+    return this.http.get<Policy[]>(`${this.apiUrl}/politicasCancelacion`);
   }
 }

@@ -13,7 +13,7 @@ import Swal from 'sweetalert2'; // Para mensajes de error/éxito
   standalone: true,
   selector: 'app-historial-reservas',
   templateUrl: './historial-reservas.component.html',
-  // styleUrls: ['./historial-reservas.component.css'],
+  //styleUrls: ['./historial-reservas.component.css'],
   imports: [
     CommonModule,
     RouterLink, // Necesario para el botón de "Volver al Catálogo"
@@ -38,26 +38,30 @@ export class HistorialReservasComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = undefined; // Limpiar cualquier mensaje de error previo
 
-    this.reservas$ = this.reservaService.getHistorialReservas().pipe(
-      tap((reservas) => {
-        this.isLoading = false;
-        if (reservas.length === 0) {
-          this.errorMessage =
-            'Actualmente no cuentas con reservas registradas.';
-        }
-      }),
-      catchError((error) => {
-        console.error('Error al cargar el historial de reservas:', error);
-        this.isLoading = false;
-        this.errorMessage =
-          error.message ||
-          'No se pudo cargar tu historial de reservas. Por favor, inténtalo de nuevo más tarde.';
-        Swal.fire('Error', this.errorMessage, 'error'); // Mostrar un SweetAlert con el error
-        return of([]); // Devuelve un observable de array vacío en caso de error
-      })
-    );
+    this.reservaService
+      .getHistorialReservas()
+      .pipe(
+        // Cambiado a llamar directamente al servicio
+        tap((reservas) => {
+          this.isLoading = false;
+          if (reservas.length === 0) {
+            this.errorMessage =
+              'Actualmente no cuentas con reservas registradas.';
+          }
+          // Asignar las reservas al observable reservasList que se usa en el HTML
+          this.reservas$ = of(reservas); // Vuelve a asignar el observable
+        }),
+        catchError((error) => {
+          console.error('Error al cargar el historial de reservas:', error);
+          this.isLoading = false;
+          const msg =
+            error.message ||
+            'No se pudo cargar tu historial de reservas. Por favor, inténtalo de nuevo más tarde.';
+          this.errorMessage = msg;
+          Swal.fire('Error', msg, 'error');
+          return of([]); // Devuelve un observable de array vacío en caso de error
+        })
+      )
+      .subscribe(); // <-- ¡AÑADIDO: Suscríbete para ejecutar la petición!
   }
-
-  // Se elimina el método getBadgeClass ya que la propiedad 'estado' no está en el modelo simplificado.
-  // Si en el futuro el backend proporciona el estado de alguna otra forma, se podría reintroducir.
 }

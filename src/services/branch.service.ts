@@ -10,7 +10,7 @@ import { Branch } from '../app/modles/branch.model'; // Asegúrate de que la rut
 export class BranchService {
   // **¡IMPORTANTE!** Reemplaza 'http://localhost:3000/api' con la URL base de tu backend.
   // Si tus endpoints son /api/sucursales, entonces la base es /api.
-  private apiUrl = 'http://localhost:3000/api'; // Ejemplo: Cambia esto a la URL de tu API
+  private apiUrl = 'http://localhost:3001'; // Ejemplo: Cambia esto a la URL de tu API
 
   constructor(private http: HttpClient) {}
 
