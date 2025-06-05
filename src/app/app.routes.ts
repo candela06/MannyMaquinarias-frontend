@@ -21,6 +21,7 @@ import { ModificarUsuarioComponent } from './usuario/modificar-usuario/modificar
 import { authGuard } from './guards/auth.guard';
 import { EliminarCuentaPropiaComponent } from './usuario/eliminar-usuario/eliminar-usuario.component'; // <-- ¡NUEVO!
 import { RealizarReservaComponent } from './usuario/reservas/realizar-reservas/realizar-reserva.component';
+import { EliminarMaquinaComponent } from './admin/gestion-maquinas/eliminar-maquina/eliminar-maquina.component';
 export const routes: Routes = [
   { path: '', component: PantallaInicioComponent }, // ← Inicio principal
   { path: 'login', component: LoginComponent },
@@ -76,6 +77,13 @@ export const routes: Routes = [
     component: ModificarMaquinaComponent,
     canActivate: [adminGuard],
   },
+
+  {
+    path: 'admin/maquinas/eliminar',
+    component: EliminarMaquinaComponent,
+    canActivate: [adminGuard],
+  },
+
   {
     path: 'admin/usuarios/gestion',
     component: GestionarUsuariosComponent,
