@@ -21,7 +21,6 @@ import { authGuard } from './guards/auth.guard';
 import { EliminarCuentaPropiaComponent } from './usuario/eliminar-usuario/eliminar-usuario.component'; // <-- ¡NUEVO!
 import { RealizarReservaComponent } from './usuario/reservas/realizar-reservas/realizar-reserva.component';
 import { EliminarMaquinaComponent } from './admin/gestion-maquinas/eliminar-maquina/eliminar-maquina.component';
-import { AsignarRolComponent } from './admin/gestion-usuarios/asignar-rol/asignar-rol.component';
 import { EstadisticasComponent } from './admin/estadisticas/estadisticas.component';
 
 export const routes: Routes = [
@@ -96,12 +95,6 @@ export const routes: Routes = [
     component: ListaNegraComponent,
     canActivate: [adminGuard],
   }, // Ruta para ver la lista negra
-
-  {
-    path: 'admin/usuarios/asignar-rol',
-    component: AsignarRolComponent,
-    canActivate: [adminGuard],
-  },
 
   {
     path: 'admin/estadisticas',
