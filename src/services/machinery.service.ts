@@ -1,6 +1,10 @@
 // src/app/services/machinery.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpParams,
+} from '@angular/common/http';
 import { Observable, BehaviorSubject, of, throwError, from } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { Machinery, MachineryStatus } from '../app/modles/machinery.model';
@@ -177,17 +181,19 @@ export class MachineryService {
         ),
       ])
     );
-    // Si el backend NO incluye sucursal, esto devolverá un array vacío o un error.
-    // En ese caso se deben obtener las sucursales de otro endpoint (`/sucursales`)
-    // o hardcodear algunas ubicaciones si es temporal.
   }
 
-  // addMachinery(newMachine: Partial<Machinery>): Observable<Machinery> {
-  //   return this.http.post<Machinery>(this._apiUrl, newMachine).pipe(
-  //     tap(addedMachine => {
-  //       const current = this.machineriesSubject.getValue();
-  //       this.machineriesSubject.next([...current, addedMachine]);
-  //     })
-  //   );
-  // }
+  getFilteredMachineriesByDateAndPrice(
+    startDate: string | null,
+    endDate: string | null,
+    maxPrice: number | null
+  ): Observable<Machinery[]> {
+    let params: any = {};
+
+    if (startDate) params.fechaInicio = startDate; // Cambiado a fechaInicio
+    if (endDate) params.fechaFin = endDate; // Cambiado a fechaFin
+    if (maxPrice !== null) params.precioMax = maxPrice;
+
+    return this.http.get<Machinery[]>(`${this._apiUrl}/maquinas`, { params });
+  }
 }

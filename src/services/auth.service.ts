@@ -241,7 +241,6 @@ export class AuthService {
   get isAdmin(): boolean {
     const currentUser = this.getCurrentUser();
     const isUserAdmin = !!currentUser && currentUser.rol_nombre === 'admin';
-    console.log('AuthService: isAdmin check', { currentUser, isUserAdmin });
 
     return isUserAdmin;
   }

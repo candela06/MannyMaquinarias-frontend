@@ -26,7 +26,8 @@ interface ActiveFilters {
   styleUrls: ['./catalogo.component.css'],
 })
 export class CatalogoComponent implements OnInit {
-  // Observables para las listas de maquinarias y opciones de filtro
+  readonly MAX_PRICE_DEFAULT = 2000000;
+
   machineries$: Observable<Machinery[]> = of([]); // Todas las maquinarias disponibles (no borradas)
   filteredMachineries$: Observable<Machinery[]> = of([]); // Maquinarias después de aplicar filtros
   machineryTypes$: Observable<string[]> = of([]); // Tipos de maquinaria únicos
@@ -39,7 +40,7 @@ export class CatalogoComponent implements OnInit {
   activeFilters: ActiveFilters = {
     tipo: [], // Inicialmente sin tipos seleccionados
     ubicacion: [], // Inicialmente sin ubicaciones seleccionadas
-    maxPrice: 100000, // Valor máximo por defecto para el slider de precio
+    maxPrice: this.MAX_PRICE_DEFAULT, // Valor máximo por defecto para el slider de precio
     startDate: null, // Fecha de inicio de alquiler no seleccionada
     endDate: null, // Fecha de fin de alquiler no seleccionada
     searchTerm: null, // Término de búsqueda vacío
@@ -164,30 +165,34 @@ export class CatalogoComponent implements OnInit {
    * Este método se llama cada vez que un filtro cambia para re-evaluar la lista `filteredMachineries$`.
    */
   private updateFilteredMachineries(): void {
-    // `combineLatest` se suscribe a `machineries$` (los datos base)
-    // y a un observable que "dispara" cuando los filtros cambian.
-    // Como `activeFilters` no es un BehaviorSubject, la forma de "disparar"
-    // es re-evaluar la cadena de Observables desde `machineries$`.
-    this.filteredMachineries$ = combineLatest([
-      this.machineries$, // Observable de todas las maquinarias disponibles
-      // Puedes añadir un observable dummy aquí si necesitas que combineLatest reaccione
-      // a cambios en `activeFilters` sin que `machineries$` emita.
-      // Por ejemplo, `of(this.activeFilters)` o un `BehaviorSubject<ActiveFilters>`
-      // que se actualice en cada `onFilterChange` etc.
-      // Para esta estructura, la lógica de filtrado se aplica en el `map`
-      // cada vez que `machineries$` emite, o cuando `updateFilteredMachineries` es llamado.
-    ]).pipe(
-      map(([allMachineries]) => {
+    const { startDate, endDate, maxPrice } = this.activeFilters;
+    const usarFiltradoBackend =
+      !!startDate || maxPrice !== this.MAX_PRICE_DEFAULT;
+
+    let baseMachineries$: Observable<Machinery[]>;
+
+    if (usarFiltradoBackend) {
+      baseMachineries$ =
+        this.machineryService.getFilteredMachineriesByDateAndPrice(
+          startDate,
+          endDate,
+          maxPrice
+        );
+    } else {
+      baseMachineries$ = this.machineryService.getAvailableMachineries();
+    }
+
+    this.filteredMachineries$ = baseMachineries$.pipe(
+      map((allMachineries) => {
         let filtered = allMachineries;
 
-        // 1. Filtrar por tipo (coincide con 'nombre' del backend)
+        // Filtros de tipo, ubicación y búsqueda en frontend
         if (this.activeFilters.tipo.length > 0) {
           filtered = filtered.filter((m) =>
             this.activeFilters.tipo.includes(m.nombre)
           );
         }
 
-        // 2. Filtrar por localidad (coincide con 'sucursal.nombre' del backend)
         if (this.activeFilters.ubicacion.length > 0) {
           filtered = filtered.filter(
             (m) =>
@@ -196,47 +201,6 @@ export class CatalogoComponent implements OnInit {
           );
         }
 
-        // 3. Filtrar por precio máximo (coincide con 'precio' del backend)
-        if (this.activeFilters.maxPrice !== 2000000) {
-          // Si el slider no está en el máximo por defecto
-          filtered = filtered.filter(
-            (m) => m.precio <= this.activeFilters.maxPrice
-          );
-        }
-
-        // 4. Filtrar por fechas (lógica de disponibilidad basada en 'estado' y 'nextAvailableDate')
-        // Esta lógica es más compleja y depende de cómo el backend maneje la disponibilidad.
-        // Aquí se asume una lógica simple: si la máquina está disponible, se muestra.
-        // Si está reservada, se muestra si su próxima fecha disponible es antes del rango de búsqueda.
-        if (this.activeFilters.startDate && this.activeFilters.endDate) {
-          const start = new Date(this.activeFilters.startDate);
-          const end = new Date(this.activeFilters.endDate);
-
-          filtered = filtered.filter((m) => {
-            // Si la máquina está disponible, siempre la incluimos (está lista para alquilar)
-            if (m.estado === MachineryStatus.DISPONIBLE) {
-              return true;
-            }
-            // Si la máquina está entregada o en checkeo (considerado 'reservado' en frontend)
-            // y tiene una próxima fecha disponible (si el backend la provee)
-            if (
-              (m.estado === MachineryStatus.ENTREGADO ||
-                m.estado === MachineryStatus.CHECKEO) &&
-              m.nextAvailableDate
-            ) {
-              const machineAvailableDate = new Date(m.nextAvailableDate);
-              // Solo se incluye si la máquina estará disponible ANTES o EN la fecha de inicio del filtro
-              return machineAvailableDate <= start;
-            }
-            // Si está en mantenimiento, no está disponible
-            if (m.estado === MachineryStatus.EN_MANTENIMIENTO) {
-              return false;
-            }
-            return false; // Por defecto, no se incluye
-          });
-        }
-
-        // 5. Filtrar por término de búsqueda (coincide con 'marca', 'modelo', 'nombre' del backend)
         if (this.activeFilters.searchTerm) {
           const searchTerm = this.activeFilters.searchTerm.toLowerCase();
           filtered = filtered.filter(
@@ -249,7 +213,28 @@ export class CatalogoComponent implements OnInit {
 
         return filtered;
       }),
-      startWith([]) // Emite un array vacío al inicio, antes de que los datos se carguen
+      startWith([])
     );
+  }
+
+  // Devuelve true si hay filtros activos
+  hasActiveFilters(): boolean {
+    const f = this.activeFilters;
+    return (
+      f.tipo.length > 0 ||
+      f.ubicacion.length > 0 ||
+      f.maxPrice !== 2000000 ||
+      f.startDate !== null ||
+      f.endDate !== null ||
+      !!f.searchTerm
+    );
+  }
+
+  // Elimina un valor individual (tipo o ubicación)
+  removeFilterValue(filterKey: 'tipo' | 'ubicacion', value: string): void {
+    this.activeFilters[filterKey] = this.activeFilters[filterKey].filter(
+      (v) => v !== value
+    );
+    this.updateFilteredMachineries();
   }
 }

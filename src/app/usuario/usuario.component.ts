@@ -9,7 +9,7 @@ import { RouterModule } from '@angular/router'; // Necesario para routerLink
  */
 @Component({
   standalone: true,
-  selector: 'app-admin-dashboard',
+  selector: 'app-user-dashboard',
   templateUrl: './usuario.component.html',
   //styleUrls: ['./usuario.component.css'],
   imports: [CommonModule, RouterModule], // Importar RouterModule

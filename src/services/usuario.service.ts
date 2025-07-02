@@ -6,7 +6,7 @@ import {
   HttpParams,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 // Importa el Auth service si necesitas el token para las llamadas a la API de usuario
 import { AuthService } from '../services/auth.service';
 import { User } from '../app/modles/user.model';
@@ -63,7 +63,7 @@ export class UsuarioService {
     let params = new HttpParams();
     params = params.set('rol', role);
     return this.http
-      .get<User[]>(`${this.apiUrl}/rol`, {
+      .get<User[]>(`${this.apiUrl}/usuarios/rol`, {
         headers: this.getAuthHeaders(),
         params: params,
       })
@@ -88,10 +88,8 @@ export class UsuarioService {
    * @returns {Observable<any>} Un Observable que emite la respuesta del backend.
    */
   eliminarCuentaPropia(): Observable<any> {
-    // Asumo que el backend tiene un endpoint DELETE /usuarios/eliminar-propia
-    // y que usa el token JWT para identificar al usuario.
     return this.http
-      .delete<any>(`${this.apiUrl}usuarios/eliminar`, {
+      .delete<any>(`${this.apiUrl}/usuarios/eliminar`, {
         headers: this.getAuthHeaders(),
       })
       .pipe(catchError(this.handleError));
@@ -115,5 +113,33 @@ export class UsuarioService {
       }
     }
     return throwError(() => new Error(errorMessage));
+  }
+
+  addBlacklistedUser(email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/listaNegra/${email}`, {});
+  }
+
+  getBlacklistedUsers(): Observable<User[]> {
+    return this.http
+      .get<{ usuarios: User[] }>(`${this.apiUrl}/listaNegra/`)
+      .pipe(map((response) => response.usuarios));
+  }
+
+  registrarEmpleado(data: {
+    username: string;
+    email: string;
+    password: string;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/register`, data);
+  }
+
+  asignarRolEmpleado(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/usuarios/empleado`, { email });
+  }
+
+  getUsuariosPorMes(
+    anio: number
+  ): Observable<{ mes: number; cantidad: number }[]> {
+    return this.http.get<any>(`${this.apiUrl}/estadistiCAS`);
   }
 }
