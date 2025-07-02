@@ -23,7 +23,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let r of reservas">
+        <tr
+          *ngFor="let r of reservas"
+          (click)="seleccionarReserva(r)"
+          class="cursor-pointer"
+        >
           <td>{{ r.maquina.nombre }}</td>
           <td>${{ r.precio }}</td>
           <td>{{ r.fecha_inicio | date : "dd/MM/yyyy" }}</td>
@@ -32,5 +36,28 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<div *ngIf="reservaSeleccionada" class="card mt-4 shadow">
+  <div class="card-body">
+    <h5 class="card-title">Detalles de la Reserva</h5>
+    <p><strong>Máquina:</strong> {{ reservaSeleccionada.maquina.nombre }}</p>
+    <p><strong>Precio:</strong> ${{ reservaSeleccionada.precio }}</p>
+    <p>
+      <strong>Fecha de Inicio:</strong>
+      {{ reservaSeleccionada.fecha_inicio | date : "dd/MM/yyyy" }}
+    </p>
+    <p>
+      <strong>Fecha de Fin:</strong>
+      {{ reservaSeleccionada.fecha_fin | date : "dd/MM/yyyy" }}
+    </p>
+    <p>
+      <strong>Fecha de Reserva:</strong>
+      {{ reservaSeleccionada.fecha_reserva | date : "dd/MM/yyyy" }}
+    </p>
+    <button class="btn btn-secondary mt-2" (click)="cerrarDetalle()">
+      Cerrar
+    </button>
   </div>
 </div>

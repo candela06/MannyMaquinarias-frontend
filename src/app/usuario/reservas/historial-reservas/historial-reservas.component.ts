@@ -13,7 +13,15 @@ export class HistorialReservasComponent implements OnInit {
   reservas: Reserva[] = [];
   cargando: boolean = true;
   error: string | null = null;
+  reservaSeleccionada: Reserva | null = null;
 
+  seleccionarReserva(reserva: Reserva) {
+    this.reservaSeleccionada = reserva;
+  }
+
+  cerrarDetalle() {
+    this.reservaSeleccionada = null;
+  }
   constructor(private reservaService: ReservaService) {}
 
   ngOnInit(): void {
