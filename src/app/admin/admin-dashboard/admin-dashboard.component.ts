@@ -34,9 +34,15 @@ export class AdminDashboardComponent {
     },
     {
       title: 'Gestionar Usuarios',
-      description: 'Administrar cuentas de usuario y roles.',
+      description: 'Administrar cuentas de usuario, roles y lista negra',
       icon: 'bi-people-fill',
-      route: '/admin/usuarios/gestion', // crear este componente
+      route: '/admin/usuarios/listar', // crear este componente
+    },
+    {
+      title: 'Estadisticas',
+      description: 'Ver estadisticas de usuarios, máquinas e ingresos',
+      icon: 'bi-people-fill',
+      route: '/admin/estadisticas', // crear este componente
     },
   ];
 
