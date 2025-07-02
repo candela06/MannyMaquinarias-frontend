@@ -1,0 +1,47 @@
+<div class="container">
+  <h2 class="mb-3">Usuarios registrados por año</h2>
+  <label for="anio">Seleccionar año:</label>
+  <select
+    [(ngModel)]="anioSeleccionado"
+    (change)="obtenerEstadisticasUsuarios()"
+  >
+    <option *ngFor="let anio of aniosDisponibles" [value]="anio">
+      {{ anio }}
+    </option>
+  </select>
+
+  <canvas id="usuariosChart" width="400" height="200"></canvas>
+</div>
+
+<!-- Ingresos por fecha -->
+<div class="container mt-5 estadisticas-ingresos">
+  <h2 class="mb-3">Ingresos por Fecha</h2>
+
+  <div class="filtros-fecha mb-3">
+    <label for="fechaInicio" class="form-label me-2">Desde:</label>
+    <input
+      type="date"
+      id="fechaInicio"
+      [(ngModel)]="fechaInicio"
+      name="fechaInicio"
+      class="form-control d-inline-block w-auto me-3"
+    />
+
+    <label for="fechaFin" class="form-label me-2">Hasta:</label>
+    <input
+      type="date"
+      id="fechaFin"
+      [(ngModel)]="fechaFin"
+      name="fechaFin"
+      class="form-control d-inline-block w-auto me-3"
+    />
+
+    <button class="btn btn-primary" (click)="cargarEstadisticasMontos()">
+      Ver ingresos
+    </button>
+  </div>
+
+  <div class="grafico-container">
+    <canvas id="montosChart" width="400" height="200"></canvas>
+  </div>
+</div>
