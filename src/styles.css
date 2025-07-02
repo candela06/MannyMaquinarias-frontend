@@ -1,1 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+    background-color: #282c34;
+    /* Fondo oscuro */
+    color: #e0e0e0;
+    /* Color de texto claro por defecto */
+}

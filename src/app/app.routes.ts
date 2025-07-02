@@ -10,10 +10,9 @@ import { RegistrarMaquinaComponent } from './admin/gestion-maquinas/registrar-ma
 import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard.component';
 import { GestionarMaquinasComponent } from './admin/gestion-maquinas/gestionar-maquinas/gestionar-maquinas.component'; // ¡NUEVO! Importamos el componente
 import { ModificarMaquinaComponent } from './admin/gestion-maquinas/modificar-maquina/modificar-maquina.component'; // ¡NUEVO! Importamos el componente de modificación
-import { GestionarUsuariosComponent } from './admin/gestion-usuarios/gestion-usuarios.component';
+import { ListarUsuariosComponent } from './admin/gestion-usuarios/listar-usuarios.component';
 import { ListaNegraComponent } from './admin/gestion-usuarios/lista-negra/lista-negra.component';
 import { adminGuard } from './guards/admin.guard';
-import { eliminarUsuario } from './admin/gestion-usuarios/eliminar-usuario/eliminar-usuario.component';
 //import { AsignarRol } from './admin/gestion-usuarios/asignar-rol/asignar-rol.component';
 import { HistorialReservasComponent } from './usuario/reservas/historial-reservas/historial-reservas.component'; // <-- ¡Importa el nuevo componente!
 import { UsuarioDashboardComponent } from './usuario/usuario.component';
@@ -22,6 +21,9 @@ import { authGuard } from './guards/auth.guard';
 import { EliminarCuentaPropiaComponent } from './usuario/eliminar-usuario/eliminar-usuario.component'; // <-- ¡NUEVO!
 import { RealizarReservaComponent } from './usuario/reservas/realizar-reservas/realizar-reserva.component';
 import { EliminarMaquinaComponent } from './admin/gestion-maquinas/eliminar-maquina/eliminar-maquina.component';
+import { AsignarRolComponent } from './admin/gestion-usuarios/asignar-rol/asignar-rol.component';
+import { EstadisticasComponent } from './admin/estadisticas/estadisticas.component';
+
 export const routes: Routes = [
   { path: '', component: PantallaInicioComponent }, // ← Inicio principal
   { path: 'login', component: LoginComponent },
@@ -85,18 +87,25 @@ export const routes: Routes = [
   },
 
   {
-    path: 'admin/usuarios/gestion',
-    component: GestionarUsuariosComponent,
+    path: 'admin/usuarios/listar',
+    component: ListarUsuariosComponent,
     canActivate: [adminGuard],
-  }, // Ruta para el panel de gestión de usuarios
+  },
   {
     path: 'admin/usuarios/lista-negra',
     component: ListaNegraComponent,
     canActivate: [adminGuard],
   }, // Ruta para ver la lista negra
+
   {
-    path: 'admin/usuarios/eliminar-usuario',
-    component: eliminarUsuario,
+    path: 'admin/usuarios/asignar-rol',
+    component: AsignarRolComponent,
+    canActivate: [adminGuard],
+  },
+
+  {
+    path: 'admin/estadisticas',
+    component: EstadisticasComponent,
     canActivate: [adminGuard],
   },
   //{ path: 'admin/usuarios/asignar-rol', component: AsignarRol, canActivate: [adminGuard]},
