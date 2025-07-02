@@ -56,28 +56,8 @@ export class ReservaService {
       .pipe(catchError(this.handleErrorCrearReserva));
   }
 
-  /**
-   * @description Obtiene el historial de reservas del usuario autenticado desde el backend.
-   * Utiliza el ID del usuario logueado como query parameter 'usuarioId'.
-   * @returns {Observable<Reserva[]>} Un Observable que emite un array de objetos Reserva.
-   */
-  getHistorialReservas(): Observable<Reserva[]> {
-    const currentUser = this.authService.getCurrentUser();
-    const userId = currentUser ? currentUser.id : null;
-
-    if (!userId) {
-      return throwError(
-        () =>
-          new Error(
-            'No se encontró ID de usuario para obtener el historial de reservas. Por favor, inicia sesión.'
-          )
-      );
-    }
-
-    const url = `${this.apiUrl}/?usuarioId=${userId}`;
-    return this.http
-      .get<Reserva[]>(url, { headers: this.getAuthHeaders() })
-      .pipe(catchError(this.handleErrorHistorial));
+  getReservasPropias(): Observable<Reserva[]> {
+    return this.http.get<Reserva[]>(`${this.apiUrl}/`);
   }
 
   // Manejador de errores para la creación de reservas
