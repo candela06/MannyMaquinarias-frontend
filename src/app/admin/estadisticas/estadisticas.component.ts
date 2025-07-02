@@ -171,9 +171,33 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
   }
 
   cargarEstadisticasMontos(): void {
-    const backendUrl = `http://localhost:3001/estadisticas/montos?fechaInicio=${this.fechaInicio}&fechaFin=${this.fechaFin}`;
+    // Si no se ingresó ninguna fecha
+    if (!this.fechaInicio && !this.fechaFin) {
+      alert('Por favor, ingresá un rango de fechas para ver los ingresos.');
+      return;
+    }
 
-    console.log(`Realizando petición GET a: ${backendUrl}`);
+    // Si solo se ingresó una fecha (caso inválido)
+    if (
+      (this.fechaInicio && !this.fechaFin) ||
+      (!this.fechaInicio && this.fechaFin)
+    ) {
+      alert('Por favor, ingresá ambas fechas: desde y hasta.');
+      return;
+    }
+
+    let backendUrl = 'http://localhost:3001/estadisticas/montos?';
+    const params: string[] = [];
+
+    if (this.fechaInicio) {
+      params.push(`fechaInicio=${this.fechaInicio}`);
+    }
+
+    if (this.fechaFin) {
+      params.push(`fechaFin=${this.fechaFin}`);
+    }
+
+    backendUrl += params.join('&');
 
     this.http
       .get<DatosMontosDia[]>(backendUrl, { headers: this.getHeaders() })
@@ -184,12 +208,17 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
           this.renderizarGraficoMontos(labels, valores);
         },
         error: (error: any) => {
+          console.error('Detalles del error:', error);
+
           if (error.status === 404) {
-            // Si no hay datos, renderiza gráfico vacío
             this.renderizarGraficoMontos([], []);
+          } else if (error.status === 400 && error.error?.error) {
+            // Mostramos el mensaje que viene desde el backend
+            alert(error.error.error);
           } else {
-            console.error('Error al obtener estadísticas de montos:', error);
-            alert('No se pudieron cargar las estadísticas de ingresos.');
+            alert(
+              `No se pudieron cargar las estadísticas de ingresos.\nCódigo: ${error.status}`
+            );
           }
         },
       });

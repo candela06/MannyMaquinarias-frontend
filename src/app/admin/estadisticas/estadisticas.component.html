@@ -36,7 +36,11 @@
       class="form-control d-inline-block w-auto me-3"
     />
 
-    <button class="btn btn-primary" (click)="cargarEstadisticasMontos()">
+    <button
+      class="btn btn-primary"
+      (click)="cargarEstadisticasMontos()"
+      [disabled]="!fechaInicio || !fechaFin"
+    >
       Ver ingresos
     </button>
   </div>
