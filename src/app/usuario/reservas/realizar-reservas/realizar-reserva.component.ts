@@ -164,60 +164,50 @@ export class RealizarReservaComponent implements OnInit {
   calculatePrice(): void {
     console.log('calculatePrice: Iniciando cálculo de precio...');
     console.log('calculatePrice: machinery:', this.machinery);
-    console.log(
-      'calculatePrice: selectedStartDate (string):',
-      this.selectedStartDate
-    );
-    console.log(
-      'calculatePrice: selectedEndDate (string):',
-      this.selectedEndDate
-    );
+    console.log('calculatePrice: selectedStartDate:', this.selectedStartDate);
+    console.log('calculatePrice: selectedEndDate:', this.selectedEndDate);
 
-    // Aseguramos que machinery y las fechas están presentes
+    // Asegurarse de que la máquina y las fechas estén presentes
     if (this.machinery && this.selectedStartDate && this.selectedEndDate) {
-      const start = new Date(this.selectedStartDate);
-      const end = new Date(this.selectedEndDate);
+      // 👇 Función auxiliar para evitar errores por zonas horarias
+      const crearFecha = (fechaStr: string): Date => {
+        const partes = fechaStr.split('-'); // ["2024", "07", "01"]
+        const anio = parseInt(partes[0], 10);
+        const mes = parseInt(partes[1], 10) - 1; // Enero = 0
+        const dia = parseInt(partes[2], 10);
+        return new Date(anio, mes, dia); // hora local fija
+      };
+
+      const start = crearFecha(this.selectedStartDate);
+      const end = crearFecha(this.selectedEndDate);
 
       console.log(
         'calculatePrice: Fecha inicio (Date obj):',
         start.toISOString()
       );
       console.log('calculatePrice: Fecha fin (Date obj):', end.toISOString());
-      console.log('calculatePrice: start.toString():', start.toString()); // <-- Añadido: Formato de cadena completa
-      console.log('calculatePrice: end.toString():', end.toString()); // <-- Añadido: Formato de cadena completa
 
-      // Validar que las fechas sean válidas y que la fecha de inicio no sea posterior a la de fin
+      // Validación: fechas válidas y start <= end
       if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
         this.calculatedPrice = 0;
         console.warn(
-          'calculatePrice: Fechas inválidas (NaN) o fecha de inicio es posterior a la fecha de fin. Precio = 0.'
+          'calculatePrice: Fechas inválidas o mal ordenadas. Precio = 0.'
         );
         return;
       }
 
-      // Obtener el precio base de la máquina y validarlo
-      console.log(
-        'calculatePrice: Raw machinery.precio:',
-        this.machinery.precio
-      );
+      // Obtener el precio base
       const basePrice = parseFloat(this.machinery.precio.toString());
-      console.log(
-        'calculatePrice: Precio base de la máquina (parseFloat):',
-        basePrice
-      );
-
       if (isNaN(basePrice) || basePrice <= 0) {
         this.calculatedPrice = 0;
-        console.warn(
-          'calculatePrice: Precio base de la máquina inválido (NaN o <= 0). Precio = 0.'
-        );
+        console.warn('calculatePrice: Precio base inválido. Precio = 0.');
         return;
       }
 
+      // Calcular diferencia de días (incluyendo ambos extremos)
       const diffTime = Math.abs(end.getTime() - start.getTime());
-      // +1 para incluir el día de inicio en el conteo de días de alquiler
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      console.log('calculatePrice: Diferencia de tiempo (ms):', diffTime);
+
       console.log('calculatePrice: Días de alquiler (diffDays):', diffDays);
 
       if (diffDays <= 0) {
@@ -235,12 +225,11 @@ export class RealizarReservaComponent implements OnInit {
       );
     } else {
       this.calculatedPrice = 0;
-      console.log(
-        'calculatePrice: Faltan datos para calcular el precio (máquina o fechas). Precio = 0.'
-      );
+      console.log('calculatePrice: Datos incompletos. Precio = 0.');
     }
+
     console.log(
-      'calculatePrice: isReservationButtonDisabled final state (después de cálculo):',
+      'calculatePrice: isReservationButtonDisabled:',
       this.isReservationButtonDisabled
     );
   }
