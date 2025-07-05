@@ -15,6 +15,7 @@ import { RouterModule } from '@angular/router'; // Necesario para routerLink
   imports: [CommonModule, RouterModule], // Importar RouterModule
 })
 export class UsuarioDashboardComponent {
+  montoPendiente: number = 100;
   /**
    * @description Define las opciones disponibles en el panel de administración.
    * Cada objeto contiene el título, una descripción, un icono y la ruta a la que navega.

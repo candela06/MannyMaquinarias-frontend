@@ -1,6 +1,21 @@
 <div class="container py-4">
   <h2 class="text-center mb-5 text-orange fw-bold">Mi cuenta</h2>
 
+  <!-- burbuja de monto a favor -->
+  <div
+    class="position-fixed start-0 ms-3 minimalist-bubble"
+    [ngClass]="{
+      'verde-sutil': montoPendiente > 0,
+      'rojo-sutil': montoPendiente < 0
+    }"
+  >
+    <small class="d-block text-muted">
+      Monto {{ montoPendiente > 0 ? "a favor" : "en contra" }}:
+    </small>
+    <strong class="display-6">{{ montoPendiente | currency : "ARS" }}</strong>
+  </div>
+
+  <!-- resto de funcionalidades -->
   <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     <div class="col" *ngFor="let option of adminOptions">
       <div class="card h-100 shadow-sm border-0 rounded-4 admin-option-card">
@@ -52,5 +67,45 @@
     background-color: #e08e00;
     color: white;
     border-color: #e08e00;
+  }
+
+  .text-muted {
+    color: #6c757d !important;
+  }
+  .border-secondary {
+    border-color: #dee2e6 !important;
+  }
+
+  /* Fuente moderna y legible */
+  .minimalist-bubble {
+    top: 60px;
+    z-index: 1050;
+    padding: 0.6rem 1.2rem;
+    border-left: 3px solid;
+    font-family: system-ui, sans-serif;
+    border-radius: 8px;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: inherit;
+  }
+
+  .verde-sutil {
+    background: linear-gradient(
+      to right,
+      rgba(40, 167, 69, 0.08),
+      rgba(40, 167, 69, 0.02)
+    );
+    border-color: #28a745;
+    color: #28a745;
+  }
+
+  .rojo-sutil {
+    background: linear-gradient(
+      to right,
+      rgba(220, 53, 69, 0.08),
+      rgba(220, 53, 69, 0.02)
+    );
+    border-color: #dc3545;
+    color: #dc3545;
   }
 </style>

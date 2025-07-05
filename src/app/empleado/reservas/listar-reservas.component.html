@@ -69,7 +69,8 @@
           <th scope="col">Fin</th>
           <th scope="col">Fecha Reserva</th>
           <th scope="col">Pagada</th>
-          <th>Acciones</th>
+          <th scope="col">Acciones</th>
+          <!--<th scope="col">Monto</th>-->
         </tr>
       </thead>
       <tbody>
@@ -92,12 +93,30 @@
               {{ reserva.pagada ? "Sí" : "No" }}
             </span>
           </td>
+          <!--
+          <td *ngIf="reserva.montoReembolso !== undefined" class="fw-bold">
+            <span
+              [ngClass]="{
+                'text-success': reserva.montoReembolso > 0,
+                'text-danger': reserva.montoReembolso < 0
+              }"
+            >
+              {{ reserva.montoReembolso | currency : "ARS" }}
+            </span>
+          </td>
+          <td *ngIf="reserva.montoReembolso === undefined" class="text-muted">
+            -
+          </td>
+          
+          -->
+
           <td>
             <button class="btn btn-sm btn-danger">Cancelar</button>
           </td>
         </tr>
       </tbody>
     </table>
+    preparadito en el cod para esperar el monto
   </div>
 </div>
 
