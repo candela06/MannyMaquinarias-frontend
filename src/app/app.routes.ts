@@ -22,6 +22,10 @@ import { EliminarCuentaPropiaComponent } from './usuario/eliminar-usuario/elimin
 import { RealizarReservaComponent } from './usuario/reservas/realizar-reservas/realizar-reserva.component';
 import { EliminarMaquinaComponent } from './admin/gestion-maquinas/eliminar-maquina/eliminar-maquina.component';
 import { EstadisticasComponent } from './admin/estadisticas/estadisticas.component';
+import { empleadoDashboardComponent } from './empleado/empleado-dashboard.component';
+import { trabajadorGuard } from './guards/trabajador.guard';
+import { ListarReservasComponent } from './empleado/reservas/listar-reservas.component';
+import { Component } from '@angular/core';
 
 export const routes: Routes = [
   { path: '', component: PantallaInicioComponent }, // ← Inicio principal
@@ -100,6 +104,17 @@ export const routes: Routes = [
     path: 'admin/estadisticas',
     component: EstadisticasComponent,
     canActivate: [adminGuard],
+  },
+
+  {
+    path: 'trabajador-dashboard',
+    component: empleadoDashboardComponent,
+    canActivate: [trabajadorGuard],
+  },
+  {
+    path: 'trabajador/reservas',
+    component: ListarReservasComponent,
+    canActivate: [trabajadorGuard],
   },
   //{ path: 'admin/usuarios/asignar-rol', component: AsignarRol, canActivate: [adminGuard]},
   { path: '**', redirectTo: '', pathMatch: 'full' },

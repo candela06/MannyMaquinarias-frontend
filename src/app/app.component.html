@@ -50,6 +50,14 @@
         >
           <a class="nav-link" routerLink="/admin-dashboard">Panel Admin</a>
         </li>
+        <li
+          class="nav-item"
+          *ngIf="(authService.isLoggedIn$ | async) && authService.isTrabajador"
+        >
+          <a class="nav-link" routerLink="/trabajador-dashboard"
+            >Panel de gestión</a
+          >
+        </li>
       </ul>
     </div>
   </div>
