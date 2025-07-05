@@ -60,6 +60,16 @@ export class ReservaService {
     return this.http.get<Reserva[]>(`${this.apiUrl}/`);
   }
 
+  getReservas(): Observable<Reserva[]> {
+    return this.http.get<Reserva[]>(`${this.apiUrl}/all`);
+  }
+
+  getReservasUsuario(email: string): Observable<Reserva[]> {
+    return this.http.get<Reserva[]>(
+      `${this.apiUrl}/historial?email=${encodeURIComponent(email)}`
+    );
+  }
+
   // Manejador de errores para la creación de reservas
   private handleErrorCrearReserva(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error al intentar realizar la reserva.';
