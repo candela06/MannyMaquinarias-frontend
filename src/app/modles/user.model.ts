@@ -8,6 +8,7 @@ export interface User {
   apellido: string;
   email: string;
   nombreUsuario: string;
+  password: string;
   dni: string;
   edad?: number;
   direccion: string;
