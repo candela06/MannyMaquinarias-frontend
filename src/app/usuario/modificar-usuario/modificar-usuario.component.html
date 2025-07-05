@@ -1,114 +1,183 @@
-<!-- src/app/usuario/modificar-usuario/modificar-usuario.component.html -->
-
-<div class="container my-5">
-  <div class="card shadow-lg rounded-lg border-0 p-4">
-    <h1 class="text-center display-6 fw-bold mb-4">Modificar Mi Perfil</h1>
-
+<div class="container py-5">
+  <div
+    class="card border-0 shadow-sm rounded-4 p-4 bg-white"
+    style="max-width: 900px; margin: auto"
+  >
+    <!-- Loading -->
     <div *ngIf="isLoading" class="text-center my-5">
       <div
-        class="spinner-border text-primary"
-        role="status"
+        class="spinner-border text-purple"
         style="width: 3rem; height: 3rem"
+        role="status"
       >
         <span class="visually-hidden">Cargando...</span>
       </div>
-      <p class="mt-3 fs-5 text-muted">Cargando datos de tu perfil...</p>
+      <p class="mt-3 fs-5 text-muted">Cargando tu información...</p>
     </div>
 
+    <!-- Error -->
     <div
       *ngIf="!isLoading && errorMessage"
-      class="alert alert-danger text-center my-4"
-      role="alert"
+      class="alert alert-danger text-center"
     >
       <p class="mb-0 fs-5">{{ errorMessage }}</p>
-      <button class="btn btn-secondary mt-3" routerLink="/user-dashboard">
+      <button class="btn btn-outline-dark mt-3" routerLink="/user-dashboard">
         Volver
       </button>
     </div>
 
+    <!-- Formulario -->
     <form *ngIf="!isLoading && user" (ngSubmit)="saveChanges()">
-      <div class="row g-3">
-        <!-- Columna izquierda para campos de texto -->
+      <div class="row g-4">
+        <!-- Columna izquierda -->
         <div class="col-md-6">
           <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre:</label>
+            <label for="nombre" class="form-label fw-semibold">Nombre</label>
             <input
               type="text"
-              class="form-control"
+              class="form-control rounded-pill"
               id="nombre"
               [(ngModel)]="user.nombre"
               name="nombre"
               required
             />
           </div>
+
           <div class="mb-3">
-            <label for="apellido" class="form-label">Apellido:</label>
+            <label for="apellido" class="form-label fw-semibold"
+              >Apellido</label
+            >
             <input
               type="text"
-              class="form-control"
+              class="form-control rounded-pill"
               id="apellido"
               [(ngModel)]="user.apellido"
               name="apellido"
             />
           </div>
+
           <div class="mb-3">
-            <label for="dni" class="form-label">DNI:</label>
+            <label for="dni" class="form-label fw-semibold">DNI</label>
             <input
               type="text"
-              class="form-control"
+              class="form-control rounded-pill"
               id="dni"
               [(ngModel)]="user.dni"
               name="dni"
             />
           </div>
+
+          <div class="form-check form-switch mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="togglePasswordChange"
+              [(ngModel)]="wantsToChangePassword"
+              name="wantsToChangePassword"
+            />
+            <label class="form-check-label" for="togglePasswordChange"
+              >Cambiar contraseña</label
+            >
+          </div>
+
+          <div
+            *ngIf="wantsToChangePassword"
+            class="bg-light rounded-3 p-3 border"
+          >
+            <div class="mb-3">
+              <label for="currentPassword" class="form-label"
+                >Contraseña actual</label
+              >
+              <input
+                type="password"
+                class="form-control rounded-pill"
+                id="currentPassword"
+                [(ngModel)]="currentPassword"
+                name="currentPassword"
+              />
+            </div>
+
+            <div class="mb-2">
+              <label for="newPassword" class="form-label"
+                >Nueva contraseña</label
+              >
+              <input
+                type="password"
+                class="form-control rounded-pill"
+                id="newPassword"
+                [(ngModel)]="newPassword"
+                name="newPassword"
+                minlength="6"
+              />
+            </div>
+
+            <small
+              *ngIf="newPassword.length > 0 && newPassword.length < 6"
+              class="text-danger"
+            >
+              La nueva contraseña debe tener al menos 6 caracteres.
+            </small>
+          </div>
         </div>
 
-        <!-- Columna derecha para otros campos -->
+        <!-- Columna derecha -->
         <div class="col-md-6">
           <div class="mb-3">
-            <label for="nombreUsuario" class="form-label"
-              >Nombre de Usuario:</label
+            <label for="fechaNacimiento" class="form-label fw-semibold"
+              >Fecha de nacimiento</label
+            >
+            <input
+              id="fechaNacimiento"
+              type="date"
+              class="form-control rounded-pill"
+              [ngModel]="fechaNacimiento"
+              (ngModelChange)="onFechaNacimientoChange($event)"
+              name="fechaNacimiento"
+              required
+            />
+            <small
+              class="text-danger"
+              *ngIf="!esMayorDeEdad && fechaNacimiento"
+            >
+              Debes ser mayor de 18 años para modificar tus datos.
+            </small>
+          </div>
+
+          <div class="mb-3">
+            <label for="direccion" class="form-label fw-semibold"
+              >Dirección</label
             >
             <input
               type="text"
-              class="form-control"
-              id="nombreUsuario"
-              [(ngModel)]="user.nombreUsuario"
-              name="nombreUsuario"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="direccion" class="form-label">Dirección:</label>
-            <input
-              type="text"
-              class="form-control"
+              class="form-control rounded-pill"
               id="direccion"
               [(ngModel)]="user.direccion"
               name="direccion"
             />
           </div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email:</label>
-            <!-- El email no se puede modificar desde aquí, solo se muestra -->
+
+          <div class="mb-1">
+            <label for="email" class="form-label fw-semibold">Email</label>
             <input
               type="email"
-              class="form-control"
+              class="form-control rounded-pill"
               id="email"
               [ngModel]="user.email"
               name="email"
               disabled
             />
             <div class="form-text">
-              Para cambiar tu email, por favor, contacta a soporte.
+              Para cambiar tu email, contacta al soporte.
             </div>
           </div>
         </div>
       </div>
 
-      <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+      <!-- Botones -->
+      <div class="d-flex justify-content-end gap-3 mt-4">
         <button
           type="submit"
-          class="btn btn-primary btn-lg"
+          class="guardar btn btn-gradient-primary px-4 py-2 rounded-pill"
           [disabled]="isSaving"
         >
           <span
@@ -121,7 +190,7 @@
         </button>
         <button
           type="button"
-          class="btn btn-secondary btn-lg"
+          class="btn btn-outline-dark px-4 py-2 rounded-pill"
           routerLink="/user-dashboard"
         >
           Cancelar
@@ -131,9 +200,18 @@
   </div>
 </div>
 
-<!-- Estilos CSS personalizados (mínimos) -->
 <style>
-  h1 {
-    color: #e08e00;
+  .guardar {
+    background: linear-gradient(to right, #e08e00, #da4723);
+    color: white;
+  }
+
+  .form-check-input:checked {
+    background: linear-gradient(to right, #e08e00, #da4723);
+    border-color: orange;
+  }
+
+  .form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(233, 176, 102, 0.39); /* naranja suave */
   }
 </style>

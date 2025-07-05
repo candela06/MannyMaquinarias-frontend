@@ -26,6 +26,11 @@ export class ModificarUsuarioComponent implements OnInit {
   isLoading: boolean = true;
   isSaving: boolean = false;
   errorMessage: string | undefined;
+  fechaNacimiento: string = '';
+  esMayorDeEdad: boolean = true;
+  wantsToChangePassword = false;
+  currentPassword: string = '';
+  newPassword: string = '';
 
   constructor(
     private usuarioService: UsuarioService,
@@ -63,29 +68,82 @@ export class ModificarUsuarioComponent implements OnInit {
       .subscribe(); // Suscribe para que el Observable se ejecute
   }
 
+  onFechaNacimientoChange(fecha: string): void {
+    this.fechaNacimiento = fecha;
+    const edadCalculada = this.calcularEdad(fecha);
+    this.esMayorDeEdad = edadCalculada >= 18;
+
+    if (this.user) {
+      this.user.edad = edadCalculada;
+    }
+  }
+
+  calcularEdad(fechaNacimiento: string): number {
+    const nacimiento = new Date(fechaNacimiento);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+
+    return edad;
+  }
+
   /**
    * @description Guarda los cambios realizados en el perfil del usuario.
    */
   saveChanges(): void {
-    // Renombrado de saveProfile a saveChanges
     if (!this.user) {
       this.errorMessage = 'No hay datos de usuario para guardar.';
       return;
     }
 
+    if (!this.esMayorDeEdad) {
+      Swal.fire(
+        'Advertencia',
+        'Debes ser mayor de 18 años para modificar tus datos.',
+        'warning'
+      );
+      return;
+    }
+
+    if (this.wantsToChangePassword) {
+      if (!this.currentPassword || !this.newPassword) {
+        Swal.fire(
+          'Advertencia',
+          'Debes completar ambas contraseñas.',
+          'warning'
+        );
+        return;
+      }
+
+      if (this.newPassword.length < 6) {
+        Swal.fire(
+          'Advertencia',
+          'La nueva contraseña debe tener al menos 6 caracteres.',
+          'warning'
+        );
+        return;
+      }
+    }
+
     this.isSaving = true;
     this.errorMessage = undefined;
 
-    // Creamos un objeto con solo los campos que se pueden modificar y enviar al backend
-    const updatedData: Partial<User> = {
+    const updatedData: any = {
       nombre: this.user.nombre,
       apellido: this.user.apellido,
       dni: this.user.dni,
       edad: this.user.edad,
-      nombreUsuario: this.user.nombreUsuario,
       direccion: this.user.direccion,
-      // El email y password no se modifican desde aquí por seguridad
     };
+
+    if (this.wantsToChangePassword) {
+      updatedData.currentPassword = this.currentPassword;
+      updatedData.newPassword = this.newPassword;
+    }
 
     this.usuarioService
       .updatePerfil(updatedData)
@@ -101,8 +159,24 @@ export class ModificarUsuarioComponent implements OnInit {
           // this.router.navigate(['/']);
         }),
         catchError((error) => {
-          console.error('Error al actualizar el perfil:', error);
           this.isSaving = false;
+
+          if (
+            error.status === 401 &&
+            error.error?.error === 'Contraseña actual incorrecta.'
+          ) {
+            this.errorMessage = error.error.error;
+            Swal.fire('Error', this.errorMessage, 'error');
+            return of(null); // no cierres la sesión
+          }
+
+          if (error.status === 401) {
+            // Token vencido o no autorizado
+            this.router.navigate(['/login']); // o lo que uses para cerrar sesión
+            return of(null);
+          }
+
+          console.error('Error al actualizar el perfil:', error);
           this.errorMessage =
             error.message ||
             'Error al actualizar el perfil. Inténtalo de nuevo.';
