@@ -1,0 +1,134 @@
+<div class="container py-5">
+  <h2 class="text-center mb-4 text-orange fw-bold">Listado de Reservas</h2>
+  <div class="mb-3 d-flex">
+    <div
+      #sugerenciasContainer
+      class="position-relative"
+      style="max-width: 400px"
+    >
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="emailBusqueda"
+        (input)="actualizarSugerencias()"
+        placeholder="Buscar por email"
+        autocomplete="off"
+      />
+
+      <ul
+        *ngIf="sugerencias.length > 0"
+        class="list-group position-absolute w-100 shadow-sm"
+        style="z-index: 1000; max-height: 200px; overflow-y: auto"
+      >
+        <li
+          *ngFor="let email of sugerencias"
+          (click)="seleccionarEmail(email)"
+          class="list-group-item list-group-item-action"
+          style="cursor: pointer"
+        >
+          {{ email }}
+        </li>
+      </ul>
+    </div>
+    <div>
+      <button
+        class="btn btn-secondary ms-2"
+        (click)="mostrarTodasLasReservas()"
+      >
+        Mostrar todas
+      </button>
+    </div>
+  </div>
+
+  <!-- tabla de reservas -->
+
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border text-orange" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <div
+    *ngIf="!isLoading && reservas.length === 0"
+    class="alert alert-info text-center"
+  >
+    No hay reservas registradas.
+  </div>
+
+  <div *ngIf="!isLoading && reservas.length > 0" class="table-responsive">
+    <table
+      class="table table-hover table-bordered align-middle shadow-sm rounded-4"
+    >
+      <thead class="table-dark">
+        <tr class="text-center">
+          <th scope="col">#</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Máquina</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Inicio</th>
+          <th scope="col">Fin</th>
+          <th scope="col">Fecha Reserva</th>
+          <th scope="col">Pagada</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let reserva of reservas; index as i" class="text-center">
+          <td>{{ i + 1 }}</td>
+          <td>{{ reserva.usuario.email }}</td>
+          <td>{{ reserva.maquina.nombre }}</td>
+          <td>${{ reserva.precio }}</td>
+          <td>{{ reserva.fecha_inicio | date : "dd/MM/yyyy" }}</td>
+          <td>{{ reserva.fecha_fin | date : "dd/MM/yyyy" }}</td>
+          <td>{{ reserva.fecha_reserva | date : "dd/MM/yyyy" }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success': reserva.pagada,
+                'bg-danger': !reserva.pagada
+              }"
+            >
+              {{ reserva.pagada ? "Sí" : "No" }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-danger">Cancelar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .text-orange {
+    color: #fd7e14;
+  }
+
+  .table-orange {
+    background-color: #fd7e14;
+  }
+
+  .sugerencias {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+  }
+
+  .sugerencias li {
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  .sugerencias li:hover {
+    background-color: #f0f0f0;
+  }
+</style>
