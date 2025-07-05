@@ -1,3 +1,4 @@
+<!--src\app\usuario\reservas\historial-reservas\historial-reservas.component.html-->
 <div class="container mt-4">
   <h2 class="mb-4">Historial de Reservas</h2>
 
@@ -37,27 +38,64 @@
       </tbody>
     </table>
   </div>
-</div>
 
-<div *ngIf="reservaSeleccionada" class="card mt-4 shadow">
-  <div class="card-body">
-    <h5 class="card-title">Detalles de la Reserva</h5>
-    <p><strong>Máquina:</strong> {{ reservaSeleccionada.maquina.nombre }}</p>
-    <p><strong>Precio:</strong> ${{ reservaSeleccionada.precio }}</p>
-    <p>
-      <strong>Fecha de Inicio:</strong>
-      {{ reservaSeleccionada.fecha_inicio | date : "dd/MM/yyyy" }}
-    </p>
-    <p>
-      <strong>Fecha de Fin:</strong>
-      {{ reservaSeleccionada.fecha_fin | date : "dd/MM/yyyy" }}
-    </p>
-    <p>
-      <strong>Fecha de Reserva:</strong>
-      {{ reservaSeleccionada.fecha_reserva | date : "dd/MM/yyyy" }}
-    </p>
-    <button class="btn btn-secondary mt-2" (click)="cerrarDetalle()">
-      Cerrar
-    </button>
+  <!-- Detalles de reserva y política -->
+  <div *ngIf="reservaSeleccionada" class="card mt-4 shadow">
+    <div class="card-body">
+      <h5 class="card-title">Detalles de la Reserva</h5>
+
+      <div class="row">
+        <!-- Detalle de reserva -->
+        <div class="col-md-6">
+          <p>
+            <strong>Máquina:</strong> {{ reservaSeleccionada.maquina.nombre }}
+          </p>
+          <p><strong>Precio:</strong> ${{ reservaSeleccionada.precio }}</p>
+          <p>
+            <strong>Fecha de Inicio:</strong>
+            {{ reservaSeleccionada.fecha_inicio | date : "dd/MM/yyyy" }}
+          </p>
+          <p>
+            <strong>Fecha de Fin:</strong>
+            {{ reservaSeleccionada.fecha_fin | date : "dd/MM/yyyy" }}
+          </p>
+          <p>
+            <strong>Fecha de Reserva:</strong>
+            {{ reservaSeleccionada.fecha_reserva | date : "dd/MM/yyyy" }}
+          </p>
+        </div>
+
+        <!-- Política de cancelación -->
+        <div class="col-md-6">
+          <div *ngIf="politicaCancelacionSeleccionada; else noPolitica">
+            <h5>Política de Cancelación</h5>
+            <p>
+              <strong>Descripción:</strong>
+              {{ politicaCancelacionSeleccionada.descripcion }}
+            </p>
+            <p>
+              <strong>Reembolso:</strong>
+              {{ politicaCancelacionSeleccionada.porcentajeRembolso }}%
+            </p>
+          </div>
+
+          <ng-template #noPolitica>
+            <p class="text-muted">
+              <em
+                >No hay política de cancelación disponible para esta
+                máquina.</em
+              >
+            </p>
+          </ng-template>
+        </div>
+
+        <div>
+          <button class="btn btn-secondary mb-4 me-2" (click)="cerrarDetalle()">
+            Cerrar
+          </button>
+          <button class="btn btn-danger mb-4 me-2">Cancelar</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
