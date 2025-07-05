@@ -6,8 +6,14 @@ export interface Reserva {
   fecha_inicio: string;
   fecha_fin: string;
   fecha_reserva: string;
+  pagada: boolean;
   maquina: {
     id: number;
     nombre: string;
+  };
+  usuario: {
+    id: number;
+    email: string;
+    apellido: string;
   };
 }

@@ -244,4 +244,9 @@ export class AuthService {
 
     return isUserAdmin;
   }
+
+  get isTrabajador(): boolean {
+    const currentUser = this.getCurrentUser();
+    return !!currentUser && currentUser.rol_nombre === 'trabajador';
+  }
 }
