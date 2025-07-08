@@ -9,7 +9,6 @@ import { DetalleMaquinariaComponent } from './detalle-maquinaria/detalle-maquina
 import { RegistrarMaquinaComponent } from './admin/gestion-maquinas/registrar-maquina/registrar-maquina.component';
 import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard.component';
 import { GestionarMaquinasComponent } from './admin/gestion-maquinas/gestionar-maquinas/gestionar-maquinas.component'; // ¡NUEVO! Importamos el componente
-import { ModificarMaquinaComponent } from './admin/gestion-maquinas/modificar-maquina/modificar-maquina.component'; // ¡NUEVO! Importamos el componente de modificación
 import { ListarUsuariosComponent } from './admin/gestion-usuarios/listar-usuarios.component';
 import { ListaNegraComponent } from './admin/gestion-usuarios/lista-negra/lista-negra.component';
 import { adminGuard } from './guards/admin.guard';
@@ -20,7 +19,6 @@ import { ModificarUsuarioComponent } from './usuario/modificar-usuario/modificar
 import { authGuard } from './guards/auth.guard';
 import { EliminarCuentaPropiaComponent } from './usuario/eliminar-usuario/eliminar-usuario.component'; // <-- ¡NUEVO!
 import { RealizarReservaComponent } from './usuario/reservas/realizar-reservas/realizar-reserva.component';
-import { EliminarMaquinaComponent } from './admin/gestion-maquinas/eliminar-maquina/eliminar-maquina.component';
 import { EstadisticasComponent } from './admin/estadisticas/estadisticas.component';
 import { empleadoDashboardComponent } from './empleado/empleado-dashboard.component';
 import { trabajadorGuard } from './guards/trabajador.guard';
@@ -75,17 +73,6 @@ export const routes: Routes = [
   {
     path: 'admin/maquinas/listar',
     component: GestionarMaquinasComponent,
-    canActivate: [adminGuard],
-  },
-  {
-    path: 'admin/maquinas/modificar',
-    component: ModificarMaquinaComponent,
-    canActivate: [adminGuard],
-  },
-
-  {
-    path: 'admin/maquinas/eliminar',
-    component: EliminarMaquinaComponent,
     canActivate: [adminGuard],
   },
 

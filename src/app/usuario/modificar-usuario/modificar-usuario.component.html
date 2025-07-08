@@ -15,17 +15,6 @@
       <p class="mt-3 fs-5 text-muted">Cargando tu información...</p>
     </div>
 
-    <!-- Error -->
-    <div
-      *ngIf="!isLoading && errorMessage"
-      class="alert alert-danger text-center"
-    >
-      <p class="mb-0 fs-5">{{ errorMessage }}</p>
-      <button class="btn btn-outline-dark mt-3" routerLink="/user-dashboard">
-        Volver
-      </button>
-    </div>
-
     <!-- Formulario -->
     <form *ngIf="!isLoading && user" (ngSubmit)="saveChanges()">
       <div class="row g-4">

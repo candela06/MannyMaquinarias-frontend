@@ -95,6 +95,14 @@ export class UsuarioService {
       .pipe(catchError(this.handleError));
   }
 
+  crearEmpleado(data: {
+    email: string;
+    edad: number;
+    rolCreador: string;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/usuarios/crear`, data);
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error desconocido.';
     if (error.error instanceof ErrorEvent) {

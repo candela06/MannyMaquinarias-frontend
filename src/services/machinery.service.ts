@@ -111,10 +111,8 @@ export class MachineryService {
    * (incluyendo la imagen si fue cambiada, o no si se mantiene la anterior).
    * @returns {Observable<any>} Un Observable que emite la respuesta del backend.
    */
-  actualizarMaquina(id: number, maquinaData: FormData): Observable<any> {
-    // Asumiendo un endpoint como /maquinas/update/:id para actualizar una máquina.
-    // El backend debe manejar si la imagen se incluye o no en el FormData.
-    return this.http.put(`${this._apiUrl}/update/${id}`, maquinaData);
+  actualizarMaquina(id: number, datos: any) {
+    return this.http.put(`${this._apiUrl}/maquinas/update/${id}`, datos);
   }
 
   private handleError(error: HttpErrorResponse) {
