@@ -1,6 +1,6 @@
 <div class="container">
   <h2 class="mb-3">Usuarios registrados por año</h2>
-  <label for="anio">Seleccionar año:</label>
+  <label class="text-black" for="anio">Seleccionar año:</label>
   <select
     [(ngModel)]="anioSeleccionado"
     (change)="obtenerEstadisticasUsuarios()"
@@ -10,7 +10,7 @@
     </option>
   </select>
 
-  <canvas id="usuariosChart" width="400" height="200"></canvas>
+  <canvas id="usuariosChart" width="300" height="100"></canvas>
 </div>
 
 <!-- Ingresos por fecha -->
@@ -18,7 +18,7 @@
   <h2 class="mb-3">Ingresos por Fecha</h2>
 
   <div class="filtros-fecha mb-3">
-    <label for="fechaInicio" class="form-label me-2">Desde:</label>
+    <label for="fechaInicio" class="form-label me-2 text-black">Desde:</label>
     <input
       type="date"
       id="fechaInicio"
@@ -27,7 +27,7 @@
       class="form-control d-inline-block w-auto me-3"
     />
 
-    <label for="fechaFin" class="form-label me-2">Hasta:</label>
+    <label for="fechaFin" class="form-label me-2 text-black">Hasta:</label>
     <input
       type="date"
       id="fechaFin"
@@ -49,3 +49,34 @@
     <canvas id="montosChart" width="400" height="200"></canvas>
   </div>
 </div>
+
+<!-- tercer estadística -->
+<div class="container">
+  <h2 class="mb-3">Porcentaje de máquinas alquiladas por categoría</h2>
+  <div class="estadisticas-wrapper my-5">
+    <div class="chart-card">
+      <canvas id="categoriaChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<style>
+  h2 {
+    color: rgb(56, 56, 56);
+  }
+  label {
+    color: rgba(rgb(0, 0, 0));
+  }
+  .estadisticas-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-card {
+    padding: 1.5rem;
+
+    max-width: 600px;
+    width: 600px;
+  }
+</style>

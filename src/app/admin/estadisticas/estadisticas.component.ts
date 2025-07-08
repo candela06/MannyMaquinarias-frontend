@@ -31,6 +31,8 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
   fechaInicio: string = '';
   fechaFin: string = '';
 
+  categoriaChart: Chart | undefined;
+
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -41,6 +43,8 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
 
     this.fechaFin = hoy.toISOString().split('T')[0];
     this.fechaInicio = haceUnMes.toISOString().split('T')[0];
+
+    this.renderDynamicChart();
   }
 
   ngAfterViewInit(): void {
@@ -51,7 +55,13 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.cargarEstadisticasMontos();
     }, 300);
+
+    //tercer estadistica
+    setTimeout(() => {
+      this.renderDynamicChart();
+    }, 300);
   }
+
   getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
@@ -148,8 +158,8 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
           {
             label: 'Usuarios registrados',
             data: valores,
-            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-            borderColor: 'rgba(54, 162, 235, 1)',
+            backgroundColor: 'rgb(255, 184, 53)',
+            borderColor: 'rgb(248, 211, 143)',
             borderWidth: 1,
           },
         ],
@@ -246,16 +256,18 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
     }
 
     this.chartMontos = new Chart(ctx, {
-      type: 'bar',
+      type: 'line',
       data: {
         labels: labels,
         datasets: [
           {
             label: 'Ingresos diarios ($)',
             data: valores,
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1,
+            fill: true,
+            borderColor: 'rgba(125, 155, 15, 0.6)', // Naranja suave
+            backgroundColor: 'rgba(223, 238, 168, 0.6)',
+            pointBackgroundColor: 'rgb(94, 121, 0)', // Puntos en naranja fuerte
+            tension: 0.3, // Línea curva
           },
         ],
       },
@@ -283,5 +295,64 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
         },
       },
     });
+  }
+
+  renderDynamicChart(): void {
+    this.http
+      .get<any[]>('http://localhost:3001/estadisticas/categorias')
+      .subscribe({
+        next: (categorias) => {
+          const labels = categorias.map((c) => c.categoria);
+          const data = categorias.map((c) => c.porcentaje);
+
+          const colores = [
+            'rgba(255, 175, 26, 0.6)',
+            'rgba(255, 130, 203, 0.6)',
+            'rgba(134, 255, 255, 0.6)',
+            'rgba(231, 255, 143, 0.6)',
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+          ];
+
+          // Evitar duplicar el gráfico si ya fue creado
+          const existingChart = Chart.getChart('categoriaChart');
+          if (existingChart) {
+            existingChart.destroy();
+          }
+
+          new Chart('categoriaChart', {
+            type: 'pie',
+            data: {
+              labels,
+              datasets: [
+                {
+                  label: 'Porcentaje por categoría',
+                  data,
+                  backgroundColor: colores.slice(0, labels.length),
+                  borderColor: '#fff',
+                  borderWidth: 2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    color: '#000',
+                    font: {
+                      size: 14,
+                    },
+                  },
+                },
+              },
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error al obtener porcentajes:', err);
+        },
+      });
   }
 }
