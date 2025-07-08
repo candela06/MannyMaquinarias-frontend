@@ -1,30 +1,154 @@
-<div class="container mt-4 mb-5">
-  <div class="card p-4 shadow-sm">
-    <h2 class="text-center mb-4 text-orange fw-bold">Gestionar Máquinas</h2>
-
-    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
-      <div class="col" *ngFor="let option of gestionOptions">
-        <div class="card h-100 text-center admin-option-card">
-          <div class="card-body d-flex flex-column justify-content-between">
-            <i class="bi {{ option.icon }} display-4 text-orange mb-3"></i>
-            <h5 class="card-title fw-bold text-dark">{{ option.title }}</h5>
-            <p class="card-text text-muted">{{ option.description }}</p>
+<div class="container my-5">
+  <h2 class="mb-4 text-center">Listado de Máquinas</h2>
+  <button class="btn btn-secondary mb-4 me-2" routerLink="/admin-dashboard">
+    Volver
+  </button>
+  <div>
+    <table class="table table-hover table-bordered shadow-sm rounded-4">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">N° Serie</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Marca</th>
+          <th scope="col">Modelo</th>
+          <th scope="col">Categoría</th>
+          <th scope="col">Precio ($)</th>
+          <th scope="col">Sucursal</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let maquina of maquinas">
+          <td>{{ maquina.numeroSerie }}</td>
+          <td>{{ maquina.nombre }}</td>
+          <td>{{ maquina.marca }}</td>
+          <td>{{ maquina.modelo }}</td>
+          <td>{{ maquina.categoria }}</td>
+          <td>{{ maquina.precio | currency : "ARS" : "symbol" }}</td>
+          <td>{{ maquina.sucursal?.localidad }}</td>
+          <td>
             <button
-              [routerLink]="option.route"
-              class="btn btn-primary mt-3"
-              (click)="logClick(option.route)"
+              class="btn btn-outline-primary btn-sm"
+              (click)="editarMaquina(maquina)"
+              data-bs-toggle="modal"
+              data-bs-target="#modalEditar"
             >
-              Ir a {{ option.title.split(" ")[0] }}
+              <i class="bi bi-pencil"></i> Editar
             </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="text-center mt-5">
-      <button class="btn btn-secondary" [routerLink]="['/admin-dashboard']">
-        Atrás
-      </button>
-    </div>
+            <button
+              (click)="eliminarMaquina(maquina.id)"
+              class="btn btn-danger btn-sm"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
+
+<!-- Modal -->
+<!-- Panel flotante simulando un modal -->
+<div *ngIf="mostrarEditor" class="backdrop">
+  <div class="editor-panel bg-white p-4 rounded-4 shadow-lg">
+    <h4 class="mb-3">Editar Máquina</h4>
+    <form *ngIf="maquinaSeleccionada">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label>Numero de serie</label>
+          <input
+            [(ngModel)]="maquinaSeleccionada.numeroSerie"
+            name="numeroSerie"
+            class="form-control"
+          />
+        </div>
+        <div class="col-md-6">
+          <label>Nombre</label>
+          <input
+            [(ngModel)]="maquinaSeleccionada.nombre"
+            name="nombre"
+            class="form-control"
+          />
+        </div>
+        <div class="col-md-6">
+          <label>Marca</label>
+          <input
+            [(ngModel)]="maquinaSeleccionada.marca"
+            name="marca"
+            class="form-control"
+          />
+        </div>
+        <div class="col-md-6">
+          <label>Modelo</label>
+          <input
+            [(ngModel)]="maquinaSeleccionada.modelo"
+            name="modelo"
+            class="form-control"
+          />
+        </div>
+        <div class="col-md-6">
+          <label>Categoría</label>
+          <input
+            [(ngModel)]="maquinaSeleccionada.categoria"
+            name="categoria"
+            class="form-control"
+          />
+        </div>
+        <div class="col-md-6">
+          <label>Precio</label>
+          <input
+            type="number"
+            [(ngModel)]="maquinaSeleccionada.precio"
+            name="precio"
+            class="form-control"
+          />
+        </div>
+        <div class="col-md-6">
+          <label>Imagen (JPG o PNG)</label>
+          <input type="file" accept=".jpg, .jpeg, .png" class="form-control" />
+        </div>
+      </div>
+
+      <div class="mt-4 d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="guardarCambios()"
+        >
+          Guardar
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          (click)="cerrarEditor()"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1050;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .editor-panel {
+    width: 90%;
+    max-width: 800px;
+    background-color: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+  }
+</style>

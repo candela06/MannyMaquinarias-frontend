@@ -1,53 +1,155 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MachineryService } from '../../../../services/machinery.service';
+import { Machinery } from '../../../modles/machinery.model';
+import Swal from 'sweetalert2';
 import { RouterModule } from '@angular/router';
 
-/**
- * @description Componente para gestionar las opciones de máquinas.
- * Este componente actúa como un menú intermedio, presentando al administrador
- * las sub-opciones para "Ver", "Modificar" y "Eliminar" máquinas.
- */
 @Component({
-  standalone: true,
-  selector: 'app-gestionar-maquinas',
+  selector: 'app-listado-maquinas',
   templateUrl: './gestionar-maquinas.component.html',
-  styleUrls: ['./gestionar-maquinas.component.css'],
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
 })
-export class GestionarMaquinasComponent {
-  /**
-   * @description Define las sub-opciones disponibles para la gestión de máquinas.
-   * Cada objeto contiene el título, una descripción, un icono y la ruta a la que navega.
-   * Las rutas específicas para 'Ver', 'Modificar' y 'Eliminar' serán creadas
-   * con sus respectivos componentes más adelante.
-   */
-  gestionOptions = [
-    /*{
-      title: 'Ver Máquinas',
-      description: 'Consultar el inventario completo de máquinas.',
-      icon: 'bi-eye-fill', // Icono de Bootstrap Icons
-      route: '/admin/maquinas/ver', // RUTA FUTURA: Crear componente 'VerMaquinasComponent'
-    },*/
-    {
-      title: 'Modificar Máquinas',
-      description: 'Actualizar los detalles de las máquinas existentes.',
-      icon: 'bi-pencil-square',
-      route: 'admin/maquinas/modificar', // RUTA FUTURA: Crear componente 'ModificarMaquinasComponent'
-    },
-    {
-      title: 'Eliminar Máquinas',
-      description: 'Remover máquinas del inventario.',
-      icon: 'bi-trash-fill',
-      route: '/admin/maquinas/eliminar', // RUTA FUTURA: Crear componente 'EliminarMaquinasComponent'
-    },
-  ];
+export class GestionarMaquinasComponent implements OnInit {
+  maquinas: Machinery[] = [];
+  maquinaSeleccionada: Machinery | null = null;
+  mostrarEditor: boolean = false;
 
-  /**
-   * @description Función para registrar el clic en consola.
-   * Útil para depuración.
-   * @param {string} route - La ruta asociada a la opción clicada.
-   */
-  logClick(route: string): void {
-    console.log('Opción de gestión de máquinas "' + route + '" clicada.');
+  constructor(private machineryService: MachineryService) {}
+
+  ngOnInit(): void {
+    this.cargarMaquinas();
+  }
+
+  cargarMaquinas(): void {
+    this.machineryService.getMachineries().subscribe({
+      next: (data) => {
+        this.maquinas = data;
+      },
+      error: (err) => {
+        console.error('Error al obtener las máquinas:', err);
+      },
+    });
+  }
+
+  editarMaquina(maquina: Machinery): void {
+    this.maquinaSeleccionada = { ...maquina };
+    this.mostrarEditor = true;
+  }
+
+  cerrarEditor(): void {
+    this.maquinaSeleccionada = null;
+    this.mostrarEditor = false;
+  }
+
+  guardarCambios(): void {
+    if (!this.maquinaSeleccionada) return;
+
+    const datosModificados = {
+      numeroSerie: this.maquinaSeleccionada.numeroSerie,
+      nombre: this.maquinaSeleccionada.nombre,
+      marca: this.maquinaSeleccionada.marca,
+      modelo: this.maquinaSeleccionada.modelo,
+      precio: this.maquinaSeleccionada.precio,
+      categoria: this.maquinaSeleccionada.categoria,
+      imageUrl: this.maquinaSeleccionada.imageUrl,
+      sucursal_id: this.maquinaSeleccionada.sucursal?.id,
+    };
+
+    this.machineryService
+      .actualizarMaquina(this.maquinaSeleccionada.id, datosModificados)
+      .subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Máquina actualizada',
+            text: 'La máquina fue modificada correctamente.',
+            confirmButtonColor: '#3085d6',
+          });
+          const index = this.maquinas.findIndex(
+            (m) => m.id === this.maquinaSeleccionada!.id
+          );
+          if (index !== -1) {
+            this.maquinas = [
+              ...this.maquinas.slice(0, index),
+              { ...this.maquinaSeleccionada! },
+              ...this.maquinas.slice(index + 1),
+            ];
+          }
+          this.mostrarEditor = false;
+        },
+        error: (err) => {
+          console.error(err);
+          if (err.status === 409) {
+            const mensaje = err.error?.detalles || err.error?.error || '';
+            if (mensaje.includes('reservas')) {
+              Swal.fire({
+                icon: 'error',
+                title: 'No se puede modificar la máquina',
+                text: 'La máquina tiene reservas pendientes activas.',
+                confirmButtonColor: '#d33',
+              });
+            } else if (mensaje.includes('número de serie')) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Número de serie duplicado',
+                text: 'Ese número de serie ya está asignado a otra máquina.',
+                confirmButtonColor: '#d33',
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: mensaje || 'Conflicto al actualizar la máquina.',
+                confirmButtonColor: '#d33',
+              });
+            }
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un error al actualizar la máquina.',
+              confirmButtonColor: '#d33',
+            });
+          }
+        },
+      });
+  }
+  eliminarMaquina(id: number): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.machineryService.eliminarMaquina(id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Eliminado',
+              text: 'La máquina fue eliminada correctamente.',
+              confirmButtonColor: '#3085d6',
+            }).then(() => {
+              this.maquinas = this.maquinas.filter((m) => m.id !== id);
+            });
+          },
+          error: (err) => {
+            console.error('Error al eliminar máquina:', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo eliminar la máquina.',
+              confirmButtonColor: '#3085d6',
+            });
+          },
+        });
+      }
+    });
   }
 }

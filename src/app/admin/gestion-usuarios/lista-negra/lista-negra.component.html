@@ -4,24 +4,18 @@
     <table class="table table-striped table-bordered shadow-sm rounded">
       <thead class="table-dark">
         <tr>
-          <th>ID</th>
           <th>DNI</th>
           <th>Nombre</th>
           <th>Apellido</th>
           <th>Email</th>
-          <th>Dirección</th>
-          <th>Edad</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let usuario of usuarios">
-          <td>{{ usuario.id }}</td>
           <td>{{ usuario.dni }}</td>
           <td>{{ usuario.nombre }}</td>
           <td>{{ usuario.apellido }}</td>
           <td>{{ usuario.email }}</td>
-          <td>{{ usuario.direccion }}</td>
-          <td>{{ usuario.edad }}</td>
         </tr>
       </tbody>
     </table>
