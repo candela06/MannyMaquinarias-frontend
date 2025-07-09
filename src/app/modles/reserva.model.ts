@@ -7,6 +7,7 @@ export interface Reserva {
   fecha_fin: string;
   fecha_reserva: string;
   pagada: boolean;
+  eliminado: boolean;
   maquina: {
     id: number;
     nombre: string;

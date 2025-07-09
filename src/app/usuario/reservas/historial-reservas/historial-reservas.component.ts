@@ -8,6 +8,7 @@ import { MachineryService } from '../../../../services/machinery.service';
 import { PolicyService } from '../../../../services/policy.service';
 import { AuthService } from '../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-ver-historial',
@@ -76,5 +77,39 @@ export class HistorialReservasComponent implements OnInit {
 
   cerrarDetalle() {
     this.reservaSeleccionada = null;
+  }
+
+  cancelarReserva(reserva: Reserva): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción aplicará la política de cancelación correspondiente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No, mantener',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.reservaService.cancelarReserva(reserva.id).subscribe({
+          next: (res) => {
+            Swal.fire(
+              'Cancelada',
+              'La reserva fue cancelada exitosamente.',
+              'success'
+            );
+            reserva.eliminado = true;
+          },
+          error: (err) => {
+            console.error('Error al cancelar reserva:', err);
+            Swal.fire(
+              'Error',
+              'No se pudo cancelar la reserva. Intenta nuevamente.',
+              'error'
+            );
+          },
+        });
+      }
+    });
   }
 }

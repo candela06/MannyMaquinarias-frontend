@@ -70,6 +70,10 @@ export class ReservaService {
     );
   }
 
+  cancelarReserva(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/cancelar?reservaId=${id}`);
+  }
+
   // Manejador de errores para la creación de reservas
   private handleErrorCrearReserva(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error al intentar realizar la reserva.';

@@ -95,7 +95,7 @@ export class UsuarioService {
       .pipe(catchError(this.handleError));
   }
 
-  crearEmpleado(data: {
+  crearUsuario(data: {
     email: string;
     edad: number;
     rolCreador: string;
@@ -148,6 +148,10 @@ export class UsuarioService {
   getUsuariosPorMes(
     anio: number
   ): Observable<{ mes: number; cantidad: number }[]> {
-    return this.http.get<any>(`${this.apiUrl}/estadistiCAS`);
+    return this.http.get<any>(`${this.apiUrl}/estadisticas`);
+  }
+
+  getMontoUsuario(): Observable<{ monto: number }> {
+    return this.http.get<{ monto: number }>(`${this.apiUrl}/usuarios/monto`);
   }
 }

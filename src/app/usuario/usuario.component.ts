@@ -1,12 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Necesario para directivas como *ngFor, *ngIf
 import { RouterModule } from '@angular/router'; // Necesario para routerLink
+import { UsuarioService } from '../../services/usuario.service';
 
-/**
- * @description Componente del panel de administración.
- * Sirve como punto central para que los administradores accedan a las diferentes
- * funcionalidades de gestión de la aplicación, como el registro, listado y modificación de máquinas.
- */
 @Component({
   standalone: true,
   selector: 'app-user-dashboard',
@@ -15,12 +11,9 @@ import { RouterModule } from '@angular/router'; // Necesario para routerLink
   imports: [CommonModule, RouterModule], // Importar RouterModule
 })
 export class UsuarioDashboardComponent {
-  montoPendiente: number = 100;
-  /**
-   * @description Define las opciones disponibles en el panel de administración.
-   * Cada objeto contiene el título, una descripción, un icono y la ruta a la que navega.
-   */
-  adminOptions = [
+  montoPendiente: number = 0;
+
+  UsuarioOptions = [
     {
       title: 'Ver Reservas',
       description: 'Consultar tu historial de reservas',
@@ -43,5 +36,18 @@ export class UsuarioDashboardComponent {
 
   logClick(route: string): void {
     console.log('Botón "Ir a ' + route + '" clicado.');
+  }
+
+  constructor(private usuarioService: UsuarioService) {}
+
+  ngOnInit(): void {
+    this.usuarioService.getMontoUsuario().subscribe({
+      next: (res) => {
+        this.montoPendiente = res.monto;
+      },
+      error: (err) => {
+        console.error('Error al obtener monto:', err);
+      },
+    });
   }
 }

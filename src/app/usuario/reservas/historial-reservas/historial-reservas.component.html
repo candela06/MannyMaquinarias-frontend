@@ -1,6 +1,6 @@
 <!--src\app\usuario\reservas\historial-reservas\historial-reservas.component.html-->
 <div class="container mt-4">
-  <h2 class="mb-4">Historial de Reservas</h2>
+  <h2 class="mb-4">Historial de Reservas 📃</h2>
 
   <div *ngIf="cargando" class="alert alert-info">Cargando tus reservas...</div>
 
@@ -93,7 +93,13 @@
           <button class="btn btn-secondary mb-4 me-2" (click)="cerrarDetalle()">
             Cerrar
           </button>
-          <button class="btn btn-danger mb-4 me-2">Cancelar</button>
+          <button
+            class="btn btn-danger mb-4 me-2"
+            (click)="cancelarReserva(reservaSeleccionada!)"
+            [disabled]="reservaSeleccionada.eliminado === true"
+          >
+            Cancelar
+          </button>
         </div>
       </div>
     </div>

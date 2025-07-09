@@ -309,7 +309,7 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
             'rgba(255, 175, 26, 0.6)',
             'rgba(255, 130, 203, 0.6)',
             'rgba(134, 255, 255, 0.6)',
-            'rgba(231, 255, 143, 0.6)',
+            'rgba(206, 235, 101, 0.6)',
             'rgba(255, 99, 132, 0.6)',
             'rgba(54, 162, 235, 0.6)',
           ];
@@ -326,7 +326,7 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
               labels,
               datasets: [
                 {
-                  label: 'Porcentaje por categoría',
+                  label: 'Porcentaje',
                   data,
                   backgroundColor: colores.slice(0, labels.length),
                   borderColor: '#fff',

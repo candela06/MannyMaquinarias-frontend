@@ -13,7 +13,16 @@
           ></i>
           <h5 class="card-title fw-bold text-dark">{{ option.title }}</h5>
           <p class="card-text text-muted">{{ option.description }}</p>
+          <button
+            *ngIf="option.accionLocal"
+            (click)="logClick(option)"
+            class="btn btn-outline-orange mt-auto"
+          >
+            Ir a {{ option.title }}
+          </button>
+
           <a
+            *ngIf="!option.accionLocal"
             [routerLink]="option.route"
             class="btn btn-outline-orange mt-auto stretched-link"
           >
@@ -23,6 +32,51 @@
       </div>
     </div>
   </div>
+</div>
+
+<div
+  *ngIf="mostrarFormularioCliente"
+  class="card shadow-sm p-4 mb-4 formulario-centrado"
+>
+  <h4 class="mb-3">Nuevo Cliente ✨</h4>
+  <form #formEmpleado="ngForm" (ngSubmit)="crearCliente()">
+    <div class="mb-3">
+      <label for="email" class="form-label">Email:</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        class="form-control"
+        [(ngModel)]="nuevoCliente.email"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="edad" class="form-label">Fecha de nacimiento:</label>
+      <input
+        type="date"
+        id="edad"
+        name="edad"
+        class="form-control"
+        [(ngModel)]="nuevoCliente.edad"
+        required
+        (change)="validarEdad()"
+        [max]="hoy"
+      />
+      <div *ngIf="edadValida === false" class="text-danger mt-1">
+        El empleado debe tener al menos 18 años.
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-outline-success"
+      [disabled]="formEmpleado.invalid || edadValida === false"
+    >
+      Crear Cliente
+    </button>
+  </form>
 </div>
 
 <style>

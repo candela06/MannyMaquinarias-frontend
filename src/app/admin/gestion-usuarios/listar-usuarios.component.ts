@@ -148,7 +148,7 @@ export class ListarUsuariosComponent implements OnInit {
       rolCreador: 'admin',
     };
 
-    this.usuarioService.crearEmpleado(payload).subscribe({
+    this.usuarioService.crearUsuario(payload).subscribe({
       next: () => {
         Swal.fire(
           'Empleado creado',
