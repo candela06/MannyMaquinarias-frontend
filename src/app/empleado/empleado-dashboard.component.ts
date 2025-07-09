@@ -37,7 +37,7 @@ export class empleadoDashboardComponent {
     {
       title: 'Crear Cliente',
       description:
-        '!Crea un cliente para que pueda utilizar nuestro servicio! ',
+        '¡Crea un cliente para que pueda utilizar nuestro servicio! ',
       icon: 'bi-list-ul',
       route: '',
       accionLocal: 'crearCliente',

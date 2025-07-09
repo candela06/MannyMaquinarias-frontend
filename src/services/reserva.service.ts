@@ -5,6 +5,7 @@ import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
+  HttpParams,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -72,6 +73,33 @@ export class ReservaService {
 
   cancelarReserva(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/cancelar?reservaId=${id}`);
+  }
+
+  eliminarReserva(reservaId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/eliminar`, {
+      params: { reservaId: reservaId.toString() },
+    });
+  }
+
+  crearReservaEmpleado(payload: {
+    email: string;
+    fecha_inicio: string;
+    fecha_fin: string;
+    maquina_id: number;
+    precio: number;
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/agregar`, payload);
+  }
+
+  getReservasPorFecha(
+    fechaInicio: string,
+    fechaFin: string
+  ): Observable<Reserva[]> {
+    const params = new HttpParams()
+      .set('fecha_inicio', fechaInicio)
+      .set('fecha_fin', fechaFin);
+
+    return this.http.get<Reserva[]>(`${this.apiUrl}/fecha`, { params });
   }
 
   // Manejador de errores para la creación de reservas

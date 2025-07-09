@@ -30,16 +30,31 @@
         </li>
       </ul>
     </div>
-    <div>
+    <div class="ms-2">
       <button
-        class="btn btn-secondary ms-2"
+        class="btn btn-outline-secondary"
         (click)="mostrarTodasLasReservas()"
       >
         Mostrar todas
       </button>
     </div>
+    <div class="ms-2">
+      <button class="btn btn-outline-primary" (click)="abrirFormulario()">
+        Asignar nueva reserva
+      </button>
+    </div>
+    <div class="ms-2 d-flex align-items-center gap-3">
+      <input type="date" [(ngModel)]="fecha_inicio" class="form-control" />
+      <input type="date" [(ngModel)]="fecha_fin" class="form-control" />
+      <button
+        class="btn btn-primary"
+        (click)="filtrarPorFechas()"
+        [disabled]="!fecha_inicio || !fecha_fin"
+      >
+        Filtrar
+      </button>
+    </div>
   </div>
-
   <!-- tabla de reservas -->
 
   <div *ngIf="isLoading" class="text-center">
@@ -111,16 +126,137 @@
           -->
 
           <td>
-            <button class="btn btn-sm btn-danger">Cancelar</button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="eliminarReserva(reserva.id)"
+            >
+              Cancelar
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
-    preparadito en el cod para esperar el monto
+  </div>
+</div>
+<div
+  class="modal-backdrop fade show"
+  *ngIf="mostrarFormulario"
+  (click)="cerrarFormulario()"
+></div>
+
+<!-- Modal de asignar reserva -->
+<div
+  class="modal d-block"
+  tabindex="-1"
+  *ngIf="mostrarFormulario"
+  style="background-color: rgba(0, 0, 0, 0.5)"
+>
+  <div
+    class="modal-dialog modal-lg modal-dialog-centered"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-content shadow">
+      <div class="modal-header">
+        <h5 class="modal-title">Asignar nueva reserva</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="cerrarFormulario()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="crearReserva()">
+          <div class="mb-3">
+            <label>Email del cliente</label>
+            <input
+              type="email"
+              class="form-control"
+              [(ngModel)]="reserva.email"
+              name="email"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label>Máquina</label>
+            <select
+              class="form-select"
+              [(ngModel)]="reserva.maquina_id"
+              name="maquina_id"
+              required
+            >
+              <option [ngValue]="null" disabled selected>
+                Seleccioná una máquina
+              </option>
+              <option *ngFor="let m of maquinas" [ngValue]="m.id">
+                {{ m.nombre }} - {{ m.marca }} {{ m.modelo }}
+              </option>
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label>Fecha de inicio</label>
+              <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="reserva.fecha_inicio"
+                name="inicio"
+                required
+                (change)="calcularPrecio()"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Fecha de fin</label>
+              <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="reserva.fecha_fin"
+                name="fin"
+                required
+                (change)="calcularPrecio()"
+              />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label>Precio total</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="reserva.precio"
+              name="precio"
+              readonly
+            />
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-success">
+              Confirmar reserva
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cerrarFormulario()"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 
 <style>
+  .modal {
+    z-index: 1055;
+  }
+
+  .modal-backdrop {
+    z-index: 1050;
+  }
+
   .text-orange {
     color: #fd7e14;
   }
