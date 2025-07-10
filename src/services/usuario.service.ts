@@ -127,6 +127,10 @@ export class UsuarioService {
     return this.http.post<any>(`${this.apiUrl}/listaNegra/${email}`, {});
   }
 
+  sacarDeListaNegra(email: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/listaNegra/${email}`);
+  }
+
   getBlacklistedUsers(): Observable<User[]> {
     return this.http
       .get<{ usuarios: User[] }>(`${this.apiUrl}/listaNegra/`)

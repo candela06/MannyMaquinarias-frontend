@@ -8,6 +8,7 @@
           <th>Nombre</th>
           <th>Apellido</th>
           <th>Email</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -16,6 +17,15 @@
           <td>{{ usuario.nombre }}</td>
           <td>{{ usuario.apellido }}</td>
           <td>{{ usuario.email }}</td>
+          <td>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="sacarDeListaNegra(usuario.email)"
+              *ngIf="usuario.id"
+            >
+              Sacar
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
