@@ -154,4 +154,23 @@ export class UsuarioService {
   getMontoUsuario(): Observable<{ monto: number }> {
     return this.http.get<{ monto: number }>(`${this.apiUrl}/usuarios/monto`);
   }
+
+  getMontoPorEmail(email: string): Observable<{ monto: number }> {
+    const params = new HttpParams().set('email', email);
+    return this.http.get<{ monto: number }>(
+      `${this.apiUrl}/usuarios/monto-cliente`,
+      {
+        params,
+      }
+    );
+  }
+
+  resetearMontoUsuario(email: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/usuarios/resetear-monto`,
+      {
+        email,
+      }
+    );
+  }
 }
