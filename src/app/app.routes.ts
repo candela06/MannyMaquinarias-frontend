@@ -23,6 +23,8 @@ import { EstadisticasComponent } from './admin/estadisticas/estadisticas.compone
 import { empleadoDashboardComponent } from './empleado/empleado-dashboard.component';
 import { trabajadorGuard } from './guards/trabajador.guard';
 import { ListarReservasComponent } from './empleado/reservas/listar-reservas.component';
+import { FailureComponent } from './failure/failure.component';
+import { SuccessComponent } from './success/success.component';
 import { Component } from '@angular/core';
 
 export const routes: Routes = [
@@ -60,6 +62,8 @@ export const routes: Routes = [
     component: ModificarUsuarioComponent,
     canActivate: [authGuard],
   },
+  { path: 'pagos/success', component: SuccessComponent },
+  { path: 'pagos/failure', component: FailureComponent },
   {
     path: 'admin-dashboard',
     component: AdminDashboardComponent,
