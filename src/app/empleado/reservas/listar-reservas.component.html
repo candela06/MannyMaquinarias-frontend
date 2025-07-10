@@ -83,7 +83,6 @@
           <th scope="col">Inicio</th>
           <th scope="col">Fin</th>
           <th scope="col">Fecha Reserva</th>
-          <th scope="col">Pagada</th>
           <th scope="col">Acciones</th>
           <!--<th scope="col">Monto</th>-->
         </tr>
@@ -97,17 +96,7 @@
           <td>{{ reserva.fecha_inicio | date : "dd/MM/yyyy" }}</td>
           <td>{{ reserva.fecha_fin | date : "dd/MM/yyyy" }}</td>
           <td>{{ reserva.fecha_reserva | date : "dd/MM/yyyy" }}</td>
-          <td>
-            <span
-              class="badge"
-              [ngClass]="{
-                'bg-success': reserva.pagada,
-                'bg-danger': !reserva.pagada
-              }"
-            >
-              {{ reserva.pagada ? "Sí" : "No" }}
-            </span>
-          </td>
+
           <!--
           <td *ngIf="reserva.montoReembolso !== undefined" class="fw-bold">
             <span
