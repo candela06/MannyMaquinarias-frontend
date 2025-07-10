@@ -19,6 +19,12 @@ export class empleadoDashboardComponent {
     email: '',
     edad: '',
   };
+  mostrarFormularioSaldar = false;
+  emailCliente = '';
+  montoActual: number | null = null;
+  cargandoMonto = false;
+  errorMonto = '';
+
   employeeOptions = [
     {
       title: 'Gestionar Máquinas',
@@ -42,6 +48,13 @@ export class empleadoDashboardComponent {
       route: '',
       accionLocal: 'crearCliente',
     },
+    {
+      title: 'Saldar Deuda',
+      description: 'Salda la deuda de los clientes',
+      icon: 'bi-list-ul',
+      route: '',
+      accionLocal: 'saldarDeuda',
+    },
   ];
 
   constructor(private usuarioService: UsuarioService) {}
@@ -49,6 +62,9 @@ export class empleadoDashboardComponent {
   logClick(option: any): void {
     if (option.accionLocal === 'crearCliente') {
       this.mostrarFormularioCliente = true;
+    }
+    if (option.accionLocal === 'saldarDeuda') {
+      this.abrirFormularioSaldar();
     }
   }
 
@@ -126,6 +142,58 @@ export class empleadoDashboardComponent {
         } else {
           Swal.fire('Error', 'No se pudo crear el cliente.', 'error');
         }
+      },
+    });
+  }
+
+  abrirFormularioSaldar(): void {
+    this.mostrarFormularioSaldar = true;
+    this.emailCliente = '';
+    this.montoActual = null;
+    this.errorMonto = '';
+  }
+
+  cerrarModal(event: MouseEvent): void {
+    this.mostrarFormularioSaldar = false;
+    this.emailCliente = '';
+    this.montoActual = null;
+    this.errorMonto = '';
+  }
+
+  buscarMonto(): void {
+    if (!this.emailCliente.trim()) {
+      this.errorMonto = 'Ingresá un email válido';
+      return;
+    }
+
+    this.errorMonto = '';
+    this.cargandoMonto = true;
+
+    this.usuarioService.getMontoPorEmail(this.emailCliente).subscribe({
+      next: (res) => {
+        this.montoActual = res.monto;
+        this.cargandoMonto = false;
+      },
+      error: (err) => {
+        this.errorMonto = err?.error?.error || 'No se pudo obtener el monto';
+        this.montoActual = null;
+        this.cargandoMonto = false;
+      },
+    });
+  }
+
+  resetearMonto(): void {
+    this.usuarioService.resetearMontoUsuario(this.emailCliente).subscribe({
+      next: () => {
+        Swal.fire('Éxito', 'Monto reseteado a $0 correctamente.', 'success');
+        this.mostrarFormularioSaldar = false;
+      },
+      error: (err) => {
+        Swal.fire(
+          'Error',
+          err?.error?.error || 'No se pudo resetear el monto.',
+          'error'
+        );
       },
     });
   }

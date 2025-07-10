@@ -79,8 +79,130 @@
   </form>
 </div>
 
+<!-- saldar deuda -->
+<!-- MODAL BACKDROP para SALDAR DEUDA con Bootstrap -->
+<!-- MODAL BACKDROP elegante -->
+<div
+  class="modal fade show d-block"
+  tabindex="-1"
+  style="background-color: rgba(0, 0, 0, 0.6)"
+  *ngIf="mostrarFormularioSaldar"
+  (click)="cerrarModal($event)"
+>
+  <div
+    class="modal-dialog modal-dialog-centered"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-content rounded-4 shadow-lg border-0">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-semibold fs-4">Saldar deuda de un cliente</h5>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Cerrar"
+          (click)="cerrarModal($event)"
+        ></button>
+      </div>
+
+      <div class="modal-body pt-0">
+        <div class="mb-4">
+          <label for="emailCliente" class="form-label fw-medium"
+            >Email del cliente</label
+          >
+          <input
+            type="email"
+            id="emailCliente"
+            class="form-control form-control-lg rounded-3 shadow-sm"
+            [(ngModel)]="emailCliente"
+            placeholder="cliente@correo.com"
+            (keyup.enter)="buscarMonto()"
+          />
+        </div>
+
+        <div class="d-grid mb-4">
+          <button
+            class="btn btn-dark btn-lg rounded-3"
+            (click)="buscarMonto()"
+            [disabled]="cargandoMonto"
+          >
+            Buscar monto
+          </button>
+        </div>
+
+        <div *ngIf="cargandoMonto" class="text-center text-muted mb-3">
+          <div
+            class="spinner-border spinner-border-sm me-2"
+            role="status"
+          ></div>
+          Buscando monto...
+        </div>
+
+        <div *ngIf="errorMonto" class="alert alert-danger rounded-3 py-2 px-3">
+          {{ errorMonto }}
+        </div>
+
+        <div
+          *ngIf="montoActual !== null"
+          class="alert alert-light border text-center fs-5 rounded-3"
+        >
+          Monto actual:
+          <span class="fw-bold text-danger">${{ montoActual }}</span>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0 pt-0">
+        <button
+          *ngIf="montoActual !== null"
+          class="btn btn-success btn-lg rounded-3"
+          (click)="resetearMonto()"
+        >
+          Saldar deuda
+        </button>
+        <button
+          class="btn btn-outline-secondary btn-lg rounded-3"
+          (click)="cerrarModal($event)"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <style>
   /* src/app/admin/admin-dashboard/admin-dashboard.component.css */
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* fondo oscuro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+  }
+
+  .modal-contenido {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    min-width: 320px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-contenido h2 {
+    margin-top: 0;
+  }
+
+  .modal-contenido .cerrar {
+    margin-top: 1rem;
+    background-color: #ccc;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
 
   .admin-option-card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
