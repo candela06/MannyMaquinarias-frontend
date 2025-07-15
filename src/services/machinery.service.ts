@@ -195,6 +195,50 @@ export class MachineryService {
     return this.http.get<Machinery[]>(`${this._apiUrl}/maquinas`, { params });
   }
 
+  finalizarMantenimiento(maquinaId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    return this.http
+      .post(
+        `${this._apiUrl}/mantenimientos/finishMantenimiento/${maquinaId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  cambiarEstadoMaquina(
+    id: number,
+    nuevoEstado: MachineryStatus
+  ): Observable<any> {
+    const token = localStorage.getItem('token');
+    return this.http.put(
+      `${this._apiUrl}/maquinas/cambiar-estado/${id}`,
+      { nuevoEstado }, // 👈 CAMBIADO
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  }
+
+  recibirMaquina(numeroReserva: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    return this.http.post(
+      `${this._apiUrl}/maquinas/recibir`,
+      { numeroReserva },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  }
+
   getResenasPorMaquina(maquinaId: number) {
     return this.http.get<any[]>(
       `${this._apiUrl}/resenas/maquina/?maquina_id=${maquinaId}`

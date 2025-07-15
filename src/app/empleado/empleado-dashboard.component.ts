@@ -30,20 +30,21 @@ export class empleadoDashboardComponent {
       title: 'Gestionar Máquinas',
       description:
         'Recibir, entregar, iniciar y finalizar mantenimiento de máquina.',
-      icon: 'bi-grid',
-      route: '',
+      icon: 'bi-tools',
+      route: '/trabajador/maquinas/gestionar',
+      accionLocal: null,
     },
     {
       title: 'Reservas',
       description:
         'Todas las reservas de todos los usuarios y cancelar reservas',
-      icon: 'bi-list-columns-reverse',
+      icon: 'bi-list-ul',
       route: '/trabajador/reservas',
+      accionLocal: null,
     },
     {
       title: 'Crear Cliente',
-      description:
-        '¡Crea un cliente para que pueda utilizar nuestro servicio! ',
+      description: '¡Crea un cliente para que pueda utilizar nuestro servicio!',
       icon: 'bi-person-plus-fill',
       route: '',
       accionLocal: 'crearCliente',
@@ -51,7 +52,7 @@ export class empleadoDashboardComponent {
     {
       title: 'Saldar Deuda',
       description: 'Salda la deuda de los clientes',
-      icon: 'bi-currency-dollar',
+      icon: 'bi-cash-coin',
       route: '',
       accionLocal: 'saldarDeuda',
     },
@@ -62,8 +63,7 @@ export class empleadoDashboardComponent {
   logClick(option: any): void {
     if (option.accionLocal === 'crearCliente') {
       this.mostrarFormularioCliente = true;
-    }
-    if (option.accionLocal === 'saldarDeuda') {
+    } else if (option.accionLocal === 'saldarDeuda') {
       this.abrirFormularioSaldar();
     }
   }
@@ -91,7 +91,7 @@ export class empleadoDashboardComponent {
     this.edadValida = edad >= 18;
   }
 
-  crearCliente() {
+  crearCliente(): void {
     if (
       !this.nuevoCliente.email ||
       !this.nuevoCliente.edad ||
