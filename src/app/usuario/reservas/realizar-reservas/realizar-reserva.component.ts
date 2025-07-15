@@ -319,69 +319,78 @@ export class RealizarReservaComponent implements OnInit {
   }
 
   makeReservation(): void {
-  if (this.isReservationButtonDisabled) {
-    Swal.fire(
-      'Atención',
-      'Por favor, completa todos los datos válidos y asegúrate de que la máquina esté disponible.',
-      'warning'
-    );
-    return;
-  }
+    if (this.isReservationButtonDisabled) {
+      Swal.fire(
+        'Atención',
+        'Por favor, completa todos los datos válidos y asegúrate de que la máquina esté disponible.',
+        'warning'
+      );
+      return;
+    }
 
-  const currentUser = this.authService.getCurrentUser();
-  if (!currentUser || !currentUser.id) {
-    Swal.fire(
-      'Error',
-      'Debes iniciar sesión para realizar una reserva.',
-      'error'
-    );
-    return;
-  }
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser || !currentUser.id) {
+      Swal.fire(
+        'Error',
+        'Debes iniciar sesión para realizar una reserva.',
+        'error'
+      );
+      return;
+    }
 
-  this.isMakingReservation = true;
+    this.isMakingReservation = true;
 
-  const reservaData: ReservaData = {
-    precio: this.calculatedPrice,
-    fecha_inicio: this.selectedStartDate,
-    fecha_fin: this.selectedEndDate,
-    maquina_id: this.machineId!,
-  };
+    const reservaData: ReservaData = {
+      precio: this.calculatedPrice,
+      fecha_inicio: this.selectedStartDate,
+      fecha_fin: this.selectedEndDate,
+      maquina_id: this.machineId!,
+    };
 
-  this.reservaService.crearReserva(reservaData).subscribe({
-    next: (reservaCreada) => {
-      console.log('✅ Reserva creada:', reservaCreada);
+    this.reservaService.crearReserva(reservaData).subscribe({
+      next: (reservaCreada) => {
+        console.log('✅ Reserva creada:', reservaCreada);
 
-      const dataPago = {
-        title: `Reserva: ${this.machinery?.nombre || 'Máquina'}`,
-        precio: reservaCreada.precio,
-        idReserva: reservaCreada.id,
-      };
+        const dataPago = {
+          title: `Reserva: ${this.machinery?.nombre || 'Máquina'}`,
+          precio: reservaCreada.precio,
+          idReserva: reservaCreada.id,
+        };
 
-      this.paymentService.crearPreferenciaPago(dataPago).subscribe({
-        next: (res) => {
-          console.log('🔁 Redirigiendo a Mercado Pago:', res.init_point);
-          window.location.href = res.init_point;
-        },
-        error: (err) => {
-          this.isMakingReservation = false;
-          console.error('❌ Error al crear preferencia de pago:', err);
-          Swal.fire('Error', 'No se pudo iniciar el pago con Mercado Pago.', 'error');
-        },
-      });
-    },
-    error: (error) => {
-      this.isMakingReservation = false;
-      console.error('❌ Error al crear reserva:', error);
+        this.paymentService.crearPreferenciaPago(dataPago).subscribe({
+          next: (res) => {
+            console.log(
+              '🔁 Abriendo Mercado Pago en nueva pestaña:',
+              res.init_point
+            );
+            window.open(res.init_point, '_blank');
+            this.isMakingReservation = false;
+          },
 
-      let errorMessage =
-        'Error al realizar la reserva. Por favor, inténtalo de nuevo.';
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.error && error.error.error) {
-        errorMessage = error.error.error;
-      }
-      Swal.fire('Error', errorMessage, 'error');
-    },
-  });
+          error: (err) => {
+            this.isMakingReservation = false;
+            console.error('❌ Error al crear preferencia de pago:', err);
+            Swal.fire(
+              'Error',
+              'No se pudo iniciar el pago con Mercado Pago.',
+              'error'
+            );
+          },
+        });
+      },
+      error: (error) => {
+        this.isMakingReservation = false;
+        console.error('❌ Error al crear reserva:', error);
+
+        let errorMessage =
+          'Error al realizar la reserva. Por favor, inténtalo de nuevo.';
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (error.error && error.error.error) {
+          errorMessage = error.error.error;
+        }
+        Swal.fire('Error', errorMessage, 'error');
+      },
+    });
   }
 }
