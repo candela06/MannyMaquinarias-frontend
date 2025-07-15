@@ -136,7 +136,7 @@ export class empleadoDashboardComponent {
           Swal.fire({
             icon: 'error',
             title: 'Email en uso',
-            text: 'Ya existe un usuario con ese correo electrónico.',
+            text: 'Ya existe un usuario con ese email.',
             confirmButtonColor: '#d33',
           });
         } else {
