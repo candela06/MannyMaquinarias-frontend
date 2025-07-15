@@ -28,30 +28,29 @@ export class empleadoDashboardComponent {
   employeeOptions = [
     {
       title: 'Gestionar Máquinas',
-      description:
-        'Recibir, entregar, iniciar y finalizar mantenimiento de máquina.',
-      icon: 'bi-plus-circle-fill',
-      route: '',
+      description: 'Recibir, entregar, iniciar y finalizar mantenimiento de máquina.',
+      icon: 'bi-tools',
+      route: '/trabajador/maquinas/gestionar',
+      accionLocal: null,
     },
     {
       title: 'Reservas',
-      description:
-        'Todas las reservas de todos los usuarios y cancelar reservas',
+      description: 'Todas las reservas de todos los usuarios y cancelar reservas',
       icon: 'bi-list-ul',
       route: '/trabajador/reservas',
+      accionLocal: null,
     },
     {
       title: 'Crear Cliente',
-      description:
-        '¡Crea un cliente para que pueda utilizar nuestro servicio! ',
-      icon: 'bi-list-ul',
+      description: '¡Crea un cliente para que pueda utilizar nuestro servicio!',
+      icon: 'bi-person-plus-fill',
       route: '',
       accionLocal: 'crearCliente',
     },
     {
       title: 'Saldar Deuda',
       description: 'Salda la deuda de los clientes',
-      icon: 'bi-list-ul',
+      icon: 'bi-cash-coin',
       route: '',
       accionLocal: 'saldarDeuda',
     },
@@ -62,8 +61,7 @@ export class empleadoDashboardComponent {
   logClick(option: any): void {
     if (option.accionLocal === 'crearCliente') {
       this.mostrarFormularioCliente = true;
-    }
-    if (option.accionLocal === 'saldarDeuda') {
+    } else if (option.accionLocal === 'saldarDeuda') {
       this.abrirFormularioSaldar();
     }
   }
@@ -91,13 +89,12 @@ export class empleadoDashboardComponent {
     this.edadValida = edad >= 18;
   }
 
-  crearCliente() {
+  crearCliente(): void {
     if (
       !this.nuevoCliente.email ||
       !this.nuevoCliente.edad ||
       this.edadValida === false
-    )
-      return;
+    ) return;
 
     const nacimiento = new Date(this.nuevoCliente.edad);
     const hoy = new Date();
@@ -117,11 +114,7 @@ export class empleadoDashboardComponent {
 
     this.usuarioService.crearUsuario(payload).subscribe({
       next: () => {
-        Swal.fire(
-          'Cliente creado',
-          'El cliente se creó correctamente.',
-          'success'
-        );
+        Swal.fire('Cliente creado', 'El cliente se creó correctamente.', 'success');
         this.mostrarFormularioCliente = false;
         this.nuevoCliente = { email: '', edad: '' };
         this.edadValida = null;
@@ -189,11 +182,7 @@ export class empleadoDashboardComponent {
         this.mostrarFormularioSaldar = false;
       },
       error: (err) => {
-        Swal.fire(
-          'Error',
-          err?.error?.error || 'No se pudo resetear el monto.',
-          'error'
-        );
+        Swal.fire('Error', err?.error?.error || 'No se pudo resetear el monto.', 'error');
       },
     });
   }

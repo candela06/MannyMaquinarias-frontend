@@ -1,0 +1,58 @@
+<div class="container py-4">
+  <h2 class="text-center text-primary fw-bold mb-4">Gestión de Máquinas (Trabajador)</h2>
+
+  <div *ngIf="maquinas.length === 0" class="text-center text-muted">
+    No hay máquinas para mostrar.
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div *ngFor="let maquina of maquinas" class="col">
+      <div class="card h-100 shadow-sm">
+        <img
+          [src]="maquina.imageUrl || 'https://placehold.co/600x400?text=Maquina'"
+          class="card-img-top"
+          alt="Imagen de {{ maquina.nombre }}"
+        />
+        <div class="card-body">
+          <h5 class="card-title text-uppercase fw-bold">{{ maquina.nombre }}</h5>
+          <p class="card-text mb-1"><strong>Marca:</strong> {{ maquina.marca }}</p>
+          <p class="card-text mb-1"><strong>Modelo:</strong> {{ maquina.modelo }}</p>
+          <p class="card-text mb-1"><strong>Categoría:</strong> {{ maquina.categoria }}</p>
+          <p class="card-text mb-1"><strong>Precio:</strong> ${{ maquina.precio }}</p>
+          <p class="card-text mb-1">
+            <strong>Sucursal:</strong> {{ maquina.sucursal?.localidad || 'Sin asignar' }}
+          </p>
+          <p class="card-text mb-2">
+            <strong>Estado:</strong>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success': maquina.estado === 'disponible',
+                'bg-warning text-dark': maquina.estado === 'en mantenimiento',
+                'bg-secondary': maquina.estado === 'checkeo',
+                'bg-info text-dark': maquina.estado === 'entregado'
+              }"
+            >
+              {{ maquina.estado }}
+            </span>
+          </p>
+
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-primary" (click)="recibirMaquina(maquina)">
+              Recibir máquina
+            </button>
+            <button class="btn btn-outline-secondary" (click)="entregarMaquina(maquina)">
+              Entregar máquina
+            </button>
+            <button class="btn btn-outline-warning" (click)="iniciarMantenimiento(maquina)">
+              Iniciar mantenimiento
+            </button>
+            <button class="btn btn-outline-danger" (click)="finalizarMantenimiento(maquina)">
+              Finalizar mantenimiento
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

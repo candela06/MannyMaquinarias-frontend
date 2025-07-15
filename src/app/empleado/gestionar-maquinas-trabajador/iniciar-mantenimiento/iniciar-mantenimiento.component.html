@@ -1,0 +1,46 @@
+<div class="container mt-4" *ngIf="maquina">
+  <h2 class="mb-3 text-center">Iniciar Mantenimiento</h2>
+
+  <div class="card p-4 shadow-sm">
+    <h5>Máquina: {{ maquina.nombre }} ({{ maquina.estado }})</h5>
+    <p><strong>Modelo:</strong> {{ maquina.modelo }}</p>
+    <p><strong>Marca:</strong> {{ maquina.marca }}</p>
+
+    <form (ngSubmit)="confirmarMantenimiento()">
+      <div class="mb-3">
+        <label for="nombre" class="form-label">Observacion</label>
+        <input
+          type="text"
+          id="nombre"
+          class="form-control"
+          [(ngModel)]="form.nombre"
+          name="nombre"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="descripcion" class="form-label">Descripción</label>
+        <textarea
+          id="descripcion"
+          class="form-control"
+          [(ngModel)]="form.descripcion"
+          name="descripcion"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label for="fechaFin" class="form-label">Fecha de fin</label>
+        <input
+          type="date"
+          id="fechaFin"
+          class="form-control"
+          [(ngModel)]="form.fechaFin"
+          name="fechaFin"
+        />
+      </div>
+
+      <button class="btn btn-warning" type="submit">Confirmar</button>
+    </form>
+  </div>
+</div>
