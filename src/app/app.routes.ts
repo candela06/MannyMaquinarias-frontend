@@ -17,7 +17,6 @@ import { HistorialReservasComponent } from './usuario/reservas/historial-reserva
 import { UsuarioDashboardComponent } from './usuario/usuario.component';
 import { ModificarUsuarioComponent } from './usuario/modificar-usuario/modificar-usuario.component';
 import { authGuard } from './guards/auth.guard';
-import { EliminarCuentaPropiaComponent } from './usuario/eliminar-usuario/eliminar-usuario.component'; // <-- ¡NUEVO!
 import { RealizarReservaComponent } from './usuario/reservas/realizar-reservas/realizar-reserva.component';
 import { EstadisticasComponent } from './admin/estadisticas/estadisticas.component';
 import { empleadoDashboardComponent } from './empleado/empleado-dashboard.component';
@@ -34,12 +33,6 @@ export const routes: Routes = [
   { path: 'catalogo', component: CatalogoComponent },
   { path: 'preguntas-frecuentes', component: SharedComponent },
   { path: 'detalle/:id', component: DetalleMaquinariaComponent },
-  {
-    path: 'eliminar-micuenta',
-    component: EliminarCuentaPropiaComponent,
-    canActivate: [authGuard],
-  },
-
   {
     path: 'mis-reservas',
     component: HistorialReservasComponent,

@@ -194,4 +194,18 @@ export class MachineryService {
 
     return this.http.get<Machinery[]>(`${this._apiUrl}/maquinas`, { params });
   }
+
+  getResenasPorMaquina(maquinaId: number) {
+    return this.http.get<any[]>(
+      `${this._apiUrl}/resenas/maquina/?maquina_id=${maquinaId}`
+    );
+  }
+
+  crearResena(data: {
+    reserva_id: number;
+    puntuacion: number;
+    comentario?: string;
+  }) {
+    return this.http.post<any>(`${this._apiUrl}/resenas/add`, data);
+  }
 }

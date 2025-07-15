@@ -30,28 +30,28 @@ export class empleadoDashboardComponent {
       title: 'Gestionar Máquinas',
       description:
         'Recibir, entregar, iniciar y finalizar mantenimiento de máquina.',
-      icon: 'bi-plus-circle-fill',
+      icon: 'bi-grid',
       route: '',
     },
     {
       title: 'Reservas',
       description:
         'Todas las reservas de todos los usuarios y cancelar reservas',
-      icon: 'bi-list-ul',
+      icon: 'bi-list-columns-reverse',
       route: '/trabajador/reservas',
     },
     {
       title: 'Crear Cliente',
       description:
         '¡Crea un cliente para que pueda utilizar nuestro servicio! ',
-      icon: 'bi-list-ul',
+      icon: 'bi-person-plus-fill',
       route: '',
       accionLocal: 'crearCliente',
     },
     {
       title: 'Saldar Deuda',
       description: 'Salda la deuda de los clientes',
-      icon: 'bi-list-ul',
+      icon: 'bi-currency-dollar',
       route: '',
       accionLocal: 'saldarDeuda',
     },
