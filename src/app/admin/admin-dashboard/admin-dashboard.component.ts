@@ -15,34 +15,30 @@ import { RouterModule } from '@angular/router'; // Necesario para routerLink
   imports: [CommonModule, RouterModule], // Importar RouterModule
 })
 export class AdminDashboardComponent {
-  /**
-   * @description Define las opciones disponibles en el panel de administración.
-   * Cada objeto contiene el título, una descripción, un icono y la ruta a la que navega.
-   */
   adminOptions = [
     {
       title: 'Registrar Máquina',
       description: 'Añadir una nueva máquina al inventario.',
-      icon: 'bi-plus-circle-fill', // Icono de Bootstrap Icons
+      icon: 'bi-plus-circle-fill',
       route: '/admin/maquinas/registrar',
     },
     {
       title: 'Gestionar Máquinas',
       description: 'Ver, modificar y eliminar máquinas existentes.',
       icon: 'bi-list-ul',
-      route: '/admin/maquinas/listar', //crear este componente más adelante
+      route: '/admin/maquinas/listar',
     },
     {
       title: 'Gestionar Usuarios',
       description: 'Administrar cuentas de usuario, roles y lista negra',
       icon: 'bi-people-fill',
-      route: '/admin/usuarios/listar', // crear este componente
+      route: '/admin/usuarios/listar',
     },
     {
       title: 'Estadisticas',
       description: 'Ver estadisticas de usuarios, máquinas e ingresos',
-      icon: 'bi-people-fill',
-      route: '/admin/estadisticas', // crear este componente
+      icon: 'bi-graph-up-arrow',
+      route: '/admin/estadisticas',
     },
   ];
 

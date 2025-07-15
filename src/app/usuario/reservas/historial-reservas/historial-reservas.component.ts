@@ -9,10 +9,19 @@ import { PolicyService } from '../../../../services/policy.service';
 import { AuthService } from '../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+import { FormsModule } from '@angular/forms';
+import { StarRatingComponent } from '../../../shared/star.component';
+
+interface Resena {
+  id: number;
+  comentario: string;
+  puntuacion: number;
+  createdAt: number;
+}
 
 @Component({
   selector: 'app-ver-historial',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, StarRatingComponent],
   templateUrl: './historial-reservas.component.html',
 })
 export class HistorialReservasComponent implements OnInit {
@@ -23,6 +32,10 @@ export class HistorialReservasComponent implements OnInit {
   maquinaSeleccionada: Machinery | null | undefined;
   politicaCancelacionSeleccionada: Policy | null | undefined;
   todasLasPoliticas: Policy[] = [];
+
+  puntuacion: number = 0;
+  comentario: string = '';
+  mostrarModalResena: boolean = false;
 
   constructor(
     private reservaService: ReservaService,
@@ -101,15 +114,90 @@ export class HistorialReservasComponent implements OnInit {
             reserva.eliminado = true;
           },
           error: (err) => {
-            console.error('Error al cancelar reserva:', err);
-            Swal.fire(
-              'Error',
-              'No se pudo cancelar la reserva. Intenta nuevamente.',
-              'error'
-            );
+            console.error('Error completo recibido del backend:', err);
+            let errorMessage =
+              'Ha ocurrido un error inesperado. Por favor, intenta de nuevo.';
+            if (err && err.error) {
+              if (typeof err.error === 'string') {
+                errorMessage = err.error;
+              } else if (err.error.message) {
+                errorMessage = err.error.message;
+              } else if (err.error.error) {
+                errorMessage = err.error.error;
+              } else if (err && err.message) {
+                errorMessage = err.message;
+              }
+              Swal.fire('Error', errorMessage, 'error');
+            }
           },
         });
       }
+      this.cerrarDetalle();
+      this.reservaService.getReservasPropias();
+    });
+  }
+
+  abrirModalResena(): void {
+    this.mostrarModalResena = true;
+    this.comentario = '';
+    this.puntuacion = 0;
+  }
+
+  cerrarModalResena(): void {
+    this.mostrarModalResena = false;
+    this.comentario = '';
+    this.puntuacion = 0;
+  }
+
+  onPuntuacionChanged(newScore: number): void {
+    this.puntuacion = newScore;
+  }
+
+  enviarResena(): void {
+    if (!this.reservaSeleccionada) return;
+
+    if (this.puntuacion === 0) {
+      Swal.fire(
+        'Atención',
+        'Por favor, selecciona un puntaje para la reseña.',
+        'warning'
+      );
+      return;
+    }
+
+    const payload = {
+      reserva_id: this.reservaSeleccionada.id,
+      comentario: this.comentario,
+      puntuacion: this.puntuacion,
+    };
+
+    this.MachineryService.crearResena(payload).subscribe({
+      next: (res) => {
+        Swal.fire('Gracias!', 'Tu reseña fue enviada.', 'success');
+        this.cerrarModalResena();
+        if (this.reservaSeleccionada) {
+          if (!this.reservaSeleccionada.resena) {
+            this.reservaSeleccionada.resena = res; // Asume una estructura mínima
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error completo recibido del backend:', err);
+        let errorMessage =
+          'Ha ocurrido un error inesperado. Por favor, intenta de nuevo.';
+        if (err && err.error) {
+          if (typeof err.error === 'string') {
+            errorMessage = err.error;
+          } else if (err.error.message) {
+            errorMessage = err.error.message;
+          } else if (err.error.error) {
+            errorMessage = err.error.error;
+          } else if (err && err.message) {
+            errorMessage = err.message;
+          }
+          Swal.fire('Error', errorMessage, 'error');
+        }
+      },
     });
   }
 }

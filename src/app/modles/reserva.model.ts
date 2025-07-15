@@ -17,4 +17,9 @@ export interface Reserva {
     email: string;
     apellido: string;
   };
+  resena: {
+    id: number;
+    comentario: string;
+    puntuacion: number;
+  };
 }

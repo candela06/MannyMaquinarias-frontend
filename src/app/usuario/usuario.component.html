@@ -28,9 +28,18 @@
           ></i>
           <h5 class="card-title fw-bold text-dark">{{ option.title }}</h5>
           <p class="card-text text-muted">{{ option.description }}</p>
+          <button
+            *ngIf="option.accionLocal"
+            (click)="logClick(option)"
+            class="btn btn-outline-orange mt-auto"
+          >
+            {{ option.title }}
+          </button>
+
           <a
+            *ngIf="option.route"
             [routerLink]="option.route"
-            class="btn btn-outline-orange mt-auto stretched-link"
+            class="btn btn-outline-orange mt-auto"
           >
             Ir a {{ option.title }}
           </a>

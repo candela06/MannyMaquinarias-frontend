@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms'; // Necesario para ngModel
 import { Router, RouterLink } from '@angular/router'; // Para la navegación
 import { UsuarioService } from '../../../services/usuario.service'; // Asegúrate de la ruta correcta
 import { User } from '../../modles/user.model'; // Asegúrate de la ruta correcta
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import Swal from 'sweetalert2'; // Para mensajes de éxito/error
 
@@ -103,7 +103,7 @@ export class ModificarUsuarioComponent implements OnInit {
     if (!this.esMayorDeEdad) {
       Swal.fire(
         'Advertencia',
-        'Debes ser mayor de 18 años para modificar tus datos.',
+        'Tu edad tiene que ser mayor a 18 años',
         'warning'
       );
       return;
@@ -167,21 +167,15 @@ export class ModificarUsuarioComponent implements OnInit {
           ) {
             this.errorMessage = error.error.error;
             Swal.fire('Error', this.errorMessage, 'error');
-            return of(null); // no cierres la sesión
+            return throwError(() => error);
+          } else {
+            console.error('Error al actualizar el perfil:', error);
+            this.errorMessage =
+              error.message ||
+              'Error al actualizar el perfil. Inténtalo de nuevo.';
+            Swal.fire('Error', this.errorMessage, 'error');
+            return throwError(() => error); // Propaga el error
           }
-
-          if (error.status === 401) {
-            // Token vencido o no autorizado
-            this.router.navigate(['/login']); // o lo que uses para cerrar sesión
-            return of(null);
-          }
-
-          console.error('Error al actualizar el perfil:', error);
-          this.errorMessage =
-            error.message ||
-            'Error al actualizar el perfil. Inténtalo de nuevo.';
-          Swal.fire('Error', this.errorMessage, 'error');
-          return of(null);
         })
       )
       .subscribe();

@@ -52,6 +52,9 @@ export class ListarUsuariosComponent implements OnInit {
       title: '¿Estás seguro?',
       text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
+      color: '#ffffff',
+      background: '#910202ff',
+      backdrop: 'rgba(123, 0, 0, 0.4)',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
@@ -68,8 +71,8 @@ export class ListarUsuariosComponent implements OnInit {
               'success'
             );
           },
-          error: () => {
-            Swal.fire('Error', 'No se pudo eliminar el usuario.', 'error');
+          error: (err) => {
+            Swal.fire('Error', err.message, 'error');
           },
         });
       }
@@ -97,8 +100,22 @@ export class ListarUsuariosComponent implements OnInit {
             );
             this.cargarUsuarios(); // Actualizamos la lista si querés ocultarlo de la principal
           },
-          error: () => {
-            Swal.fire('Error', 'No se pudo agregar a la lista negra.', 'error');
+          error: (err) => {
+            console.error('Error completo recibido del backend:', err);
+            let errorMessage =
+              'Ha ocurrido un error inesperado. Por favor, intenta de nuevo.';
+            if (err && err.error) {
+              if (typeof err.error === 'string') {
+                errorMessage = err.error;
+              } else if (err.error.message) {
+                errorMessage = err.error.message;
+              } else if (err.error.error) {
+                errorMessage = err.error.error;
+              } else if (err && err.message) {
+                errorMessage = err.message;
+              }
+              Swal.fire('Error', errorMessage, 'error');
+            }
           },
         });
       }

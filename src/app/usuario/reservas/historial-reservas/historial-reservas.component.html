@@ -87,6 +87,21 @@
               >
             </p>
           </ng-template>
+
+          <!-- dejar reseña -->
+          <div class="mt-3">
+            <button
+              *ngIf="!reservaSeleccionada?.resena?.id"
+              class="btn btn-primary"
+              (click)="abrirModalResena()"
+            >
+              Dejar reseña
+            </button>
+
+            <span *ngIf="reservaSeleccionada?.resena?.id" class="text-success">
+              Ya dejaste una reseña para esta reserva.
+            </span>
+          </div>
         </div>
 
         <div>
@@ -105,3 +120,120 @@
     </div>
   </div>
 </div>
+
+<!-- modal de reseña -->
+<div *ngIf="mostrarModalResena" class="backdrop">
+  <div class="editor-panel p-4 rounded-4 shadow-lg">
+    <h4 class="mb-3">
+      ✨Deja una reseña para {{ maquinaSeleccionada?.nombre }} ✨
+    </h4>
+    <p *ngIf="reservaSeleccionada">
+      Numero de reserva: {{ reservaSeleccionada.id }}
+    </p>
+
+    <div class="form-group">
+      <label>Puntuación:</label>
+      <app-star-rating
+        [rating]="puntuacion"
+        (ratingChange)="onPuntuacionChanged($event)"
+      ></app-star-rating>
+      <span class="current-score">({{ puntuacion }} de 5)</span>
+    </div>
+
+    <div class="form-group">
+      <label for="comentario"></label>
+      <textarea
+        id="comentario"
+        [(ngModel)]="comentario"
+        name="comentario"
+        rows="5"
+        placeholder="Escribe tu comentario aquí..."
+      ></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" (click)="enviarResena()">
+        Enviar Reseña
+      </button>
+      <button class="btn btn-secondary" (click)="cerrarModalResena()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+  }
+
+  .editor-panel {
+    width: 40%;
+    background-color: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .editor-panel h4 {
+    margin-top: 0;
+    margin-bottom: 0;
+    color: #333;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* --- Número de Reserva --- */
+  .editor-panel p {
+    color: #777;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: -0.5rem;
+    margin-bottom: 0;
+  }
+
+  app-star-rating {
+    display: flex;
+    align-items: center;
+  }
+
+  /* --- Área de Comentario --- */
+  textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    line-height: 1.4;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+    outline: none;
+  }
+
+  /* --- Contenedor de Acciones  --- */
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+</style>

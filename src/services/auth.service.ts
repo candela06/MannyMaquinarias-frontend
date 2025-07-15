@@ -6,6 +6,8 @@ import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
+import { title } from 'process';
+import { text } from 'stream/consumers';
 
 export interface AuthResponse {
   token: string;
@@ -28,17 +30,16 @@ export interface DecodedToken {
   exp: number; // Expiration Time (timestamp)
 }
 
-// AÑADIR/ASEGURAR EL 'export' AQUÍ
 export interface RegisterData {
   email: string;
   password: string;
-  fechaNacimiento: string; // Es opcional si el backend no lo requiere explícitamente como string obligatorio
-  dni?: string; // Agregado
-  nombreUsuario?: string; // Agregado
-  nombre?: string; // Agregado
-  apellido?: string; // Agregado
-  direccion?: string; // Agregado
-  edad?: number; // Agregado
+  fechaNacimiento: string;
+  dni?: string;
+  nombreUsuario?: string;
+  nombre?: string;
+  apellido?: string;
+  direccion?: string;
+  edad?: number;
 }
 
 @Injectable({
@@ -69,23 +70,12 @@ export class AuthService {
     }
   }
 
-  /**
-   * @description Verifica si hay un token JWT almacenado en el localStorage.
-   * @returns {boolean} True si hay un token, false en caso contrario.
-   */
-
   private hasToken(): boolean {
     if (isPlatformBrowser(this.platformId)) {
       return !!localStorage.getItem('token');
     }
     return false;
   }
-
-  /**
-   * @description Obtiene la información del usuario almacenada en el localStorage.
-   * Si hay un token, intenta decodificarlo para obtener el rol del usuario.
-   * @returns {any | null} Objeto con la información del usuario (incluyendo rol) o null.
-   */
 
   private getStoredUser(): any {
     if (isPlatformBrowser(this.platformId)) {
@@ -112,12 +102,6 @@ export class AuthService {
     }
     return null;
   }
-  /**
-   * @description Maneja el inicio de sesión del usuario.
-   * Almacena el token JWT y la información del usuario (incluyendo el rol) en el localStorage.
-   * @param credentials Objeto con email y password del usuario.
-   * @returns Un Observable con la respuesta de autenticación.
-   */
 
   login(credentials: {
     email: string;
@@ -154,11 +138,14 @@ export class AuthService {
             decodedToken.rol_nombre
           );
 
-          Swal.fire(
-            '¡Bienvenido!',
-            'Sesión iniciada correctamente',
-            'success'
-          ).then(() => {
+          Swal.fire({
+            title: '¡Bienvenido!',
+            text: 'Sesión iniciada correctamente',
+            icon: 'success',
+            showConfirmButton: false,
+            showCancelButton: false,
+            timer: 1500,
+          }).then(() => {
             this.router.navigate(['/catalogo']);
           });
         }),
@@ -177,11 +164,6 @@ export class AuthService {
       );
   }
 
-  /**
-   * @description Maneja el registro de un nuevo usuario.
-   * @param userData Objeto con los datos del nuevo usuario.
-   * @returns Un Observable con la respuesta del registro.
-   */
   register(userData: RegisterData): Observable<any | null> {
     return this.http.post<any>(`${this.apiUrl}/register`, userData).pipe(
       tap((response) => {
@@ -201,7 +183,7 @@ export class AuthService {
     );
   }
 
-  logout(): void {
+  logout(fromDeleteAccount: boolean = false): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
       localStorage.removeItem('currentUser');
@@ -210,14 +192,22 @@ export class AuthService {
     this._isLoggedIn.next(false);
     this._currentUser.next(null);
 
-    this.router.navigate(['/login']);
-    Swal.fire('Sesión Cerrada', 'Has cerrado sesión correctamente', 'info');
+    // Si la llamada no viene de eliminarCuenta, redirige inmediatamente.
+    // Si viene de eliminarCuenta, vamos a esperar para redirigir.
+    if (!fromDeleteAccount) {
+      this.router.navigate(['/login']);
+      Swal.fire({
+        title: 'Sesión cerrada',
+        icon: 'success',
+        showCancelButton: false,
+        showConfirmButton: false,
+        timer: 1500, // Duración del segundo mensaje
+      });
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
-  /**
-   * @description Obtiene el token JWT almacenado en el localStorage.
-   * @returns {string | null} El token JWT o null si no está presente.
-   */
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
       return localStorage.getItem('token');
@@ -225,18 +215,9 @@ export class AuthService {
     return null;
   }
 
-  /**
-   * @description Obtiene la información actual del usuario logueado desde el BehaviorSubject.
-   * @returns {any | null} Un objeto con la información del usuario (incluyendo rol) o null.
-   */
   getCurrentUser(): any {
     return this._currentUser.getValue();
   }
-
-  /**
-   * @description Obtiene la información actual del usuario logueado desde el BehaviorSubject.
-   * @returns {any | null} Un objeto con la información del usuario (incluyendo rol) o null.
-   */
 
   get isAdmin(): boolean {
     const currentUser = this.getCurrentUser();

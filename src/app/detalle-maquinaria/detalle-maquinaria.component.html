@@ -144,10 +144,51 @@
   </ng-template>
 </div>
 
-<!-- Enlace al CDN de Bootstrap CSS (asegúrate de que esté cargado globalmente o aquí) -->
-<link
-  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-  rel="stylesheet"
-  xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-  crossorigin="anonymous"
-/>
+<!-- Reseñas -->
+<div class="mt-5">
+  <h3 class="text-dark fw-bold mb-3">Reseñas de esta máquina</h3>
+
+  <div *ngIf="resenas.length > 0; else sinResenas">
+    <div class="mb-3">
+      <span class="text-warning fs-4">
+        <ng-container *ngFor="let estrella of obtenerEstrellas(promedio)">
+          <i
+            class="bi"
+            [ngClass]="estrella === 'full' ? 'bi-star-fill' : 'bi-star'"
+          ></i>
+        </ng-container>
+      </span>
+      <span class="ms-2 text-secondary">
+        {{ promedio }} / 5 ({{ resenas.length }} reseñas)
+      </span>
+    </div>
+
+    <div class="list-group">
+      <div *ngFor="let r of resenas.slice(0, 3)" class="list-group-item">
+        <div class="d-flex justify-content-between">
+          <div class="text-warning">
+            <ng-container
+              *ngFor="let estrella of obtenerEstrellas(r.puntuacion)"
+            >
+              <i
+                class="bi"
+                [ngClass]="estrella === 'full' ? 'bi-star-fill' : 'bi-star'"
+              ></i>
+            </ng-container>
+          </div>
+          <small class="text-muted">{{
+            r.createdAt | date : "fullDate"
+          }}</small>
+        </div>
+        <p class="mb-0 mt-2" *ngIf="r.comentario">{{ r.comentario }}</p>
+        <p class="text-muted fst-italic" *ngIf="!r.comentario">
+          Sin comentario
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #sinResenas>
+    <p class="text-muted fst-italic">Esta máquina aún no tiene reseñas.</p>
+  </ng-template>
+</div>
