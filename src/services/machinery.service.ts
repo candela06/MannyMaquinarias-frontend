@@ -226,11 +226,11 @@ export class MachineryService {
     );
   }
 
-  recibirMaquina(numeroReserva: number): Observable<any> {
+  recibirMaquina(maquinaId: number): Observable<any> {
     const token = localStorage.getItem('token');
     return this.http.post(
       `${this._apiUrl}/maquinas/recibir`,
-      { numeroReserva },
+      { maquina_id: maquinaId },
       {
         headers: {
           Authorization: `Bearer ${token}`,
