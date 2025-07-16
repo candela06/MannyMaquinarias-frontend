@@ -59,8 +59,8 @@
               type="range"
               class="form-range"
               min="1000"
-              max="2000000"
-              step="1000"
+              max="5000"
+              step="500"
               [(ngModel)]="activeFilters.maxPrice"
               (change)="onPriceRangeChange()"
             />
@@ -129,7 +129,7 @@
           </ng-container>
 
           <span
-            *ngIf="activeFilters.maxPrice !== 2000000"
+            *ngIf="activeFilters.maxPrice !== 5000"
             class="badge bg-info text-dark"
           >
             Precio ≤ ${{ activeFilters.maxPrice | number }}

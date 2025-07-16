@@ -72,7 +72,7 @@ export class EstadisticasComponent implements OnInit, AfterViewInit {
   generarAniosDisponibles(): void {
     const anioActual = new Date().getFullYear();
     const anioInicio = anioActual - 3;
-    for (let i = anioInicio; i <= anioActual + 1; i++) {
+    for (let i = anioInicio; i <= anioActual; i++) {
       this.aniosDisponibles.push(i);
     }
     this.anioSeleccionado = anioActual;
