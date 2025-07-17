@@ -110,7 +110,6 @@ export class GestionarMaquinasTrabajadorComponent implements OnInit {
                   2
                 )}`
               : '',
-          showConfirmButton: false,
           timer: 3000,
         });
         this.obtenerMaquinas(); // Recargar la lista para actualizar estados/datos

@@ -179,11 +179,7 @@ export class ListarReservasComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al obtener reservas por fecha:', err);
-          Swal.fire(
-            'Error',
-            'No se encontraron reservas en ese rango o ocurrió un problema.',
-            'error'
-          );
+          Swal.fire('No se encontraron reservas en ese rango');
         },
       });
   }
