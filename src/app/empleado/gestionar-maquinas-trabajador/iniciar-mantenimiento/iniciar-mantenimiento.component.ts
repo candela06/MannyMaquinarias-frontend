@@ -11,14 +11,14 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-iniciar-mantenimiento',
   templateUrl: './iniciar-mantenimiento.component.html',
   styleUrls: ['./iniciar-mantenimiento.component.css'],
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule],
 })
 export class IniciarMantenimientoComponent implements OnInit {
   maquina: any = null;
   form = {
     nombre: '',
     descripcion: '',
-    fechaFin: ''
+    fechaFin: '',
   };
 
   constructor(
@@ -41,50 +41,67 @@ export class IniciarMantenimientoComponent implements OnInit {
     }
   }
 
- confirmarMantenimiento() {
-  if (!this.maquina || this.maquina.estado !== 'disponible') {
-    Swal.fire('No permitido', 'La máquina no se encuentra en el local', 'warning');
-    return;
-  }
+  confirmarMantenimiento() {
+    if (!this.maquina || this.maquina.estado !== 'disponible') {
+      Swal.fire(
+        'No permitido',
+        'La máquina no se encuentra en el local',
+        'warning'
+      );
+      return;
+    }
 
-  if (!this.form.nombre || !this.form.descripcion || !this.form.fechaFin) {
-    Swal.fire('Faltan campos', 'Completa todos los campos', 'info');
-    return;
-  }
+    if (!this.form.nombre || !this.form.descripcion || !this.form.fechaFin) {
+      Swal.fire('Faltan campos', 'Completa todos los campos', 'info');
+      return;
+    }
 
-  const payload = {
-  nombre: this.form.nombre,
-  detalle: this.form.descripcion,
-  fechaFin: this.form.fechaFin
-};
+    const fechaFinDate = new Date(this.form.fechaFin);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
+    if (fechaFinDate <= hoy) {
+      Swal.fire(
+        'Fecha inválida',
+        'La fecha de fin debe ser posterior a hoy',
+        'warning'
+      );
+      return;
+    }
 
-  const token = localStorage.getItem('token'); // O ajustá si usás otra clave
+    const payload = {
+      nombre: this.form.nombre,
+      detalle: this.form.descripcion,
+      fechaFin: this.form.fechaFin,
+    };
 
-  fetch('http://localhost:3001/mantenimientos/startMantenimiento/' + this.maquina.id, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-            },
-    body: JSON.stringify(payload)
-  })
-    .then(async (res) => {
-      if (!res.ok) {
-        const error = await res.text();
-        throw new Error(error || 'Error al iniciar mantenimiento');
+    const token = localStorage.getItem('token'); // O ajustá si usás otra clave
+
+    fetch(
+      'http://localhost:3001/mantenimientos/startMantenimiento/' +
+        this.maquina.id,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
       }
-      return res.json();
-    })
-    .then(() => {
-      Swal.fire('Éxito', 'Mantenimiento iniciado correctamente', 'success');
-      this.router.navigate(['/trabajador/maquinas/gestionar']);
-    })
-    .catch((err) => {
-      Swal.fire('Error', err.message, 'error');
-    });
+    )
+      .then(async (res) => {
+        if (!res.ok) {
+          const error = await res.text();
+          throw new Error(error || 'Error al iniciar mantenimiento');
+        }
+        return res.json();
+      })
+      .then(() => {
+        Swal.fire('Éxito', 'Mantenimiento iniciado correctamente', 'success');
+        this.router.navigate(['/trabajador/maquinas/gestionar']);
+      })
+      .catch((err) => {
+        Swal.fire('Error', err.message, 'error');
+      });
+  }
 }
-
-
-}
-
-
