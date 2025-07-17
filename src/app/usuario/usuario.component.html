@@ -10,7 +10,7 @@
     }"
   >
     <small class="d-block text-muted">
-      Monto {{ montoPendiente > 0 ? "a favor" : "en contra" }}:
+      Monto {{ montoPendiente > 0 ? "a favor" : "" }}:
     </small>
     <strong class="display-6">{{ montoPendiente | currency : "ARS" }}</strong>
   </div>
